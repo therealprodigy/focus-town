@@ -1,0 +1,8 @@
+:root { font-family: Georgia, 'Times New Roman', serif; color: #f4e8c9; background: #162327; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+.opening-screen { min-height: 100vh; display: grid; place-content: center; text-align: center; padding: 2rem; background: radial-gradient(circle at 50% 35%, #3e6753, #162327 65%); }
+.opening-mark { color: #e7ca7e; font-size: 4rem; }
+.eyebrow { letter-spacing: .3em; color: #d5aa6d; font: bold .8rem system-ui; }
+h1 { font-size: clamp(3rem, 12vw, 7rem); margin: .1em 0; letter-spacing: -.06em; }
+.opening-foot { margin-top: 2rem; font-style: italic; opacity: .7; }
