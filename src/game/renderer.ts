@@ -41,6 +41,7 @@ type Options = TownLife & {
   camera?: { x: number; y: number; width: number; height: number };
   peers?: Peer[];
   sharedMinutes?: number;
+  characterName?: string;
   time: number;
   activity: "idle" | "walking" | "focusing" | "sleeping";
   streak: number;
@@ -859,6 +860,15 @@ export function renderWorld(
           player.y,
           o.activity === "focusing" ? "up" : player.facing,
         );
+        if (
+          o.characterName &&
+          !(o.peers ?? []).some(
+            (p) =>
+              p.scene === sceneId &&
+              Math.hypot(p.x - player.x, p.y - player.y) < 28,
+          )
+        )
+          text(o.characterName, player.x, player.y - 78, "#e8dfbf", 10);
         if (o.activity === "focusing") {
           rect(player.x - 6, player.y - 8, 12, 8, "#b48b56");
           if (Math.floor(t * 2) % 2)

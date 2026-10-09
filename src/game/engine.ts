@@ -55,6 +55,7 @@ export class GameEngine {
   scene: SceneId = "village";
   player: Player = { ...WORLDS.village.spawn, facing: "down", walkFrame: 0 };
   sharedMinutes = 0;
+  characterName = "";
   discoveries: DiscoveryId[] = [];
   upgrades: UpgradeId[] = [];
   private idleSeconds = 0;
@@ -277,6 +278,7 @@ export class GameEngine {
         camera,
         peers: this.peers,
         sharedMinutes: this.sharedMinutes,
+        characterName: this.characterName,
         time: this.reducedMotion ? 0 : this.elapsed,
         activity,
         streak: this.streak,

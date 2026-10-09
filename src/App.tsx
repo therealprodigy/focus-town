@@ -26,6 +26,7 @@ import { type Interaction, type SceneId } from "./game/world";
 import { CHAPTERS, getChapter } from "./game/story";
 import {
   parseSave,
+  characterNameFrom,
   settleTimer,
   startFocus,
   startBreak,
@@ -229,6 +230,9 @@ function Game() {
       notice,
       canSave,
       canRestore,
+      recovery,
+      storageStatus,
+      retry,
     } = useSave(),
     room = useRoom();
   const [prefs, setPrefs] = useState(loadPrefs),
@@ -253,6 +257,14 @@ function Game() {
         : "",
     ),
     [backup, setBackup] = useState<SaveData | null>(null);
+  const [characterDraft, setCharacterDraft] = useState("");
+  const [settingsError, setSettingsError] = useState("");
+  useEffect(() => {
+    if (ready) {
+      setCharacterDraft(save.characterName ?? "");
+      setName(save.characterName ?? "");
+    }
+  }, [ready, save.characterName]);
   const [storageNotice, setStorageNotice] = useState(() => {
     try {
       return localStorage.getItem("focus-town-storage-notice") !== "read";
@@ -368,8 +380,11 @@ function Game() {
   useEffect(() => {
     try {
       localStorage.setItem("focus-town-preferences-v2", JSON.stringify(prefs));
+      setSettingsError("");
     } catch {
-      /* Session progress has its own save guard. */
+      setSettingsError(
+        "Your timer settings could not be saved. They will reset when you reload.",
+      );
     }
   }, [prefs]);
   encounter.current = (i) => {
@@ -473,6 +488,7 @@ function Game() {
       engine.current.visible = view === "town";
       engine.current.blocked = view !== "town" || !!panel;
       engine.current.streak = progress.currentStreak;
+      engine.current.characterName = save.characterName ?? "";
       engine.current.discoveries = save.discoveries ?? [];
       engine.current.upgrades = inRoom
         ? (room.snapshot?.social?.world.upgrades ?? [])
@@ -486,6 +502,7 @@ function Game() {
     progress.currentStreak,
     prefs.quiet,
     isPaused,
+    save.characterName,
     save.discoveries,
     save.upgrades,
     inRoom,
@@ -929,6 +946,12 @@ function Game() {
               {String(getWorldClock(now).hour).padStart(2, "0")}:
               {String(getWorldClock(now).minute).padStart(2, "0")}
             </small>
+            <button
+              className="character-name"
+              onClick={() => setPanel("settings")}
+            >
+              {save.characterName || "Name your character"}
+            </button>
           </div>
           <section className="town-session" aria-label="Town timer">
             <button
@@ -1083,9 +1106,7 @@ function Game() {
       </nav>
       {storageNotice && !panel && (
         <aside className="storage-notice">
-          <button onClick={() => setPanel("settings")}>
-            Saved on this device
-          </button>
+          <button onClick={() => setPanel("settings")}>Save & backup</button>
           <button
             aria-label="Dismiss storage notice"
             onClick={acknowledge}
@@ -1369,6 +1390,41 @@ function Game() {
       )}
       {panel === "settings" && (
         <Modal title="Settle in." onClose={close}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const next = characterNameFrom(characterDraft);
+              if (!next) {
+                setMessage(
+                  "Choose a name with 1–24 characters, without line breaks.",
+                );
+                return;
+              }
+              if (update((s) => ({ ...s, characterName: next }))) {
+                setCharacterDraft(next);
+                setName(next);
+                setMessage("The town knows your name now.");
+              }
+            }}
+          >
+            <label className="text-field">
+              Character name
+              <input
+                value={characterDraft}
+                maxLength={24}
+                placeholder="What should the town call you?"
+                onChange={(e) => setCharacterDraft(e.target.value)}
+              />
+            </label>
+            <Button type="submit" variant="outline" disabled={!canSave}>
+              Save name
+            </Button>
+            {inRoom && (
+              <p className="fine-print">
+                Your current room keeps the nickname you joined with.
+              </p>
+            )}
+          </form>
           <label className="check-row">
             <input
               type="checkbox"
@@ -1393,24 +1449,64 @@ function Game() {
             />
             24-hour clock
           </label>
+          {settingsError && <p role="alert">{settingsError}</p>}
           <h3>Your save</h3>
+          <p role="status">{storageStatus}</p>
+          {notice && <p role="alert">{notice}</p>}
           <p>
-            Sessions, coins, story progress and settings stay in this browser on
-            this device. Clearing site data removes them. Download a backup
-            before moving browsers.
+            {save.sessions.length} completed sessions · {save.coins} coins
+          </p>
+          <p>
+            Progress saves automatically in this browser at{" "}
+            <strong>{location.hostname}</strong>. Another browser, device or
+            website address has a separate save.
+          </p>
+          <p>
+            Moving devices? Download a backup here, open Focus Town on the other
+            device, then choose Import progress. It carries your character and
+            town progress; timer preferences and your online identity stay here.
           </p>
           <div className="button-row">
             <Button variant="outline" onClick={download}>
-              Export save
+              Download progress backup
             </Button>
             <Button
               variant="outline"
               disabled={active || inRoom || room.busy || !canRestore}
               onClick={() => file.current?.click()}
             >
-              Import save
+              Import progress
             </Button>
           </div>
+          <div className="button-row">
+            <Button
+              disabled={!canSave}
+              onClick={() => {
+                if (retry())
+                  setMessage(
+                    "Saving works. Repeat any action that previously failed to save.",
+                  );
+              }}
+            >
+              Check saving again
+            </Button>
+            {recovery && (
+              <Button
+                disabled={active || inRoom || room.busy || !canRestore}
+                onClick={() => {
+                  setBackup(recovery);
+                  setPanel("import");
+                }}
+              >
+                Review recovery copy
+              </Button>
+            )}
+          </div>
+          <p className="fine-print">
+            The recovery copy is kept in this browser too. It may miss recent
+            changes if storage was full. Clearing site data removes both copies,
+            so keep a downloaded backup.
+          </p>
           <p className="fine-print">
             Co-op rooms share your nickname, character position and timer with
             invited players. Your profile also reports focus totals, best streak
@@ -1652,7 +1748,9 @@ function Game() {
             <Button onClick={download}>Export current save</Button>
             <Button
               variant="default"
+              disabled={active || inRoom || room.busy || !canRestore}
               onClick={() => {
+                if (active || inRoom || room.busy || !canRestore) return;
                 if (restore(backup)) {
                   setBackup(null);
                   close();

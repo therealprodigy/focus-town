@@ -86,3 +86,10 @@ Publishing took longer than expected. The first hosting route failed during uplo
 The automated suite passed 113 tests. Another run checked 22 existing room and reward tests against the hosted database adapter. Visual layout, audio levels and two-device play still need my manual pass.
 
 I supplied the concept, design direction, feedback and bug reports, and contributed bug fixes and work on the friends feature. Codex did much of the implementation, debugging and automated testing. The observatory background used image generation; the asset credits record it. This entry describes the linked Focus Town work, not unrelated projects or extra claimed hours.
+
+
+## 9 October 2026: names and safer saves
+
+Players can choose a character name in Settings. Old saves still load, and new names carry across progress backups. The save screen explains which browser holds progress and how to move it. A recovery copy can be reviewed if the main save is damaged; it is never silently restored. Import is blocked during sessions and room visits.
+
+The README leads with the public game and uses npm start for desktop source downloads. The updated suite passed 121 tests, both production builds and Worker route/audio checks. Source review found no shipping blockers. Visual layout and two-device play remain for the owner to check. Implementation and review were AI-assisted; no extra human hours are claimed here.

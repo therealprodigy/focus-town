@@ -57,6 +57,7 @@ export type Cycle = {
   autoBreak: boolean;
 };
 export type SaveData = {
+  characterName?: string;
   discoveries?: DiscoveryId[];
   upgrades?: UpgradeId[];
   missionClaims?: MissionId[];
@@ -175,6 +176,15 @@ function validTimer(x: unknown): x is Timer {
         time(x.endAt) &&
         x.endAt === x.startedAt + x.remainingMs;
 }
+export function characterNameFrom(input: unknown): string | null {
+  if (typeof input !== "string") return null;
+  const name = input.trim();
+  return name.length > 0 &&
+    name.length <= 24 &&
+    !/[\u0000-\u001f\u007f-\u009f]/.test(name)
+    ? name
+    : null;
+}
 function validSave(x: unknown): x is SaveData {
   if (
     !record(x) ||
@@ -183,6 +193,11 @@ function validSave(x: unknown): x is SaveData {
     !count(x.energy) ||
     !count(x.xp) ||
     !Array.isArray(x.sessions)
+  )
+    return false;
+  if (
+    x.characterName !== undefined &&
+    characterNameFrom(x.characterName) !== x.characterName
   )
     return false;
   if (x.discoveries !== undefined && !validDiscoveries(x.discoveries))

@@ -9,7 +9,11 @@ A small town for the thing you keep putting off. Pick a task, light the desk lam
       _|__|_   one page at a time
         ||
 
-## Download and play locally
+## Play now
+
+Open [Focus Town](https://focus-town-greenvale.vercel.app) on a phone, tablet or computer. No account, terminal or download is needed. This is the easiest way to play with friends.
+
+## Run your own desktop copy
 
 [**Download Focus Town ZIP**](https://github.com/therealprodigy/focus-town/archive/refs/heads/main.zip)
 
@@ -18,7 +22,7 @@ For Windows, macOS or Linux, install [Node.js 24 or newer](https://nodejs.org/en
 **Mac or Linux**
 
 ```sh
-git clone https://github.com/therealprodigy/focus-town.git "focus-town" && cd "focus-town" && npm ci && npm run dev -- --strictPort --open
+git clone https://github.com/therealprodigy/focus-town.git "focus-town" && cd "focus-town" && npm start
 ```
 
 **Windows PowerShell**
@@ -27,14 +31,12 @@ git clone https://github.com/therealprodigy/focus-town.git "focus-town" && cd "f
 git clone https://github.com/therealprodigy/focus-town.git "focus-town"
 if ($LASTEXITCODE -ne 0) { throw "Download failed. Check Git and choose a folder without an existing focus-town directory." }
 Set-Location -LiteralPath "focus-town" -ErrorAction Stop
-npm.cmd ci
-if ($LASTEXITCODE -ne 0) { throw "Setup failed. Check the error above and your Node.js version." }
-npm.cmd run dev -- --strictPort --open
+npm.cmd start
 ```
 
 Leave the terminal open while playing. If the browser does not open, visit the local address printed by Vite. Press **Ctrl+C** in the terminal to stop it. If port 5173 is already occupied by Focus Town, use the running copy.
 
-**Downloaded the ZIP?** Extract it, open a terminal inside the extracted folder and run `npm install`, then `npm run dev -- --strictPort --open`. In Windows PowerShell, use `npm.cmd` instead of `npm` if script execution is restricted. The ZIP route does not require Git. To play again, open the same folder and run the second command.
+**Downloaded the ZIP?** It contains source code, not a standalone app. Install Node.js 24 or newer, extract the ZIP, open the extracted folder in VS Code and choose **Terminal → New Terminal**. Run `npm start` (`npm.cmd start` in Windows PowerShell). The first run installs dependencies and opens the game. Use the same command next time. No Git is needed for this route.
 
 **Phones and tablets:** open [Play Focus Town](https://focus-town-greenvale.vercel.app). No terminal or installation is needed. The commands above are for running your own desktop copy.
 
@@ -68,7 +70,11 @@ Use the public Play link for remote invitations. A localhost invitation works on
 
 ## Your save
 
-Progress, settings, discoveries, purchases and journals live in this browser. Use **Settings → Export save** for a backup. Clearing browser data removes that copy and the device's co-op credential. Importing a save replaces local progress after confirmation; it does not restore a cleared co-op identity.
+Choose a character name in **Settings** or click **Name your character** in Town. Your name, sessions, discoveries, purchases and journal progress save automatically in this browser.
+
+**Settings → Download progress backup** makes a portable copy of that progress. On another device, open the public game and choose **Import progress**. Importing replaces that browser's progress after confirmation and is blocked during a session or room visit. Timer preferences and online identity are not included.
+
+Settings shows the current save status and website address. A recovery copy is kept beside the main save. If the main copy is damaged, you can review the recovery copy before restoring it. Clearing site data removes both copies and the device's co-op credential. Keep a downloaded backup; the recovery copy is not cloud storage.
 
 The old `focusraid-save-v1` storage key remains for save compatibility. One tab owns the writing lock. Shared rewards are acknowledged only after they have been saved locally. The server stores device profiles, reported totals, upgrades, room presence, comparisons and reward receipts. Task text stays local. See the in-game Privacy and Storage pages.
 
@@ -76,7 +82,7 @@ The old `focusraid-save-v1` storage key remains for save compatibility. One tab 
 
 `npm test` checks game and server rules. `npm run build` checks TypeScript and builds the app and Worker. `node scripts/check-worker.mjs` checks the built document routes and audio delivery without opening a browser.
 
-The 9 October 2026 build passed **113 automated tests**. Another run passed 22 existing room and reward tests against the libSQL adapter. The production build and Vercel deployment succeeded. Public checks passed for the custom 404, audio range delivery, room invitations, timer synchronization, host permissions, reward acknowledgements and mogging ties/overtakes. The earlier town upgrade also passed Worker checks and decoding checks for all five sound files. Visual layout, sound levels and two-device play remain for the owner to test using [TEST_PLAN.md](TEST_PLAN.md).
+The latest local checks on 9 October 2026 passed **121 automated tests**, both production builds and the built Worker route/audio checks. The eight new tests cover character-name compatibility and save recovery without duplicate rewards. The previous deployment also passed 22 existing room and reward tests against the libSQL adapter. Its public checks passed for the custom 404, audio range delivery, room invitations, timer synchronization, host permissions, reward acknowledgements and mogging ties/overtakes. The earlier town upgrade also passed Worker checks and decoding checks for all five sound files. Visual layout, sound levels and two-device play remain for the owner to test using [TEST_PLAN.md](TEST_PLAN.md).
 
 React, Vite, TypeScript, Tailwind and Canvas power the game. Local development uses SQLite; the public shared-room service uses Turso/libSQL. A Cloudflare D1 adapter is also available. [ARCHITECTURE.md](ARCHITECTURE.md) covers saving and co-op. [ASSETS.md](ASSETS.md) records artwork, fonts and the locally bundled CC0 sound library. Flocus informed timer hierarchy; its assets and code are not bundled.
 

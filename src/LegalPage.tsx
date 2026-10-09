@@ -8,7 +8,7 @@ const pages: Record<
     sections: [
       {
         title: "Personal progress",
-        text: "Focus Town stores sessions, coins, energy, village upgrades, discoveries, mission claims, story progress, timer state and preferences in local storage in your browser. There is no personal account or automatic cross-device backup. Export a save in Settings to move it yourself.",
+        text: "Focus Town stores your character name, sessions, coins, energy, village upgrades, discoveries, mission claims, story progress, timer state and preferences in local storage in your browser. There is no personal account or automatic cross-device backup. Download a progress backup in Settings to move it yourself. A recovery copy is also kept in the same browser; clearing site data removes both copies. Backups do not include timer preferences or online identity.",
       },
       {
         title: "When you join a room",
@@ -29,7 +29,7 @@ const pages: Record<
     sections: [
       {
         title: "Required local storage",
-        text: "The game uses browser local storage for the save, preferences and this notice. It uses session storage for your current co-op membership so you can reconnect after a reload. These are browser storage technologies, not advertising cookies.",
+        text: "The game uses browser local storage for the save, its recovery copy, preferences and this notice. It uses session storage for your current co-op membership so you can reconnect after a reload. These are browser storage technologies, not advertising cookies.",
       },
       {
         title: "Optional tracking",

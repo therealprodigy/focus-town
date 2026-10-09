@@ -6,6 +6,7 @@ import {
   serializeSave,
   type SaveData,
 } from "./game/state";
+import { readStoredSave, writeStoredSave } from "./saveStorage";
 export function useSave() {
   const [save, setSave] = useState<SaveData>(createSave),
     ref = useRef(save);
@@ -13,18 +14,37 @@ export function useSave() {
     valid = useRef(false);
   const [ready, setReady] = useState(false),
     [notice, setNotice] = useState("Opening save...");
+  const [storageStatus, setStorageStatus] = useState("Opening save...");
+  const [recovery, setRecovery] = useState<SaveData | null>(null);
   const persist = useCallback((next: SaveData) => {
+    let result = { saved: false, mirrored: false };
     try {
-      localStorage.setItem(SAVE_KEY, serializeSave(next));
-      ref.current = next;
-      valid.current = true;
-      setSave(next);
-      setNotice("");
-      return true;
+      result = writeStoredSave(localStorage, next);
     } catch {
-      setNotice("Could not save. Free some browser storage and try again.");
+      /* Storage access can itself be blocked. */
+    }
+    if (!result.saved) {
+      setStorageStatus("Last change could not be saved");
+      setNotice(
+        "Could not save. Your last saved progress is unchanged. Export it in Settings, free some browser storage, then retry.",
+      );
       return false;
     }
+    ref.current = next;
+    valid.current = true;
+    setSave(next);
+    setRecovery(null);
+    setStorageStatus(
+      result.mirrored
+        ? "Saved here, with a recovery copy"
+        : "Progress saved; recovery copy unavailable",
+    );
+    setNotice(
+      result.mirrored
+        ? ""
+        : "Progress saved, but the recovery copy could not be updated. Download a backup in Settings.",
+    );
+    return true;
   }, []);
   const update = useCallback(
     (change: (s: SaveData) => SaveData) => {
@@ -41,6 +61,10 @@ export function useSave() {
     },
     [persist],
   );
+  const retry = useCallback(
+    () => lock.current && valid.current && persist(ref.current),
+    [persist],
+  );
   const exportRaw = () => {
     try {
       return localStorage.getItem(SAVE_KEY) ?? serializeSave(ref.current);
@@ -54,27 +78,32 @@ export function useSave() {
     const controller = new AbortController();
     const load = () => {
       try {
-        const parsed = parseSave(localStorage.getItem(SAVE_KEY));
+        const parsed = readStoredSave(localStorage);
         ref.current = parsed.save;
         valid.current = !parsed.error;
         setSave(parsed.save);
+        setRecovery(parsed.recovery);
         setNotice(parsed.error ?? "");
+        setStorageStatus(
+          parsed.error ? "Save needs attention" : "Save opened in this browser",
+        );
       } catch {
         valid.current = false;
+        setStorageStatus("Browser storage unavailable");
         setNotice("Browser storage is unavailable. Sessions cannot be saved.");
       }
     };
+    load();
     if (!navigator.locks) {
-      load();
       setNotice(
         "This browser cannot protect saves across tabs. Use a current browser for sessions.",
       );
+      setStorageStatus("Saving unavailable in this browser");
       setReady(true);
       return () => {
         alive = false;
       };
     }
-    load();
     setNotice(
       "Save open in another tab. Close that tab to start sessions here.",
     );
@@ -96,6 +125,7 @@ export function useSave() {
       )
       .catch(() => {
         if (alive && !controller.signal.aborted) {
+          setStorageStatus("Saving unavailable");
           setNotice("Could not open the save. Reload to try again.");
           setReady(true);
         }
@@ -114,6 +144,9 @@ export function useSave() {
     exportRaw,
     ready,
     notice,
+    recovery,
+    storageStatus,
+    retry,
     canSave: lock.current && valid.current,
     canRestore: lock.current,
   };

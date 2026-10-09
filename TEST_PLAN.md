@@ -51,3 +51,8 @@ Use two browser profiles or devices with access to the same running server. A lo
 ## Report a bug
 
 Write what you clicked, what you expected, what happened, your browser/device, and whether reloading changes it. A screenshot helps with layout. Keep private saves and invitation secrets out of public issues. Journal only the testing you actually did.
+
+
+## Final name and backup check
+
+Save a name in Settings, visit Town and reload. Download a progress backup, then import it into an idle copy in another browser and compare names, sessions and coins. Timer preferences and online identity do not transfer. Import must remain disabled during a session or room visit.

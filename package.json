@@ -14,7 +14,8 @@
     "deploy:cloudflare": "wrangler deploy",
     "db:migrate:cloudflare": "wrangler d1 migrations apply DB --remote",
     "build:hosted": "tsc -b && vite build --config vite.hosted.config.ts",
-    "db:migrate:turso": "node scripts/migrate-libsql.ts"
+    "db:migrate:turso": "node scripts/migrate-libsql.ts",
+    "start": "node scripts/start.mjs"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",
