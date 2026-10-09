@@ -9,7 +9,10 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
-    "format": "prettier --write src server db scripts tests *.ts *.json *.md .vscode"
+    "format": "prettier --write src server db scripts tests *.ts *.json *.md .vscode",
+    "build:cloudflare": "tsc -b && vite build --outDir dist-cloudflare",
+    "deploy:cloudflare": "wrangler deploy",
+    "db:migrate:cloudflare": "wrangler d1 migrations apply DB --remote"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.4.0",
@@ -32,7 +35,8 @@
     "prettier": "^3.9.9",
     "typescript": "^7.0.2",
     "vite": "^8.3.3",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "wrangler": "^4.149.0"
   },
   "overrides": {
     "esbuild": "$esbuild"

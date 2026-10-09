@@ -12,3 +12,8 @@ coverage/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+
+dist-cloudflare/
+.wrangler/
+.dev.vars
+.dev.vars.*

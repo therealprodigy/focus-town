@@ -45,8 +45,12 @@ The old `focusraid-save-v1` storage key remains for save compatibility. One tab 
 
 `npm test` checks game and server rules. `npm run build` checks TypeScript and builds the app and Worker. `node scripts/check-worker.mjs` checks the built document routes and audio delivery without opening a browser.
 
-The 9 October 2026 upgrade passed **87 automated tests**, the production build, Worker checks and decoding checks for all five sound files. Visual layout, sound levels and two-device play remain for the owner to test using [TEST_PLAN.md](TEST_PLAN.md).
+The 9 October 2026 build passed **103 automated tests**, both production builds and the Cloudflare deployment dry run. The earlier town upgrade also passed Worker checks and decoding checks for all five sound files. Visual layout, sound levels and two-device play remain for the owner to test using [TEST_PLAN.md](TEST_PLAN.md).
 
 React, Vite, TypeScript, Tailwind, Canvas and SQLite/D1 power the game. [ARCHITECTURE.md](ARCHITECTURE.md) covers saving and co-op. [ASSETS.md](ASSETS.md) records artwork, fonts and the locally bundled CC0 sound library. Flocus informed timer hierarchy; its assets and code are not bundled.
 
 Hackatime's local project name is now **Focus Town**. Historical project grouping in Pixl is separate from that setting and does not change previously recorded categories or hours.
+
+## Public hosting
+
+The Cloudflare adapter supports the full game and co-op backend on one address. [DEPLOYMENT.md](DEPLOYMENT.md) covers account setup, database migrations and publishing. Its packaging checks pass; account authorization and a live public deployment are still pending.
