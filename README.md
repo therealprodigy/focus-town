@@ -7,11 +7,40 @@ A small town for the thing you keep putting off. Pick a task, light the desk lam
       _|__|_   one page at a time
         ||
 
-## Play locally
+## Download and play locally
 
-Open this folder in VS Code. On a fresh checkout, use Node 26 or newer and run `npm install` in its integrated terminal. Choose **Run and Debug → Focus Town: start preview → Play**. If the server is already running, open [Focus Town](http://127.0.0.1:5173/) in Brave instead.
+[**Download Focus Town ZIP**](https://github.com/therealprodigy/focus-town/archive/refs/heads/main.zip)
 
-Keep the preview terminal open. A connection error usually means the preview has stopped; **Terminal → Run Task → Focus Town: start preview** starts it again. Do not start another copy if port 5173 is already occupied.
+For Windows, macOS or Linux, install [Node.js 26 or newer](https://nodejs.org/en/download) and [Git](https://git-scm.com/downloads) first. Paste the matching block into a terminal in the folder where you want to keep the game. It downloads the project, installs its dependencies and opens the game in your browser.
+
+**Mac or Linux**
+
+```sh
+git clone https://github.com/therealprodigy/focus-town.git "focus-town" && cd "focus-town" && npm ci && npm run dev -- --strictPort --open
+```
+
+**Windows PowerShell**
+
+```powershell
+git clone https://github.com/therealprodigy/focus-town.git "focus-town"
+if ($LASTEXITCODE -ne 0) { throw "Download failed. Check Git and choose a folder without an existing focus-town directory." }
+Set-Location -LiteralPath "focus-town" -ErrorAction Stop
+npm.cmd ci
+if ($LASTEXITCODE -ne 0) { throw "Setup failed. Check the error above and your Node.js version." }
+npm.cmd run dev -- --strictPort --open
+```
+
+Leave the terminal open while playing. If the browser does not open, visit [Focus Town on this computer](http://127.0.0.1:5173/). Press **Ctrl+C** in the terminal to stop it. If port 5173 is already occupied by Focus Town, use the running copy.
+
+**Downloaded the ZIP?** Extract it, open a terminal inside the extracted folder and run `npm install`, then `npm run dev -- --strictPort --open`. In Windows PowerShell, use `npm.cmd` instead of `npm` if script execution is restricted. The ZIP route does not require Git. To play again, open the same folder and run the second command.
+
+**Phones and tablets:** the game runs in a browser, but the local setup above is for desktop computers. A public playable link is being prepared. Nothing needs installing on mobile once that link is live.
+
+## Run and debug in VS Code
+
+Open the downloaded folder in VS Code, then choose **Run and Debug → Focus Town: start preview → Play**. If the server is already running, open [Focus Town](http://127.0.0.1:5173/) in Brave instead.
+
+A connection error usually means the preview stopped. **Terminal → Run Task → Focus Town: start preview** starts it again. Keep that terminal open and avoid starting another copy on port 5173.
 
 ## One page, then a walk
 
