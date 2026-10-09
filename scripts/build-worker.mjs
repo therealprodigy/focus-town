@@ -5,6 +5,8 @@ const root = process.cwd(),
   out = path.join(root, "dist"),
   assets = {};
 const mime = {
+  ".mp3": "audio/mpeg",
+  ".ogg": "audio/ogg",
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8",

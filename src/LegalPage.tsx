@@ -8,11 +8,11 @@ const pages: Record<
     sections: [
       {
         title: "Personal progress",
-        text: "Focus Town stores solo sessions, coins, energy, story progress, timer state and preferences in local storage in your browser. There is no personal account or automatic cross-device backup. Export a save in Settings to move it yourself.",
+        text: "Focus Town stores sessions, coins, energy, village upgrades, discoveries, mission claims, story progress, timer state and preferences in local storage in your browser. There is no personal account or automatic cross-device backup. Export a save in Settings to move it yourself.",
       },
       {
         title: "When you join a room",
-        text: "The room service stores a nickname, membership credentials as hashes, presence times, your character’s scene and position, and the shared timer. Your nickname and character presence are visible to other room members. Your personal task text and solo journal are not sent to the room service.",
+        text: "The room service stores nicknames, hashed device and room secrets, presence, character positions, shared sessions and reward receipts. Your device profile reports total focus minutes, best streak and village upgrades for invited players to compare. Pair standings and profiles persist beyond room expiry. Your task text and detailed solo journal stay local. Clearing site data loses the device secret; importing a game save does not recover that identity.",
       },
       {
         title: "Room lifetime",

@@ -1,66 +1,53 @@
 # Owner playtest
 
-Automated baseline on 9 October 2026: 65 tests and the production build passed. These checks are still for the owner to perform in a browser. Record what you actually observe, including failures.
+Automated checks on 9 October 2026: 87 tests, TypeScript, production build, built Worker routing/audio checks and decoding of five sound files passed. The browser checks below are not marked complete. Record what you actually see.
 
-## Open the game
+## Open it
 
-1. In VS Code, click Run and Debug on the left.
-2. Choose Focus Town: start preview and click the green play button.
-3. If the preview is already running, open http://127.0.0.1:5173/ in Brave.
-4. Keep VS Code's preview terminal open. Do not start a second copy if port 5173 is in use.
+In VS Code, select **Run and Debug → Focus Town: start preview → Play**. If the preview is already running, use http://127.0.0.1:5173/ in Brave. Leave its terminal open.
 
-## First ten minutes
+## Start with the town
 
-- [ ] Resize the window. Check that the clock, Start button and bottom dock remain visible, including at phone size and browser zoom 200%.
-- [ ] Click the dock's full-screen corners icon. Press Escape to return.
-- [ ] Open Sessions. Set focus, short break and long break to 1 minute, with 2 rounds. Start.
-- [ ] Pause after a few seconds, reload, and check that it remains paused. Resume and wait for completion.
-- [ ] Check that one session appears in Journal, with one reward. Reload again and check it is not duplicated.
-- [ ] Finish the short break, start round two, then check the final break is labelled Long break even though both breaks are 1 minute.
-- [ ] Try automatic breaks. Confirm the next focus round still waits for Start.
+- [ ] Click Town. Walk with WASD or arrows; press E near an object. Try the touch controls too.
+- [ ] Visit the reading bench, mailbox, tea stall and Miso. Dialogs should open and close without sticking a movement key.
+- [ ] Use Take a tea break at Jun's stall. Short break settings should open while Town stays selected.
+- [ ] Try going above the broken bridge and around the library. The visible fence and woods should stop you; the library door and bridge notice must remain reachable.
+- [ ] Read the atlas and the shelf inside Lantern House. Investigate the bell. Discoveries should appear in Journal and survive a reload.
+- [ ] Return to the pond and house window after nightfall. Check the twelve-minute light cycle; reduced motion should hold it still.
+- [ ] Walk behind the new props and, after purchase, the moonflowers. Look for incorrect overlap or floating shadows.
+- [ ] Compare Focus and Town at phone size, full screen and 200% zoom. The dock, clock and character should remain usable.
 
-## Town refresh
+## Sessions and rewards
 
-- [ ] Switch between Focus and Town. Compare their colours and lighting; record anything that feels out of place.
-- [ ] In Town, click Set sessions. Choose custom focus, short break, long break and rounds. Save settings; Town should stay open.
-- [ ] Start a one-minute interval from Town, then pause and resume. The apprentice should study in Lantern House while the town timer remains usable.
-- [ ] Complete the interval and take a break. Check the next-round action and the saved result without visiting Focus.
-- [ ] Hide and reopen the timer. On a short phone screen it starts collapsed; make sure the expanded controls leave room to see the character.
-- [ ] Walk to all map edges on a phone and a wide screen. The whole character should stay visible. Resizing should not move the character to a different map position.
-- [ ] Read the atlas outside the library and inspect the bell south of the square. Walk behind both and check their drawing order.
-- [ ] Talk to Mira and open the journal. Close it, then continue walking.
-- [ ] As co-op host, clear a duration field. Start should be disabled until it is valid. Guests must not gain timer control.
+- [ ] Set focus, short break and long break to 1 minute with 2 rounds. Start, pause, reload, resume and finish.
+- [ ] Confirm one Journal entry and one reward. Reload again; neither should duplicate.
+- [ ] Finish both rounds. The final break should be labelled Long break. With automatic breaks enabled, the next focus still waits for Start.
+- [ ] Open Missions. A completed mission pays once; an unfinished mission cannot be claimed.
+- [ ] Visit Lottie. Unaffordable or streak-locked upgrades stay unavailable. Buy an available upgrade, check its scenery, then reload.
+- [ ] After 25 completed minutes in a day, check the streak. Three- and seven-day bonuses should appear only once when reached through real sessions.
 
-## Explore
+## Sound and saves
 
-- [ ] Click Town, click the game and use WASD or arrow keys. Enter Lantern House and talk to Rowan or Mira outside.
-- [ ] Hide movement controls; restore them in Settings.
-- [ ] On a touch device, check each movement button releases after lifting or cancelling a touch.
-- [ ] Check the day/night cycle, foreground depth and larger character silhouette.
-- [ ] Open a dialog with the keyboard. Tab through it, close it with Escape, and continue moving.
-- [ ] Turn on Reduce motion. Check that ambient movement stops.
+- [ ] Open Audio. Nothing should play until you click Play. Try all four tracks, volume, pause and switching tracks.
+- [ ] Enable the completion chime and test it. Finish a short focus session and listen for one chime. Note harsh volume changes or loop clicks.
+- [ ] Export a save. Import it only after checking the replacement confirmation. Invalid JSON must leave existing progress intact.
+- [ ] Open a second tab. It should not write personal progress, claim rewards or create/join rooms while the first tab owns the save.
+- [ ] Hide and restore controls, use keyboard navigation in dialogs, and press Escape to close them.
+- [ ] Visit Privacy, Storage & cookies, Terms and an unknown address.
 
-## Saves
+## Two players
 
-- [ ] Export a save. End any session and import the exported file; check the replacement confirmation before restoring.
-- [ ] Check the same save in a second tab. Only one tab should be allowed to change personal progress.
-- [ ] Try invalid JSON and an unrelated file. The existing save must remain intact.
-- [ ] Read Privacy and Storage & cookies. Check an unknown address shows the custom 404 and a return link.
+Use two browser profiles or devices with access to the same running server. A localhost link works only on this Mac. Remote play needs a published accessible host.
 
-## Two-player check
+- [ ] Create and join a room. Check names and host village upgrades on both sides.
+- [ ] Start remains unavailable until both players ready up. Guests cannot control the timer.
+- [ ] Finish a one-minute focus interval. Both players receive one receipt and one Journal entry; shared room minutes increase once.
+- [ ] Reload after completion. Rewards must not repeat. Start a break; it should not promise focus rewards.
+- [ ] Disconnect a ready guest during focus, finish, then reconnect. The earned receipt should be collected.
+- [ ] Explicitly leave before a different interval ends. That unfinished interval should not reward the departing guest.
+- [ ] Compare totals. A tie preserves the existing mogged tag; strictly overtaking flips it.
+- [ ] Close as host. A failed server request should keep the room credentials available for retry.
 
-Use two browser sessions with access to the same Site. A localhost link is only for this Mac; a private Site invitation does not grant hosting access.
+## Report a bug
 
-- [ ] Host creates a room; guest joins with its invitation. Both see the two names.
-- [ ] Both enter Town. Walk and change rooms; companions should appear only in the same scene.
-- [ ] Host starts a 1-minute interval. Guest sees it and cannot control it.
-- [ ] Pause, resume and complete it. Shared minutes should increase by one, once; the beacon should light.
-- [ ] Disconnect the guest and leave locally. Solo focus should remain available.
-- [ ] Disconnect the host and try Close room. It should show a failure and keep retry access.
-- [ ] Reconnect and close as host. Guest should return to solo when the closed room is detected.
-
-## Write a useful bug report
-
-Use: what you clicked, what you expected, what happened, browser/device and whether a reload changes it. Include a screenshot if the layout is wrong. Do not include room secrets or private save files in a public issue.
-
-These observations are the human part of the journal. Do not mark unchecked items as passed or invent time spent testing.
+Write what you clicked, what you expected, what happened, your browser/device, and whether reloading changes it. A screenshot helps with layout. Keep private saves and invitation secrets out of public issues. Journal only the testing you actually did.

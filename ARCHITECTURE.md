@@ -1,29 +1,35 @@
 # Architecture
 
-## Interface and town
+## Scene and interface
 
-React owns the timer, settings, accessible dialogs and room roster. Tailwind and shared Radix/CVA button primitives support the interface. Focus uses an original static observatory illustration; Town keeps a 960 by 600 world-coordinate map. A responsive camera fills the window, follows the apprentice on narrow screens and leaves room for the sprite at map edges. Rendering never changes collision or co-op coordinates. All fonts are served locally. Focus and Town reuse the same session actions, phase choices and permission checks. The town desk opens the session dialog in place.
+React owns session controls, dialogs, missions, purchases and the room roster. Canvas draws the 960 by 600 top-down world. A responsive camera follows the apprentice on narrow screens without changing world or collision coordinates. Focus and Town share timer controls, permissions and a blue-hour palette. VT323 and Silkscreen provide locally served pixel typography.
 
-The engine keeps movement outside React renders, normalizes diagonal speed, subdivides collision steps and releases held keys on blur. World objects are drawn in ground-position order. Reduced motion stops ambient animation and companion interpolation.
+The engine runs movement outside React renders, normalizes diagonal movement and subdivides collision steps. Blur releases held keys. Objects are sorted by their ground position, including individual purchased flowers. Reduced motion stops ambient animation and companion interpolation. Cosmetic upgrades do not change collision. The northern fence, river and sealed eastern woods form a continuous barrier while the bridge is closed.
 
-## Personal timers
+## Local progression
 
-Pure transitions in src/game/state.ts own durations, Pomodoro plans, rewards and streaks. A running timer has an absolute device-clock deadline. A paused focus or break keeps its remaining duration. A plan captures its intervals and round count when it begins. The final round leads to a long break. Automatic breaks begin when completion is observed; a new focus round always requires a click.
+Pure transitions in src/game/state.ts and src/game/townProgress.ts own timers, purchases, missions, streaks and receipt application. Running timers retain an absolute device-clock deadline; paused timers retain their remaining duration. A Pomodoro plan captures its intervals and rounds when it begins. Automatic breaks start when completion is observed; focus always requires a click.
 
-Completion and rewards form one save envelope. Completed IDs prevent duplicate rewards. useSave.ts acquires an exclusive Web Lock before writing localStorage. Ordinary updates require a valid existing save; explicit backup restoration requires the lock but can recover damaged data. UI state updates only after persistence succeeds. The legacy save key is retained through the Focus Town rename.
+Discoveries, upgrades and claimed rewards are optional validated arrays in the existing version-one save. Older saves remain valid. The legacy localStorage key is retained. Purchases check coins and best streak, then deduct coins and record the upgrade together. Mission IDs and streak milestones prevent duplicate claims. Missing days do not remove purchases. Discovery interactions do not complete timers or mint coins.
 
-## Shared rooms
+useSave.ts requires an exclusive Web Lock and a valid save before ordinary writes. UI success follows successful persistence. A damaged save blocks ordinary updates but can be replaced with a valid backup after confirmation.
 
-The browser posts same-origin JSON to server/room-service.ts. A host creates an eight-person room and receives a random invitation plus a separate membership capability. Membership secrets and invitation secrets are hashed in storage. Room access expires after 24 hours. Guests may leave locally if disconnected; host closure keeps credentials until the server confirms deletion.
+## Shared focus
 
-The server validates bodies and origin, authenticates every room operation, applies request limits, and allows only the host to change intervals. Revision comparisons and conditional SQL updates prevent competing controls or polls from settling a session twice. Shared focus contributes minutes once per completed interval, not once per member. It never changes personal rewards.
+Same-origin JSON endpoints validate request size, origin, types and rate limits. Invitations and membership capabilities are random; secrets are hashed in the database. A separate device profile secret is generated and saved locally before profile creation, so interrupted creation can recover the same identity. There is no account or cross-device identity recovery.
 
-Companion positions are cosmetic. Coordinates and enum values are validated; membership identity comes from authentication, not submitted player IDs. Per-member sequences reject stale position updates. Visible Town polls approximately once per second; Focus polls every four seconds; hidden tabs poll every twelve seconds. Only online companions with recent positions in the same scene are rendered. Scene changes snap, ordinary motion interpolates, and overlapping companions are grouped by name/count. Positions never affect collision, rewards or progression.
+The writable tab reports local totals and upgrades. Reports use revision comparisons, and queued client work rechecks save ownership before sending or retrying. Reported totals are personal device data, not proof of study. Comparisons keep their existing leader through ties and change only after a strict overtake. Room snapshots include only relevant participants and the host's upgrades.
 
-## Storage and hosting
+Everyone currently online must ready up before a shared focus start. A conditional room revision update freezes eligible profile IDs and creates a durable session. The host can pause, resume or cancel it. Explicit departure forfeits unfinished participation; temporary loss of presence does not. Closing a room cancels unfinished work after settling any already completed interval.
 
-Drizzle schema definitions in db/schema.ts generate SQL migrations. Hosted D1 runs prepared queries; production requests never create schema. The Vite plugin supplies an equivalent SQLite adapter for local development using Node 26. Its ignored database is .sites-runtime/focus-town.sqlite.
+Server-issued receipts hold exact coins, energy and XP. Unique constraints prevent duplicate grants. Clients apply receipt and session history in one local save, then acknowledge receipt IDs. A failed acknowledgement can be retried safely. Earned receipts survive deletion of their room. Personal local timers are preserved when receipts arrive.
 
-The build bundles the React app, then creates a browser-compatible Worker containing static assets and the room handler. Local Node SQLite code is excluded from the Worker. Known document routes return the app; unknown routes return the app with HTTP 404. The archive includes hosting metadata and Drizzle migrations. The initial Site remains owner-private; game invitations do not grant Site access.
+Companion coordinates are cosmetic, validated and sequenced. Town polls about once per second, Focus every four seconds, hidden tabs every twelve. Remote positions never affect collision or progression.
 
-No music, combat, shop inventory or personal cloud account is implemented. Automated tests exercise the rules and real SQLite handler; they do not establish visual quality or real-device behavior.
+## Audio and hosting
+
+One user-started audio element loops the chosen ambience. Track changes stop its predecessor. An optional second element plays completion chimes. Five credited CC0 recordings are bundled locally; no third-party audio host is contacted during playback. The Worker serves audio MIME types and byte ranges.
+
+Drizzle migrations target local Node SQLite and hosted D1. Development data stays in the ignored .sites-runtime directory. Production handlers do not create schema. The build embeds static assets in a browser-compatible Worker, excluding Node SQLite. Known document routes return the app; unknown paths return a custom 404 with HTTP 404 status.
+
+Automated tests cover transition rules, reachable interactions, the sealed forest, real SQLite room permissions, session concurrency, grant recovery and read-only profile behavior. Built Worker checks cover routing and audio responses. Browser layout, playback and two-device behavior remain owner playtests. The configured Site has not yet completed publication; a local invitation is not a public server.

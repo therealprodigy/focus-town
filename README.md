@@ -1,66 +1,52 @@
 # Focus Town
 
-A quiet place to finish something. Set a timer in the observatory, or walk through Greenvale with a lantern and a few friends.
+A small town for the thing you keep putting off. Pick a task, light the desk lamp, and give it one interval. Greenvale will still be here when you need a break.
 
        .--.
        |::|    GREENVALE
       _|__|_   one page at a time
         ||
 
-## Start here in VS Code
+## Play locally
 
-1. Open this project folder. On a fresh checkout, run `npm install` in the integrated terminal. Use Node 26 or newer; local co-op uses Node's built-in SQLite.
-2. Click **Run and Debug** in the left sidebar.
-3. Select **Focus Town: start preview**, then click the green play button. This starts the local server and opens the game.
-4. If the server is already running, open [the local game](http://127.0.0.1:5173/) in Brave. Keep the preview terminal open.
+Open this folder in VS Code. On a fresh checkout, use Node 26 or newer and run `npm install` in its integrated terminal. Choose **Run and Debug → Focus Town: start preview → Play**. If the server is already running, open [Focus Town](http://127.0.0.1:5173/) in Brave instead.
 
-The game opens in **Focus**. Choose **Sessions**, pick a preset or enter your own times, then press **Start focus**. Use **Town** to walk around. Its timer has **Set sessions**, Start, Pause and Resume; the desk and bed also open session choices without leaving the town. WASD or the arrow keys move; E interacts. The corners icon in the bottom dock enters full screen. Escape exits full screen or closes a dialog.
+Keep the preview terminal open. A connection error usually means the preview has stopped; **Terminal → Run Task → Focus Town: start preview** starts it again. Do not start another copy if port 5173 is already occupied.
 
-If the address says it cannot connect, run **Terminal > Run Task > Focus Town: start preview**. If the terminal says port 5173 is already in use, use the existing preview instead of starting another one. Do not open index.html directly.
+## One page, then a walk
 
-## What is here
+**Sessions** sets focus, short break and long break durations from 1 to 720 minutes. Choose a preset or a custom plan of up to 12 rounds. The last round ends with a long break. Automatic breaks are optional; the next focus interval waits for you.
 
-- An original observatory backdrop, a large clock, one editable task line, and a compact tools dock.
-- Focus, short break and long break intervals from 1 to 720 whole minutes.
-- Four presets and custom Pomodoro plans with 1 to 12 rounds. The last round leads to a long break. Breaks can start automatically; the next focus round waits for you.
-- Pause, resume, reload recovery, completed-session rewards and a seven-day journal.
-- A village and house in the observatory’s blue-hour palette, with warm windows, lantern gardens, two villagers, an atlas and a quiet bell to inspect. Responsive framing follows the apprentice on small screens; a twelve-minute day/night cycle changes the light.
-- Five story chapters unlocked by completed solo focus. Coins and energy are saved for later systems.
-- Invite rooms for up to eight people: a host-controlled timer, companion positions, presence, and a river beacon fed by completed shared focus.
-- Export/import backups, storage information, privacy and terms pages, and a custom 404.
+**Town** opens the top-down village. Move with WASD or arrow keys, press E to interact, or use the touch controls. The dock includes full screen, audio, missions and settings. Controls can be hidden. The town desk and Jun's tea stall open session choices without sending you back to Focus.
 
-The shop, library interior, forest, combat, equipment and music are still planned. Their signs are readable; those systems are not secretly working features.
+Greenvale has a reading bench, a tea stall, a rather unhelpful mailbox, Miso the cat, and a library atlas with something pencilled in the margin. Some discoveries need nightfall. The twelve-minute day/night cycle shares the observatory's blue-hour palette; reduced motion keeps the scene still.
 
-## Together
+Finish sessions and claim noticeboard missions to earn coins. Lottie's shop sells porch lanterns, moonflower beds, a fountain repair and festival bunting. Purchases visibly change the village and stay bought after a missed day. A streak day needs 25 completed focus minutes; reaching your first three- and seven-day streaks pays a one-time bonus.
 
-Open **Together**, enter a nickname, and create a room. Copy its invitation for another player who can access the same hosted site. The host starts, pauses, resumes and ends intervals. Guests can leave without changing everyone else's timer.
+The forest and library interior are closed. The broken bridge cannot be bypassed. Combat and equipment are not implemented.
 
-Town positions update about once per second while the Town view is visible, more slowly in Focus or a hidden tab. This is companion play, not fast-action multiplayer. Co-op time lights the river beacon; it does not award solo coins or write to another player's journal. Rooms expire after 24 hours. Closing as host requires a confirmed server response.
+## Bring a friend
 
-A localhost invitation works only on this Mac. The initial hosted Site is private to its owner; an invitation does not bypass the Site's access controls.
+Open **Together**, choose a nickname and create a room. Send its invitation to someone who can access the same hosted site. Up to eight people can join. Everyone who is online must ready up before the host starts focus. The host controls the timer; each ready participant receives a saved completion receipt. A temporary disconnect keeps eligibility, while explicitly leaving forfeits an unfinished interval.
 
-## Where progress lives
+Guests see the host's village upgrades. Recorded focus minutes and best streaks appear beside friends. The lower total gets the playful **mogged** tag; a tie preserves the existing lead until the other player overtakes it. These are self-reported device totals, not verified study records.
 
-Solo progress stays in this browser on this device. Settings has **Export save** and **Import save**. Clearing browser data removes the local copy. There is no account-based personal save sync.
+Rooms expire after 24 hours. Earned receipts survive room expiry and are collected when the same browser reconnects. Personal saves do not sync between devices. Town presence updates about once per second: this is a shared study space, not fast-action multiplayer.
 
-The original `focusraid-save-v1` key and `focusraid-save-writer` lock preserve earlier saves through the rename. A completed session and its rewards are saved together. One tab holds the writing lock; another waits. A damaged save blocks ordinary writes, but a valid backup can be restored after explicit confirmation.
+A localhost invitation works only on this Mac. Hosting must be live and accessible to both players before remote invitations work.
 
-A streak day needs 25 completed minutes. Several sessions can add up to that total. Missing a day never removes coins or XP. Running timers retain a deadline; paused timers retain their remaining time. Personal time uses the device clock and is not verified work or study attendance.
+## Your save
 
-Hosted rooms use a separate database for nicknames, hashed membership secrets, presence, character positions and shared timer state. Task text and personal journals stay local. The room capability stays in this tab's session storage. Development rooms live in the ignored .sites-runtime folder.
+Progress, settings, discoveries, purchases and journals live in this browser. Use **Settings → Export save** for a backup. Clearing browser data removes that copy and the device's co-op credential. Importing a save replaces local progress after confirmation; it does not restore a cleared co-op identity.
 
-## Checks and your debugging pass
+The old `focusraid-save-v1` storage key remains for save compatibility. One tab owns the writing lock. Shared rewards are acknowledged only after they have been saved locally. The server stores device profiles, reported totals, upgrades, room presence, comparisons and reward receipts. Task text stays local. See the in-game Privacy and Storage pages.
 
-Run **Terminal > Run Task > Focus Town: test** for rules and room tests. **Focus Town: build** checks TypeScript and prepares the application.
+## Development
 
-On 9 October 2026, **65 automated tests and the production build passed**. Tests cover timer transitions, rewards, reloads, streaks, reachable interactions, real SQLite room permissions, concurrent controls, expiry, membership limits and stale companion updates.
+`npm test` checks game and server rules. `npm run build` checks TypeScript and builds the app and Worker. `node scripts/check-worker.mjs` checks the built document routes and audio delivery without opening a browser.
 
-Browser layout, full screen, touch controls, backup dialogs and two-device co-op still need the owner's manual pass. Start with the short checklist in [TEST_PLAN.md](TEST_PLAN.md). Automated checks do not establish visual quality.
+The 9 October 2026 upgrade passed **87 automated tests**, the production build, Worker checks and decoding checks for all five sound files. Visual layout, sound levels and two-device play remain for the owner to test using [TEST_PLAN.md](TEST_PLAN.md).
 
-## Inside
+React, Vite, TypeScript, Tailwind, Canvas and SQLite/D1 power the game. [ARCHITECTURE.md](ARCHITECTURE.md) covers saving and co-op. [ASSETS.md](ASSETS.md) records artwork, fonts and the locally bundled CC0 sound library. Flocus informed timer hierarchy; its assets and code are not bundled.
 
-React, Vite, TypeScript and Tailwind handle the interface. A shadcn-style Radix/CVA button supplies the shared controls. Canvas draws the town. Pure timer rules live in src/game/state.ts; the room service is in server/room-service.ts. Drizzle migrations support local SQLite and hosted D1. See [ARCHITECTURE.md](ARCHITECTURE.md).
-
-[Flocus](https://flocus.com/features/pomodoro-timer) informed the clear timer hierarchy. [Aceternity](https://ui.aceternity.com/components/floating-dock) informed the compact dock. Their artwork and site code are not bundled. [ASSETS.md](ASSETS.md) records the original scene and locally bundled font licenses.
-
-AI assisted implementation, artwork, tests and documentation. The owner supplies the design direction and manual playtest. No human coding hours, Pixl submission or personal playtest results are claimed. The .wakatime-project identifier remains focusraid to preserve its tracking history.
+Hackatime's local project name is now **Focus Town**. Historical project grouping in Pixl is separate from that setting and does not change previously recorded categories or hours.

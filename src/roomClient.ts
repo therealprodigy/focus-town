@@ -1,3 +1,12 @@
+import {
+  prepareProfile,
+  syncProfile,
+  profileCredential,
+  type Report,
+  type DeviceProfile,
+  type SocialSnapshot,
+} from "./profileClient";
+import type { SharedGrant } from "./game/townProgress";
 import { useCallback, useEffect, useRef, useState } from "react";
 export type Presence = {
   scene: "village" | "house";
@@ -14,6 +23,7 @@ export type RoomTimer = {
   remainingMs: number;
 };
 export type RoomSnapshot = {
+  social: SocialSnapshot;
   id: string;
   revision: number;
   hostId: string;
@@ -22,6 +32,8 @@ export type RoomSnapshot = {
   sharedMinutes: number;
   timer: RoomTimer | null;
   members: {
+    profileId: string | null;
+    ready: boolean;
     id: string;
     name: string;
     online: boolean;
@@ -77,6 +89,49 @@ export function roomRemaining(
       : t.remainingMs;
 }
 export function useRoom() {
+  const canReport = useRef(false);
+  const stats = useRef<Report>({ totalMinutes: 0, streak: 0, upgrades: [] });
+  const receiveGrants = useRef<(grants: SharedGrant[]) => boolean>(() => false);
+  const [profile, setProfile] = useState<DeviceProfile | null>(null),
+    [profileError, setProfileError] = useState("");
+  useEffect(() => {
+    let stopped = false,
+      running = false;
+    const sync = async () => {
+      if (running || !canReport.current || !profileCredential()) return;
+      running = true;
+      try {
+        const p = await syncProfile(
+          () => stats.current,
+          (g) => receiveGrants.current(g),
+          () => canReport.current,
+        );
+        if (!stopped) {
+          setProfile(p);
+          setProfileError("");
+        }
+      } catch (e) {
+        if (!stopped)
+          setProfileError(
+            e instanceof Error ? e.message : "Profile sync is waiting.",
+          );
+      } finally {
+        running = false;
+      }
+    };
+    void sync();
+    const timer = setInterval(() => void sync(), 15000);
+    const wake = () => {
+      if (!document.hidden) void sync();
+    };
+    document.addEventListener("visibilitychange", wake);
+    return () => {
+      stopped = true;
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", wake);
+    };
+  }, []);
+
   const [credentials, setCredentials] = useState<Credentials | null>(read),
     cref = useRef(credentials);
   const [snapshot, setSnapshot] = useState<RoomSnapshot | null>(null),
@@ -125,11 +180,17 @@ export function useRoom() {
     setError("");
   }, []);
   const request = useCallback(
-    async (path: string, body: unknown, token?: string) => {
+    async (
+      path: string,
+      body: unknown,
+      token?: string,
+      profileSecret?: string,
+    ) => {
       const res = await fetch("/api/rooms" + path, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(profileSecret ? { "X-Focus-Profile": profileSecret } : {}),
           ...(token ? { Authorization: "Bearer " + token } : {}),
         },
         body: JSON.stringify(body),
@@ -203,12 +264,23 @@ export function useRoom() {
     };
   }, [credentials, request, accept, failed]);
   const enter = async (name: string, invite?: string) => {
-    if (busyRef.current || cref.current) return;
+    if (busyRef.current || cref.current || !canReport.current) return;
     busyRef.current = true;
     setBusy(true);
     setError("");
     try {
-      const data = await request(invite ? "/join" : "", { name, invite });
+      const device = await prepareProfile(
+        name,
+        stats.current,
+        () => canReport.current,
+      );
+      setProfile(device.profile);
+      const data = await request(
+        invite ? "/join" : "",
+        { name, invite },
+        undefined,
+        device.secret,
+      );
       generation.current++;
       sref.current = null;
       saveCredentials(data.credentials);
@@ -245,12 +317,6 @@ export function useRoom() {
   const leave = async () => {
     const c = cref.current;
     if (!c || busyRef.current) return;
-    if (!c.invite) {
-      clear();
-      setError("");
-      void request("/" + c.roomId + "/leave", {}, c.token).catch(() => {});
-      return;
-    }
     busyRef.current = true;
     setBusy(true);
     try {
@@ -264,7 +330,28 @@ export function useRoom() {
       setBusy(false);
     }
   };
+  const setReady = async (ready: boolean) => {
+    const c = cref.current;
+    if (!c || busyRef.current) return;
+    busyRef.current = true;
+    setBusy(true);
+    try {
+      const data = await request("/" + c.roomId + "/ready", { ready }, c.token);
+      if (cref.current?.roomId === c.roomId) accept(data.snapshot);
+    } catch (e) {
+      failed(e);
+    } finally {
+      busyRef.current = false;
+      setBusy(false);
+    }
+  };
   return {
+    canReport,
+    stats,
+    receiveGrants,
+    profile,
+    profileError,
+    setReady,
     position,
     townVisible,
     credentials,

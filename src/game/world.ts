@@ -15,7 +15,7 @@ export interface Player extends Point {
 export interface Interaction {
   id: string;
   label: string;
-  kind: "door" | "desk" | "bed" | "npc" | "sign";
+  kind: "door" | "desk" | "bed" | "npc" | "sign" | "shop";
   bounds: Rect;
   targetScene?: SceneId;
   targetSpawn?: Point;
@@ -103,10 +103,16 @@ export const WORLDS: Record<SceneId, WorldScene> = {
     spawn: { x: 448, y: 416 },
     solids: [
       ...TOWN_LAMPS.map(({ x, y }) => r(x - 4, y - 8, 8, 8)),
+      r(150, 382, 52, 14),
+      r(302, 292, 16, 12),
+      r(136, 456, 68, 20),
+      r(538, 272, 32, 12),
       r(374, 514, 24, 10),
       r(702, 312, 30, 12),
       ...BUILDINGS.map(({ x, y, width, height }) => r(x, y, width, height)),
       ...VILLAGE_TREES.map(({ x, y }) => r(x - 12, y - 18, 24, 20)),
+      r(856, 0, 104, 320),
+      r(748, 292, 108, 28),
       r(748, 320, 48, 280),
       r(424, 336, 64, 44),
       r(342, 334, 20, 18),
@@ -116,6 +122,45 @@ export const WORLDS: Record<SceneId, WorldScene> = {
     ],
     interactions: [
       {
+        id: "bench",
+        label: "Check the reading bench",
+        kind: "sign",
+        bounds: r(150, 382, 52, 14),
+        title: "Borrowed time",
+        lines: [
+          "There is a blanket, a warm cup and a library book under the seat.",
+          "The due date was three years ago. Mira says the late fee is telling her whether the ending was any good.",
+        ],
+      },
+      {
+        id: "mail",
+        label: "Open the little mailbox",
+        kind: "sign",
+        bounds: r(302, 292, 16, 12),
+        title: "A letter for tomorrow",
+        lines: [
+          "To: Whoever needs an extra minute.",
+          "You can start again from here. No stamp, no signature. Just a tiny drawing of your house.",
+        ],
+      },
+      {
+        id: "tea",
+        label: "Talk to Jun at the tea stall",
+        kind: "npc",
+        bounds: r(136, 456, 68, 20),
+        title: "Jun / keeper of the kettle",
+        lines: [
+          "I was an adventurer once. Then I discovered sitting down.",
+          "One leaf, hot water, and absolutely no side quests until the kettle boils. Take a short break. Your work will still be there.",
+        ],
+      },
+      {
+        id: "cat",
+        label: "Say hello to the cat",
+        kind: "npc",
+        bounds: r(538, 272, 32, 12),
+      },
+      {
         id: "atlas",
         label: "Read the river atlas",
         kind: "sign",
@@ -123,7 +168,7 @@ export const WORLDS: Record<SceneId, WorldScene> = {
         title: "A page left open",
         lines: [
           "An old route crosses the river, then stops at a drawing of a bell.",
-          "In the margin: If the lamps answer, you are on the right path.",
+          "Three little marks sit beside the bell. In the margin: If the lamps answer, you are on the right path.",
         ],
       },
       {
@@ -147,13 +192,13 @@ export const WORLDS: Record<SceneId, WorldScene> = {
       },
       {
         id: "lottie",
-        label: "Read shop notice",
-        kind: "door",
+        label: "Browse Lottie’s Goods",
+        kind: "shop",
         bounds: r(492, 234, 32, 16),
-        title: "Lottie’s Goods / closed",
+        title: "Lottie’s Goods",
         lines: [
-          "Back after the lantern festival. Please stop feeding the delivery moths.",
-          "Furniture and trading will arrive in a later chapter.",
+          "Window boxes. No loot boxes.",
+          "Earn coins at your desk. Keep a streak to open the rest of the catalogue.",
         ],
       },
       {
@@ -215,7 +260,7 @@ export const WORLDS: Record<SceneId, WorldScene> = {
         id: "forest",
         label: "Read forest sign",
         kind: "sign",
-        bounds: r(860, 364, 28, 24),
+        bounds: r(696, 362, 28, 24),
         title: "Whispering Forest / sealed",
         lines: [
           "The academy has sealed this trail until the bridge is repaired.",
@@ -253,6 +298,12 @@ export const WORLDS: Record<SceneId, WorldScene> = {
     ],
     interactions: [
       {
+        id: "window",
+        label: "Look through the window",
+        kind: "sign",
+        bounds: r(444, 146, 72, 8),
+      },
+      {
         id: "exit",
         label: "Go outside",
         kind: "door",
@@ -279,8 +330,8 @@ export const WORLDS: Record<SceneId, WorldScene> = {
         bounds: r(248, 426, 48, 22),
         title: "A note in the margin",
         lines: [
-          "[::] No grand spell today. Just one page, one problem, one beginning.",
-          "The candle will keep you company.",
+          "[::] A folded note slips from a book. Three quiet knocks. Leave room for an answer.",
+          "Below it, in smaller letters: This is a save point. Take a breath.",
         ],
       },
     ],

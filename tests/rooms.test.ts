@@ -26,6 +26,24 @@ async function call(
   at = now,
   extra: Record<string, string> = {},
 ) {
+  if (path === "" || path === "/join") {
+    const secret = Array.from(crypto.getRandomValues(new Uint8Array(32)), (v) =>
+      v.toString(16).padStart(2, "0"),
+    ).join("");
+    await handleApi(
+      new Request("https://town.test/api/profile/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + secret,
+        },
+        body: JSON.stringify({ name: (data as { name: string }).name }),
+      }),
+      { DB: db },
+      at,
+    );
+    extra = { "X-Focus-Profile": secret, ...extra };
+  }
   const response = await handleApi(
     new Request("https://town.test/api/rooms" + path, {
       method: "POST",
@@ -40,7 +58,16 @@ async function call(
     { DB: db },
     at,
   );
-  return { status: response.status, ...((await response.json()) as Reply) };
+  const result = {
+    status: response.status,
+    ...((await response.json()) as Reply),
+  };
+  if (result.credentials)
+    await db
+      .prepare("UPDATE members SET ready=1 WHERE room_id=? AND id=?")
+      .bind(result.credentials.roomId, result.credentials.memberId)
+      .run();
+  return result;
 }
 const create = async () => {
   const r = await call("", { name: "Host" });

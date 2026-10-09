@@ -1,3 +1,11 @@
+import { validDiscoveries, type DiscoveryId } from "./discoveries";
+import {
+  validUpgrades,
+  validMissionClaims,
+  validStreakClaims,
+  type UpgradeId,
+  type MissionId,
+} from "./townCatalog";
 export type FocusMinutes = number;
 export type BreakMinutes = number;
 export type Rewards = { energy: number; xp: number; coins: number };
@@ -49,6 +57,10 @@ export type Cycle = {
   autoBreak: boolean;
 };
 export type SaveData = {
+  discoveries?: DiscoveryId[];
+  upgrades?: UpgradeId[];
+  missionClaims?: MissionId[];
+  streakClaims?: number[];
   cycle?: Cycle | null;
   version: 1;
   coins: number;
@@ -172,6 +184,13 @@ function validSave(x: unknown): x is SaveData {
     !count(x.xp) ||
     !Array.isArray(x.sessions)
   )
+    return false;
+  if (x.discoveries !== undefined && !validDiscoveries(x.discoveries))
+    return false;
+  if (x.upgrades !== undefined && !validUpgrades(x.upgrades)) return false;
+  if (x.missionClaims !== undefined && !validMissionClaims(x.missionClaims))
+    return false;
+  if (x.streakClaims !== undefined && !validStreakClaims(x.streakClaims))
     return false;
   if (x.cycle !== undefined && x.cycle !== null && !validCycle(x.cycle))
     return false;

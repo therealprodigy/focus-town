@@ -1,4 +1,16 @@
 import {
+  paintReadingCorner,
+  paintMailbox,
+  paintTeaStall,
+  paintCat,
+  paintNorthFence,
+  paintUpgrades,
+  paintMoonflower,
+  paintFountainUpgrade,
+  paintDiscoveries,
+  type TownLife,
+} from "./townLife";
+import {
   BUILDINGS,
   TOWN_LAMPS,
   VILLAGE_TREES,
@@ -25,7 +37,7 @@ export type Peer = {
   walking?: boolean;
   walkFrame?: number;
 };
-type Options = {
+type Options = TownLife & {
   camera?: { x: number; y: number; width: number; height: number };
   peers?: Peer[];
   sharedMinutes?: number;
@@ -568,6 +580,23 @@ export function renderWorld(
       if (i % 3 === 0) flower(x, y, i);
     }
     paintMoonCourt(ctx);
+    layers.push(
+      { y: 396, paint: () => paintReadingCorner(ctx) },
+      { y: 304, paint: () => paintMailbox(ctx) },
+      { y: 476, paint: () => paintTeaStall(ctx, o.time) },
+    );
+    layers.push({ y: 320, paint: () => paintNorthFence(ctx) });
+    layers.push({ y: 292, paint: () => paintUpgrades(ctx, o, o.time) });
+    if (o.upgrades?.includes("moonflowers"))
+      for (let n = 0; n < 12; n++)
+        layers.push({
+          y: 490 + (n % 2) * 12,
+          paint: () => paintMoonflower(ctx, n),
+        });
+    layers.push({
+      y: 284,
+      paint: () => paintCat(ctx, 554, 284, o.time, o.effect === "cat"),
+    });
     paintLampPools(ctx, darkness);
     for (const lamp of TOWN_LAMPS)
       layers.push({
@@ -599,10 +628,11 @@ export function renderWorld(
         rect(444, 328, 4, 12, "#b5ceab");
         rect(464, 336, 4, 12, "#b5ceab");
         rect(432 + (Math.floor(t * 4) % 3) * 12, 356, 12, 2, "#a3c4ac");
+        if (o.upgrades?.includes("fountain")) paintFountainUpgrade(ctx, o.time);
       },
     });
     layers.push(
-      { y: 290, paint: () => paintTownAccents(ctx, o.time) },
+      { y: 290, paint: () => paintTownAccents(ctx) },
       { y: 324, paint: () => paintAtlas(ctx) },
       { y: 524, paint: () => paintBell(ctx) },
     );
@@ -628,7 +658,7 @@ export function renderWorld(
     layers.push(
       { y: 440, paint: () => sign(710, 420, "CLOSED") },
       { y: 488, paint: () => sign(672, 468, "CHOIR") },
-      { y: 388, paint: () => sign(872, 368, "SEALED") },
+      { y: 388, paint: () => sign(710, 366, "SEALED") },
     );
   } else {
     rect(frame.x, frame.y, frame.width, frame.height, "#19263c");
@@ -880,7 +910,15 @@ export function renderWorld(
       },
     });
   }
+  if (sceneId === "house" && o.discoveries?.includes("shop-cat"))
+    layers.push({ y: 416, paint: () => paintCat(ctx, 568, 416, o.time) });
   layers.sort((a, b) => a.y - b.y).forEach((layer) => layer.paint());
+  paintDiscoveries(ctx, sceneId, o, o.time, clock.hour < 5 || clock.hour >= 20);
+  if (o.activity === "idle" && (o.idleSeconds ?? 0) > 16) {
+    rect(player.x - 12, player.y - 31, 24, 13, "#a08aa4");
+    rect(player.x - 10, player.y - 30, 20, 9, "#e5d4b8");
+    rect(player.x, player.y - 30, 2, 10, "#89778d");
+  }
   // A uniform tint keeps every pixel crisp; illumination uses rectangular patches.
   ctx.save();
   ctx.globalAlpha = darkness * (sceneId === "village" ? 0.24 : 0.14);

@@ -1,3 +1,16 @@
+import {
+  authenticateProfile,
+  handleProfile,
+  roomSocial,
+  SocialError,
+} from "./social";
+import {
+  setMemberReady,
+  startSharedFocus,
+  controlSharedFocus,
+  settleRoomFocus,
+  SharedFocusError,
+} from "./shared-focus";
 export type SqlResult = {
   meta: { changes: number };
   results?: Record<string, unknown>[];
@@ -14,6 +27,7 @@ export interface Database {
 }
 export type Env = { DB?: Database };
 type RoomRow = {
+  active_session_id: string | null;
   id: string;
   host_member_id: string;
   expires_at: number;
@@ -95,12 +109,19 @@ async function snapshot(
   db: Database,
   id: string,
   now: number,
+  viewerMemberId: string,
   responseTime = () => now,
 ) {
+  await settleRoomFocus(db, id, now);
   let r = await readRoom(db, id);
   if (!r || r.expires_at <= now)
     throw new Problem("This room has closed or expired.", 404);
-  if (r.status === "running" && r.end_at !== null && r.end_at <= now) {
+  if (
+    !r.active_session_id &&
+    r.status === "running" &&
+    r.end_at !== null &&
+    r.end_at <= now
+  ) {
     await db
       .prepare(
         "UPDATE rooms SET status='complete',remaining=0,end_at=NULL,shared_minutes=shared_minutes+CASE WHEN kind='focus' THEN minutes ELSE 0 END,revision=revision+1 WHERE id=? AND revision=? AND status='running' AND end_at<=?",
@@ -112,7 +133,7 @@ async function snapshot(
   }
   const roster = await db
     .prepare(
-      "SELECT id,name,last_seen,position,position_seq FROM members WHERE room_id=? ORDER BY last_seen DESC",
+      "SELECT id,name,last_seen,position,position_seq,profile_id,ready FROM members WHERE room_id=? ORDER BY last_seen DESC",
     )
     .bind(id)
     .all<{
@@ -121,8 +142,12 @@ async function snapshot(
       last_seen: number;
       position: string | null;
       position_seq: number;
+      profile_id: string | null;
+      ready: number;
     }>();
+  const social = await roomSocial(db, id, viewerMemberId, now);
   return {
+    social,
     id: r.id,
     hostId: r.host_member_id,
     revision: r.revision,
@@ -140,6 +165,8 @@ async function snapshot(
       : null,
     members: roster.results.map((m) => ({
       id: m.id,
+      profileId: m.profile_id,
+      ready: m.ready === 1,
       name: m.name,
       online: m.last_seen >= now - 30000,
       position: m.position ? JSON.parse(m.position) : null,
@@ -160,10 +187,15 @@ async function authenticate(
   const tokenHash = await hash(raw);
   const m = await db
     .prepare(
-      "SELECT m.id,m.room_id,r.host_member_id FROM members m JOIN rooms r ON r.id=m.room_id WHERE m.token_hash=? AND m.room_id=? AND r.expires_at>?",
+      "SELECT m.id,m.room_id,m.profile_id,r.host_member_id FROM members m JOIN rooms r ON r.id=m.room_id WHERE m.token_hash=? AND m.room_id=? AND r.expires_at>?",
     )
     .bind(tokenHash, id, now)
-    .first<{ id: string; room_id: string; host_member_id: string }>();
+    .first<{
+      id: string;
+      room_id: string;
+      profile_id: string | null;
+      host_member_id: string;
+    }>();
   if (!m) throw new Problem("This room could not be opened.", 401);
   return { ...m, tokenHash };
 }
@@ -227,8 +259,21 @@ export async function handleApi(
     const db = env.DB,
       data = await body(request);
     await rateLimit(request, db, path, now);
+    if (path.startsWith("/api/profile/")) {
+      const r = await handleProfile(request, db, path, data, now);
+      return json(r.data, r.status ?? 200);
+    }
     if (path === "/api/rooms" || path === "/api/rooms/join") {
+      const profile = await authenticateProfile(
+        db,
+        request.headers.get("X-Focus-Profile"),
+      );
       await db.batch([
+        db
+          .prepare(
+            "UPDATE focus_sessions SET status='cancelled' WHERE status='paused' AND room_id IN (SELECT id FROM rooms WHERE expires_at<=?)",
+          )
+          .bind(now),
         db.prepare("DELETE FROM rooms WHERE expires_at<=?").bind(now),
         db.prepare("DELETE FROM request_limits WHERE expires_at<=?").bind(now),
       ]);
@@ -242,14 +287,20 @@ export async function handleApi(
         await db.batch([
           db
             .prepare(
-              "INSERT INTO rooms (id,invite_hash,host_member_id,expires_at) VALUES (?,?,?,?)",
+              "INSERT INTO rooms (id,invite_hash,host_member_id,expires_at,owner_profile_id) VALUES (?,?,?,?,?)",
             )
-            .bind(roomId, await hash(secret), memberId, now + 86400000),
+            .bind(
+              roomId,
+              await hash(secret),
+              memberId,
+              now + 86400000,
+              profile.id,
+            ),
           db
             .prepare(
-              "INSERT INTO members (room_id,id,token_hash,name,last_seen) VALUES (?,?,?,?,?)",
+              "INSERT INTO members (room_id,id,token_hash,name,last_seen,profile_id) VALUES (?,?,?,?,?,?)",
             )
-            .bind(roomId, memberId, tokenHash, name, now),
+            .bind(roomId, memberId, tokenHash, name, now, profile.id),
         ]);
         return json(
           {
@@ -259,7 +310,7 @@ export async function handleApi(
               token: rawToken,
               invite: roomId + "." + secret,
             },
-            snapshot: await snapshot(db, roomId, now, responseTime),
+            snapshot: await snapshot(db, roomId, now, memberId, responseTime),
           },
           201,
         );
@@ -273,9 +324,9 @@ export async function handleApi(
         secretHash = await hash(invite[2]);
       const result = await db
         .prepare(
-          "INSERT INTO members (room_id,id,token_hash,name,last_seen) SELECT id,?,?,?,? FROM rooms WHERE id=? AND invite_hash=? AND expires_at>? AND (SELECT COUNT(*) FROM members WHERE room_id=rooms.id)<8",
+          "INSERT INTO members (room_id,id,token_hash,name,last_seen,profile_id) SELECT id,?,?,?,?,? FROM rooms WHERE id=? AND invite_hash=? AND expires_at>? AND (SELECT COUNT(*) FROM members WHERE room_id=rooms.id)<8",
         )
-        .bind(memberId, tokenHash, name, now, id, secretHash, now)
+        .bind(memberId, tokenHash, name, now, profile.id, id, secretHash, now)
         .run();
       if (result.meta.changes !== 1)
         throw new Problem(
@@ -285,30 +336,51 @@ export async function handleApi(
       return json(
         {
           credentials: { roomId: id, memberId, token: rawToken },
-          snapshot: await snapshot(db, id, now, responseTime),
+          snapshot: await snapshot(db, id, now, memberId, responseTime),
         },
         201,
       );
     }
     const match = path.match(
-      /^\/api\/rooms\/([a-f0-9]{32})\/(sync|control|leave)$/,
+      /^\/api\/rooms\/([a-f0-9]{32})\/(sync|control|leave|ready)$/,
     );
     if (!match) return json({ error: "Room route not found." }, 404);
     const [, id, action] = match,
       m = await authenticate(request, db, id, now);
     await rateLimit(request, db, path, now, m.id);
     if (action === "leave") {
+      await settleRoomFocus(db, id, now);
       if (m.id === m.host_member_id)
-        await db
-          .prepare("DELETE FROM rooms WHERE id=? AND host_member_id=?")
-          .bind(id, m.id)
-          .run();
+        await db.batch([
+          db
+            .prepare(
+              "UPDATE focus_sessions SET status='cancelled' WHERE room_id=? AND status IN ('running','paused') AND EXISTS (SELECT 1 FROM rooms WHERE id=? AND host_member_id=?)",
+            )
+            .bind(id, id, m.id),
+          db
+            .prepare("DELETE FROM rooms WHERE id=? AND host_member_id=?")
+            .bind(id, m.id),
+        ]);
       else
-        await db
-          .prepare("DELETE FROM members WHERE room_id=? AND id=?")
-          .bind(id, m.id)
-          .run();
+        await db.batch([
+          db
+            .prepare(
+              "DELETE FROM members WHERE room_id=? AND id=? AND token_hash=?",
+            )
+            .bind(id, m.id, m.tokenHash),
+          db
+            .prepare(
+              "UPDATE session_participants SET forfeited=1 WHERE profile_id=? AND session_id=(SELECT active_session_id FROM rooms WHERE id=?) AND EXISTS (SELECT 1 FROM focus_sessions WHERE id=session_participants.session_id AND status IN ('running','paused')) AND NOT EXISTS (SELECT 1 FROM members WHERE room_id=? AND profile_id=?)",
+            )
+            .bind(m.profile_id, id, id, m.profile_id),
+        ]);
       return json({ left: true });
+    }
+    if (action === "ready") {
+      await setMemberReady(db, id, m.id, data.ready, now);
+      return json({
+        snapshot: await snapshot(db, id, now, m.id, responseTime),
+      });
     }
     await db
       .prepare("UPDATE members SET last_seen=? WHERE room_id=? AND id=?")
@@ -351,11 +423,13 @@ export async function handleApi(
           .bind(data.positionSeq, position, data.positionSeq, id, m.id)
           .run();
       }
-      return json({ snapshot: await snapshot(db, id, now, responseTime) });
+      return json({
+        snapshot: await snapshot(db, id, now, m.id, responseTime),
+      });
     }
     if (m.id !== m.host_member_id)
       throw new Problem("Only the host can change this timer.", 403);
-    await snapshot(db, id, now, responseTime);
+    await snapshot(db, id, now, m.id, responseTime);
     const r = await readRoom(db, id);
     if (!r) throw new Problem("This room has closed.", 404);
     if (!Number.isSafeInteger(data.revision) || data.revision !== r.revision)
@@ -363,6 +437,32 @@ export async function handleApi(
         "The room changed. Wait for it to sync and try again.",
         409,
       );
+    const command = {
+      roomId: id,
+      memberId: m.id,
+      tokenHash: m.tokenHash,
+      revision: Number(data.revision),
+      now,
+    };
+    if (data.action === "start" && data.kind === "focus") {
+      await startSharedFocus(db, command, data.minutes);
+      return json({
+        snapshot: await snapshot(db, id, now, m.id, responseTime),
+      });
+    }
+    if (
+      r.active_session_id &&
+      ["pause", "resume", "reset"].includes(String(data.action))
+    ) {
+      await controlSharedFocus(
+        db,
+        command,
+        data.action as "pause" | "resume" | "reset",
+      );
+      return json({
+        snapshot: await snapshot(db, id, now, m.id, responseTime),
+      });
+    }
     let kind = r.kind,
       status = r.status,
       minutes = r.minutes,
@@ -400,7 +500,7 @@ export async function handleApi(
     } else throw new Problem("That timer action is unavailable.", 409);
     const changed = await db
       .prepare(
-        "UPDATE rooms SET kind=?,status=?,minutes=?,end_at=?,remaining=?,revision=revision+1 WHERE id=? AND revision=? AND expires_at>? AND EXISTS (SELECT 1 FROM members WHERE room_id=rooms.id AND id=rooms.host_member_id AND token_hash=?)",
+        "UPDATE rooms SET active_session_id=NULL,kind=?,status=?,minutes=?,end_at=?,remaining=?,revision=revision+1 WHERE id=? AND revision=? AND expires_at>? AND EXISTS (SELECT 1 FROM members WHERE room_id=rooms.id AND id=rooms.host_member_id AND token_hash=?)",
       )
       .bind(
         kind,
@@ -419,16 +519,22 @@ export async function handleApi(
         "The room changed. Wait for it to sync and try again.",
         409,
       );
-    return json({ snapshot: await snapshot(db, id, now, responseTime) });
+    return json({ snapshot: await snapshot(db, id, now, m.id, responseTime) });
   } catch (e) {
     return json(
       {
         error:
-          e instanceof Problem
+          e instanceof Problem ||
+          e instanceof SocialError ||
+          e instanceof SharedFocusError
             ? e.message
             : "The room service is unavailable. Try again shortly.",
       },
-      e instanceof Problem ? e.status : 503,
+      e instanceof Problem ||
+        e instanceof SocialError ||
+        e instanceof SharedFocusError
+        ? e.status
+        : 503,
     );
   }
 }

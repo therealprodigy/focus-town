@@ -38,3 +38,46 @@ assert.equal(api.status, 503);
 console.log(
   "Built Worker checks passed: documents, 404, image, HEAD, unavailable storage. No browser preview was opened.",
 );
+
+for (const name of ["rain", "forest", "fire", "lofi", "chime"]) {
+  const url = "https://town.test/audio/" + name + ".mp3";
+  const full = await worker.fetch(new Request(url), {});
+  assert.equal(full.status, 200);
+  assert.equal(full.headers.get("content-type"), "audio/mpeg");
+  const bytes = new Uint8Array(await full.arrayBuffer());
+  assert.ok(bytes.length > 1000);
+  for (const [range, start, end] of [
+    ["bytes=0-99", 0, 99],
+    ["bytes=100-", 100, bytes.length - 1],
+    ["bytes=-100", bytes.length - 100, bytes.length - 1],
+  ]) {
+    const partial = await worker.fetch(
+      new Request(url, { headers: { Range: range } }),
+      {},
+    );
+    assert.equal(partial.status, 206);
+    assert.equal(
+      partial.headers.get("content-range"),
+      "bytes " + start + "-" + end + "/" + bytes.length,
+    );
+    assert.deepEqual(
+      new Uint8Array(await partial.arrayBuffer()),
+      bytes.slice(start, end + 1),
+    );
+  }
+  const invalid = await worker.fetch(
+    new Request(url, { headers: { Range: "bytes=" + bytes.length + "-" } }),
+    {},
+  );
+  assert.equal(invalid.status, 416);
+  const headAudio = await worker.fetch(
+    new Request(url, { method: "HEAD", headers: { Range: "bytes=0-99" } }),
+    {},
+  );
+  assert.equal(headAudio.status, 200);
+  assert.equal(headAudio.headers.get("content-length"), String(bytes.length));
+  assert.equal((await headAudio.arrayBuffer()).byteLength, 0);
+}
+console.log(
+  "Five bundled audio files: full responses, byte ranges, invalid ranges and HEAD passed.",
+);

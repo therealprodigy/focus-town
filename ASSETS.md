@@ -4,12 +4,12 @@
 
 All fonts are bundled locally under SIL Open Font License 1.1. Full copyright and license notices are included beside the font files.
 
-| Font             | Use                                    | Source                                                                        | License file                         |
-| ---------------- | -------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------ |
-| Instrument Serif | Wordmark and story headings            | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/instrumentserif) | public/fonts/InstrumentSerif-OFL.txt |
-| Inter            | Clock and interface                    | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/inter)           | public/fonts/Inter-OFL.txt           |
-| Silkscreen       | Town labels                            | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/silkscreen)      | public/fonts/Silkscreen-OFL.txt      |
-| VT323            | Pixel typography available to the town | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/vt323)           | public/fonts/VT323-OFL.txt           |
+| Font             | Use                     | Source                                                                        | License file                         |
+| ---------------- | ----------------------- | ----------------------------------------------------------------------------- | ------------------------------------ |
+| Instrument Serif | Retained display font   | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/instrumentserif) | public/fonts/InstrumentSerif-OFL.txt |
+| Inter            | Retained interface font | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/inter)           | public/fonts/Inter-OFL.txt           |
+| Silkscreen       | Wordmark and headings   | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/silkscreen)      | public/fonts/Silkscreen-OFL.txt      |
+| VT323            | Clock and interface     | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/vt323)           | public/fonts/VT323-OFL.txt           |
 
 ## Observatory illustration
 
@@ -24,3 +24,19 @@ The characters, buildings, terrain and lighting are original Canvas pixel drawin
 ## Interface references
 
 [Flocus](https://flocus.com/features/pomodoro-timer) informed timer hierarchy and session controls. [Aceternity's floating dock](https://ui.aceternity.com/components/floating-dock) informed the compact reveal-on-demand navigation. No Aceternity source code was copied. The shared button follows shadcn/ui's Radix Slot and class-variance-authority pattern, with Focus Town's own styles. Package licenses remain with their respective dependencies.
+
+## Sound library
+
+Five CC0 recordings are bundled locally as mono 44.1 kHz, 48 kbps MP3 files. No external audio server is contacted during playback. Re-encoding removes metadata; rain and birds use the mirror's processed loops. Source licensing was checked on 9 October 2026. Playback taste and volume remain part of the owner's playtest.
+
+| File                    | Recording and creator                      | Source / provenance                                                                                                                                 |
+| ----------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| public/audio/rain.mp3   | Rain on Window, silencyo                   | https://freesound.org/people/silencyo/sounds/81818/ ; https://github.com/twtrubiks/moonseal/blob/main/public/audio/README.md                        |
+| public/audio/forest.mp3 | Birds singing, Dawn chorus, SamsterBirdies | https://freesound.org/people/SamsterBirdies/sounds/578523/ ; same mirror README                                                                     |
+| public/audio/fire.mp3   | Fireplace.wav, inchadney                   | https://freesound.org/people/inchadney/sounds/132534/ ; https://github.com/Muges/ambientsounds                                                      |
+| public/audio/lofi.mp3   | Lofi Hip Hop Loop, omfgdude / OMF-Games    | https://opengameart.org/content/lofi-hip-hop-loop ; https://github.com/euuuuuuan/neko-shift-public/blob/main/docs/AUDIO_SOURCING.md                 |
+| public/audio/chime.mp3  | Interface Sounds, confirmation_001, Kenney | https://kenney.nl/assets/interface-sounds ; https://github.com/lavenderdotpet/CC0-Public-Domain-Sounds/blob/main/kenney_interfacesounds/License.txt |
+
+License: https://creativecommons.org/publicdomain/zero/1.0/
+
+Direct OpenGameArt downloads returned HTTP 403 in this environment. The files above were imported from the credited public mirrors through GitHub's Contents API. The initially researched piano and rain tracks from OpenGameArt are not bundled.

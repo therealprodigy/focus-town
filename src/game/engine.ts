@@ -12,6 +12,8 @@ import {
 } from "./world";
 import { renderWorld, type Peer } from "./renderer";
 import { getCamera } from "./camera";
+import type { DiscoveryId, DiscoveryEffect } from "./discoveries";
+import type { UpgradeId } from "./townCatalog";
 export const PLAYER_SPEED = 150;
 export function movePlayer(
   scene: WorldScene,
@@ -53,6 +55,13 @@ export class GameEngine {
   scene: SceneId = "village";
   player: Player = { ...WORLDS.village.spawn, facing: "down", walkFrame: 0 };
   sharedMinutes = 0;
+  discoveries: DiscoveryId[] = [];
+  upgrades: UpgradeId[] = [];
+  private idleSeconds = 0;
+  private effect?: { kind: DiscoveryEffect; until: number };
+  reveal(kind: DiscoveryEffect) {
+    this.effect = { kind, until: performance.now() + 7000 };
+  }
   private peers: Peer[] = [];
   private peerTargets: Peer[] = [];
   setPeers(peers: Peer[]) {
@@ -140,6 +149,8 @@ export class GameEngine {
     } else this.callbacks.onInteract(i);
   }
   setScene(scene: SceneId, point: Point) {
+    this.effect = undefined;
+    this.idleSeconds = 0;
     this.scene = scene;
     this.player = { ...point, facing: "down", walkFrame: 0 };
     this.clear();
@@ -180,6 +191,11 @@ export class GameEngine {
     const dt = this.last ? Math.min((now - this.last) / 1000, 0.05) : 0;
     this.last = now;
     this.elapsed += dt * 1000;
+    if (this.effect && now >= this.effect.until) this.effect = undefined;
+    this.idleSeconds =
+      !this.session && !this.blocked && !this.keys.size
+        ? this.idleSeconds + dt
+        : 0;
     for (const p of this.peers) {
       const target = this.peerTargets.find((t) => t.id === p.id)!;
       const distance = Math.hypot(target.x - p.x, target.y - p.y),
@@ -254,6 +270,10 @@ export class GameEngine {
       this.ctx.scale(camera.scale, camera.scale);
       this.ctx.translate(-Math.round(camera.x), -Math.round(camera.y));
       renderWorld(this.ctx, this.scene, this.player, {
+        discoveries: this.discoveries,
+        upgrades: this.upgrades,
+        effect: this.effect?.kind,
+        idleSeconds: this.idleSeconds,
         camera,
         peers: this.peers,
         sharedMinutes: this.sharedMinutes,

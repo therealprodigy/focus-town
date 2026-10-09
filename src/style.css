@@ -21,20 +21,15 @@
   font-display: swap;
 }
 :root {
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family: VT323, monospace;
   font-size: 16px;
   line-height: 1.5;
   color: #f7f4ed;
   background: #0c1d32;
   font-synthesis: none;
   color-scheme: dark;
-  --font-display: "Instrument Serif", Georgia, serif;
-  --font-body: Inter, sans-serif;
+  --font-display: "Silkscreen", monospace;
+  --font-body: "VT323", monospace;
   --background: 201 100% 13%;
   --foreground: 0 0% 100%;
   --muted-foreground: 220 12% 72%;
@@ -165,7 +160,7 @@ small {
 }
 .wordmark span {
   display: block;
-  font-family: Inter, sans-serif;
+  font-family: VT323, monospace;
   font-size: 0.75rem;
   letter-spacing: 0.28em;
   margin-top: 7px;
@@ -1295,7 +1290,7 @@ dialog .fine-print {
   padding: 8px 0;
 }
 .town-session-clock {
-  font-family: Inter, sans-serif;
+  font-family: VT323, monospace;
   font-size: 3.7rem;
   font-weight: 400;
   line-height: 1.2;
@@ -1450,4 +1445,199 @@ dialog .fine-print {
   .town-label {
     max-width: none;
   }
+}
+
+/* Pixel lettering follows the town without crowding the timer. */
+.brand {
+  font-family: Silkscreen, monospace;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+}
+.hero-clock,
+.town-clock {
+  font-family: VT323, monospace;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+dialog {
+  font-size: 1.25rem;
+}
+dialog h2 {
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  line-height: 1.5;
+  letter-spacing: -0.03em;
+}
+dialog h3 {
+  font-family: VT323, monospace;
+  font-size: 1.4rem;
+}
+dialog .muted,
+dialog .fine-print,
+dialog small {
+  font-size: 1.05rem;
+}
+.bottom-dock {
+  max-width: calc(100vw - 24px);
+}
+.bottom-dock button {
+  font-size: 1rem;
+}
+.ledger-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--gold);
+  margin: 1rem 0;
+}
+.ledger-list article {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  justify-content: space-between;
+  padding: 1.2rem 0;
+  border-bottom: 1px solid #ffffff18;
+}
+.ledger-list article:first-child {
+  border-top: 1px solid #ffffff18;
+}
+.ledger-list h3,
+.ledger-list p {
+  margin: 0 0 0.25rem;
+}
+.ledger-list p {
+  color: var(--muted-text);
+  line-height: 1.3;
+}
+.ledger-list article > div {
+  flex: 1;
+  min-width: 0;
+}
+.ledger-list article > button {
+  flex-shrink: 0;
+  min-width: 4rem;
+}
+.ledger-list progress {
+  width: 100%;
+  height: 3px;
+  display: block;
+  margin: 0.7rem 0;
+  accent-color: var(--gold);
+}
+.ledger-list small {
+  display: block;
+  color: var(--muted-text);
+}
+.discovery-list {
+  columns: 2;
+  column-gap: 2rem;
+}
+.discovery-list article {
+  break-inside: avoid;
+  padding: 0.35rem 0;
+}
+.discovery-list h4 {
+  color: var(--gold);
+  margin: 0;
+  font-size: 1.3rem;
+}
+.discovery-list p {
+  margin: 0.3rem 0 1rem;
+  color: var(--muted-text);
+}
+.discovery-note {
+  color: var(--gold);
+}
+.chapter-teaser strong {
+  font-family: VT323, monospace;
+}
+@media (max-width: 650px) {
+  .bottom-dock {
+    gap: 0;
+    padding: 4px;
+  }
+  .bottom-dock button {
+    width: 35px;
+    min-width: 35px;
+    padding: 7px;
+  }
+  .discovery-list {
+    columns: 1;
+  }
+  .ledger-list article {
+    gap: 0.6rem;
+  }
+  .ledger-list article > button {
+    font-size: 1rem;
+  }
+}
+
+.sound-list {
+  margin: 1.2rem 0;
+}
+.sound-list button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  padding: 1rem 0.5rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #ffffff18;
+}
+.sound-list button[aria-pressed="true"] {
+  color: var(--gold);
+  background: #efdbb50a;
+}
+.sound-list button > span:nth-child(2) {
+  flex: 1;
+}
+.sound-list strong,
+.sound-list small {
+  display: block;
+}
+.sound-list small {
+  color: var(--muted-text);
+}
+.record-glyph {
+  font:
+    1.15rem Silkscreen,
+    monospace;
+  color: var(--gold);
+}
+.volume-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.volume-control input {
+  width: 120px;
+  accent-color: var(--gold);
+}
+.audio-credits {
+  margin-top: 1.2rem;
+  color: var(--muted-text);
+}
+.audio-credits p {
+  font-size: 1rem;
+  margin: 0.3rem 0;
+}
+.audio-credits a {
+  text-decoration: underline;
+}
+.rival-tag {
+  font:
+    10px Silkscreen,
+    monospace;
+  color: #e6bd99;
+  margin-left: 0.3rem;
+}
+
+.shared-ready {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.5rem 0;
+  color: var(--gold);
+  font-size: 1.15rem;
 }

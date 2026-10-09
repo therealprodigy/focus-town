@@ -101,9 +101,9 @@ export function paintLantern(
   r(x + 10 + sway, y - 81, 18, 3, "#bca184");
   r(x + 12 + sway, y - 62, 14, 3, "#a58e75");
 }
-export function paintTownAccents(ctx: CanvasRenderingContext2D, time: number) {
+export function paintTownAccents(ctx: CanvasRenderingContext2D) {
   const r = townBrush(ctx);
-  // Lottie's striped canvas awning; the closed shop remains clearly marked.
+  // Lottie's striped canvas awning; the shop is open for village upgrades.
   for (let i = 0; i < 10; i++) {
     r(436 + i * 14, 190, 14, 13, i % 2 ? "#617489" : "#d0c3b0");
     r(436 + i * 14, 202, 14, 5, i % 2 ? "#475b74" : "#ad9f97");
@@ -129,14 +129,6 @@ export function paintTownAccents(ctx: CanvasRenderingContext2D, time: number) {
       r(x, y + 8, 3, 5, "#fff0c5");
     }
   }
-  // A sleeping cat on Lottie's roof; its tail twitches very occasionally.
-  r(438, 91, 22, 10, "#bdadad");
-  r(442, 85, 10, 8, "#d7c7bc");
-  r(442, 83, 3, 4, "#bdadad");
-  r(450, 83, 3, 4, "#bdadad");
-  r(444, 91, 3, 1, "#424657");
-  r(459, 95, 9, 3, "#bdadad");
-  if (Math.sin(time / 3400) > 0.85) r(465, 91, 3, 6, "#bdadad");
 }
 export function paintLampPools(
   ctx: CanvasRenderingContext2D,

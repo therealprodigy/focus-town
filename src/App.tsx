@@ -1,3 +1,18 @@
+import { SoundLibrary, useSoundLibrary } from "./SoundLibrary";
+import { TownLedger } from "./TownLedger";
+import {
+  DISCOVERIES,
+  discoveryAt,
+  encounterText,
+  recordDiscovery,
+  canAnswerBell,
+  type DiscoveryEffect,
+} from "./game/discoveries";
+import {
+  settleStreakRewards,
+  rowanAdvice,
+  applySharedGrant,
+} from "./game/townProgress";
 import {
   useCallback,
   useEffect,
@@ -33,6 +48,9 @@ import { Button } from "./components/ui/button";
 import { LegalPage } from "./LegalPage";
 
 type Panel =
+  | "shop"
+  | "missions"
+  | "audio"
   | "sessions"
   | "journal"
   | "story"
@@ -97,6 +115,14 @@ function loadPrefs() {
 }
 function Icon({ name }: { name: string }) {
   const paths: Record<string, ReactNode> = {
+    missions: <path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h4" />,
+    audio: (
+      <>
+        <path d="M9 18V5l11-2v13M9 8l11-2" />
+        <circle cx="6" cy="18" r="3" />
+        <circle cx="17" cy="16" r="3" />
+      </>
+    ),
     focus: (
       <>
         <circle cx="12" cy="12" r="8" />
@@ -234,6 +260,9 @@ function Game() {
       return true;
     }
   });
+  const [bellTaps, setBellTaps] = useState(0),
+    [discoveryNote, setDiscoveryNote] = useState("");
+  const encounter = useRef<(i: Interaction) => void>(() => {});
   const canvas = useRef<HTMLCanvasElement>(null),
     engine = useRef<GameEngine | null>(null),
     file = useRef<HTMLInputElement>(null);
@@ -242,6 +271,44 @@ function Game() {
     timer = save.timer,
     cycle = save.cycle,
     rt = room.snapshot?.timer;
+  const sound = useSoundLibrary(save.sessions.at(-1)?.id);
+  room.canReport.current = ready && canSave;
+  room.stats.current = {
+    totalMinutes: progress.totalMinutes,
+    streak: progress.bestStreak,
+    upgrades: save.upgrades ?? [],
+  };
+  room.receiveGrants.current = (grants) => {
+    if (!canSave) return false;
+    let awarded = 0;
+    let validGrant = true;
+    let result = save;
+    const ok = update((current) => {
+      let next = current;
+      for (const g of grants) {
+        const before = next;
+        next = applySharedGrant(next, g);
+        if (next !== before) awarded += g.minutes;
+        if (!next.sessions.some((s) => s.id === "coop_" + g.id)) {
+          validGrant = false;
+          return current;
+        }
+      }
+      result = settleStreakRewards(next, Date.now());
+      return result;
+    });
+    if (ok && validGrant) {
+      if (awarded)
+        setMessage(awarded + " shared focus minutes and rewards saved.");
+      const p = getProgress(result, Date.now());
+      room.stats.current = {
+        totalMinutes: p.totalMinutes,
+        streak: p.bestStreak,
+        upgrades: result.upgrades ?? [],
+      };
+    }
+    return ok && validGrant;
+  };
   const inRoom = !!room.credentials,
     active = inRoom ? !!rt && rt.status !== "complete" : !!timer,
     focus = parseMinutes(prefs.focus),
@@ -305,16 +372,79 @@ function Game() {
       /* Session progress has its own save guard. */
     }
   }, [prefs]);
+  encounter.current = (i) => {
+    setBellTaps(0);
+    setDiscoveryNote("");
+    if (i.kind === "desk" || i.kind === "bed") {
+      setPanel("sessions");
+      setTownTimerOpen(true);
+      setPhase(i.kind === "desk" ? "focus" : "short");
+      return;
+    }
+    if (i.kind === "shop") {
+      setPanel("shop");
+      return;
+    }
+    const hour = getWorldClock().hour,
+      id = discoveryAt(i.id);
+    if (id) {
+      let added = false;
+      const ok = update((current) => {
+        const next = recordDiscovery(current, id, hour);
+        added = next !== current;
+        return next;
+      });
+      if (added && ok) {
+        setDiscoveryNote("Added to your journal.");
+        const effect = (
+          { cat: "cat", frog: "choir", window: "star" } as Record<
+            string,
+            DiscoveryEffect
+          >
+        )[i.id];
+        if (effect) engine.current?.reveal(effect);
+      } else if (added && !ok)
+        setDiscoveryNote("This finding could not be saved.");
+    }
+    setPanel(
+      i.id === "rowan"
+        ? {
+            ...i,
+            lines: [
+              rowanAdvice(save, Date.now()),
+              "The observatory lost an hour. Until we find it, we can still make good use of this one.",
+            ],
+          }
+        : encounterText(i, save, hour),
+    );
+  };
+  const tapBell = () => {
+    const taps = Math.min(3, bellTaps + 1);
+    setBellTaps(taps);
+    if (taps === 3) {
+      let added = false;
+      const ok = update((current) => {
+        const next = recordDiscovery(
+          current,
+          "quiet-bell",
+          getWorldClock().hour,
+          taps,
+        );
+        added = next !== current;
+        return next;
+      });
+      if (ok && added) {
+        engine.current?.reveal("bell");
+        setDiscoveryNote(
+          "Three lights answer across the river. Added to your journal.",
+        );
+      }
+    }
+  };
   useEffect(() => {
     if (!canvas.current) return;
     const game = new GameEngine(canvas.current, {
-      onInteract: (i) => {
-        if (i.kind === "desk" || i.kind === "bed") {
-          setPanel("sessions");
-          setTownTimerOpen(true);
-          setPhase(i.kind === "desk" ? "focus" : "short");
-        } else setPanel(i);
-      },
+      onInteract: (i) => encounter.current(i),
       onNearby: setNearby,
       onScene: setScene,
     });
@@ -328,7 +458,7 @@ function Game() {
     const tick = () => {
       const t = Date.now();
       setNow(t);
-      update((s) => settleTimer(s, t));
+      update((s) => settleStreakRewards(settleTimer(s, t), t));
     };
     tick();
     const id = setInterval(tick, 250);
@@ -343,10 +473,24 @@ function Game() {
       engine.current.visible = view === "town";
       engine.current.blocked = view !== "town" || !!panel;
       engine.current.streak = progress.currentStreak;
+      engine.current.discoveries = save.discoveries ?? [];
+      engine.current.upgrades = inRoom
+        ? (room.snapshot?.social?.world.upgrades ?? [])
+        : (save.upgrades ?? []);
       engine.current.reducedMotion = prefs.quiet;
       engine.current.paused = isPaused === true;
     }
-  }, [view, panel, progress.currentStreak, prefs.quiet, isPaused]);
+  }, [
+    view,
+    panel,
+    progress.currentStreak,
+    prefs.quiet,
+    isPaused,
+    save.discoveries,
+    save.upgrades,
+    inRoom,
+    room.snapshot?.social?.world,
+  ]);
   useEffect(() => {
     room.position.current = () =>
       engine.current
@@ -569,12 +713,45 @@ function Game() {
   );
   const sessionActions = (
     <>
+      {inRoom && !active && (
+        <div className="shared-ready">
+          <Button
+            disabled={!canSave || room.busy || !room.connected}
+            onClick={() =>
+              void room.setReady(
+                !(
+                  room.snapshot?.members.find(
+                    (m) => m.id === room.credentials?.memberId,
+                  )?.ready ?? false
+                ),
+              )
+            }
+          >
+            {room.snapshot?.members.find(
+              (m) => m.id === room.credentials?.memberId,
+            )?.ready
+              ? "Ready"
+              : "Ready up"}
+          </Button>
+          <span>
+            {room.snapshot?.members.filter((m) => m.online && m.ready).length ??
+              0}{" "}
+            / {room.snapshot?.members.filter((m) => m.online).length ?? 0} ready
+          </span>
+        </div>
+      )}
       <div className="timer-buttons">
         <Button
           className="start-button"
           variant="default"
           disabled={
             (!active && !valid) ||
+            (inRoom &&
+              !active &&
+              currentPhase === "focus" &&
+              !room.snapshot?.members
+                .filter((m) => m.online)
+                .every((m) => m.ready)) ||
             (inRoom
               ? !room.isHost || !room.connected || room.busy
               : !canSave || room.busy)
@@ -601,6 +778,13 @@ function Game() {
       {!inRoom && cycle?.next === "done" && !timer && (
         <p className="completion-line" role="status">
           All {cycle.rounds} rounds finished. Take your time.
+        </p>
+      )}
+      {inRoom && rt?.status === "complete" && (
+        <p className="session-result" role="status">
+          {rt.kind === "focus"
+            ? "Shared interval complete. Ready players’ rewards will be saved shortly."
+            : "Break finished. Ready for another page?"}
         </p>
       )}
       {!inRoom && save.lastCompletion && !timer && (
@@ -870,6 +1054,16 @@ function Game() {
           <Icon name="journal" />
           <span>Journal</span>
         </Button>
+        <Button
+          onClick={() => setPanel("missions")}
+          aria-label="Missions and village upgrades"
+        >
+          <Icon name="missions" />
+          <span>Missions</span>
+        </Button>
+        <Button onClick={() => setPanel("audio")} aria-label="Sound library">
+          <Icon name="audio" />
+        </Button>
         <Button onClick={() => setPanel("settings")} aria-label="Settings">
           <Icon name="settings" />
         </Button>
@@ -916,6 +1110,11 @@ function Game() {
         hidden
         onChange={(e) => void upload(e.target.files?.[0])}
       />
+      {panel === "audio" && (
+        <Modal title="A little company" onClose={close}>
+          <SoundLibrary sound={sound} />
+        </Modal>
+      )}
       {panel === "sessions" && (
         <Modal title="Set your session" onClose={close}>
           {sessionTabs}
@@ -1017,6 +1216,23 @@ function Game() {
           )}
         </Modal>
       )}
+      {(panel === "missions" || panel === "shop") && (
+        <Modal
+          title={panel === "shop" ? "Lottie’s Goods" : "Town noticeboard"}
+          onClose={close}
+          wide
+        >
+          <TownLedger
+            kind={panel}
+            save={save}
+            now={now}
+            canSave={canSave}
+            update={update}
+            message={setMessage}
+            openShop={() => setPanel("shop")}
+          />
+        </Modal>
+      )}
       {panel === "journal" && (
         <Modal title="Your time, kept." onClose={close} wide>
           <div className="journal-totals">
@@ -1077,6 +1293,24 @@ function Game() {
             <span>{save.coins} coins</span>
             <span>{save.energy} energy</span>
           </div>
+          <p className="fine-print">
+            Village level {1 + (save.upgrades?.length ?? 0)} ·{" "}
+            {save.upgrades?.length ?? 0} improvements built. Streak milestones:
+            3 days / 12 coins, 7 days / 24 coins. Paid once; buildings stay.
+          </p>
+          {!!save.discoveries?.length && (
+            <>
+              <h3>Things you found</h3>
+              <div className="discovery-list">
+                {save.discoveries.map((id) => (
+                  <article key={id}>
+                    <h4>{DISCOVERIES[id].title}</h4>
+                    <p>{DISCOVERIES[id].text}</p>
+                  </article>
+                ))}
+              </div>
+            </>
+          )}
           <h3>Recent sessions</h3>
           {save.sessions.length ? (
             <ul className="session-list">
@@ -1179,7 +1413,10 @@ function Game() {
           </div>
           <p className="fine-print">
             Co-op rooms share your nickname, character position and timer with
-            invited players. They do not sync your personal save.
+            invited players. Your profile also reports focus totals, best streak
+            and village upgrades. These comparisons stay with this browser’s
+            profile. Clearing site data loses that profile; a game-save backup
+            does not restore it.
           </p>
           <div className="legal-links">
             <a href="/privacy">Privacy</a>
@@ -1206,7 +1443,9 @@ function Game() {
               </label>
               <Button
                 variant="default"
-                disabled={!!timer || room.busy || !name.trim()}
+                disabled={
+                  !!timer || room.busy || !canSave || !ready || !name.trim()
+                }
                 onClick={() => void room.enter(name)}
               >
                 Create a room
@@ -1229,7 +1468,12 @@ function Game() {
               <Button
                 variant="outline"
                 disabled={
-                  !!timer || room.busy || !name.trim() || !invite.trim()
+                  !!timer ||
+                  room.busy ||
+                  !canSave ||
+                  !ready ||
+                  !name.trim() ||
+                  !invite.trim()
                 }
                 onClick={() => void room.enter(name, invite.trim())}
               >
@@ -1257,10 +1501,69 @@ function Game() {
                       {m.name}
                       {m.id === room.snapshot?.hostId ? " · host" : ""}
                     </span>
-                    <small>{m.online ? "here" : "away"}</small>
+                    <small>
+                      {m.online ? (m.ready ? "ready" : "here") : "away"}
+                    </small>
                   </li>
                 ))}
               </ul>
+              <label className="check-row">
+                <input
+                  type="checkbox"
+                  checked={
+                    room.snapshot?.members.find(
+                      (m) => m.id === room.credentials?.memberId,
+                    )?.ready ?? false
+                  }
+                  disabled={room.busy || !room.connected || active || !canSave}
+                  onChange={(e) => void room.setReady(e.target.checked)}
+                />
+                Ready for the next focus session
+              </label>
+              <p className="fine-print">
+                The host starts when everyone here is ready. Joining mid-session
+                means watching until the next round. Leaving early gives up that
+                interval’s reward.
+              </p>
+              {!!room.snapshot?.social?.people.length && (
+                <>
+                  <h3>Friendly rivalry</h3>
+                  <ul className="session-list">
+                    {room.snapshot.social.people.map((p) => {
+                      const own = room.profile?.id,
+                        paired = room.snapshot!.social.comparisons.filter(
+                          (pair) =>
+                            pair.lowProfileId === p.id ||
+                            pair.highProfileId === p.id,
+                        ),
+                        trailing = paired.some(
+                          (pair) =>
+                            (pair.lowProfileId === own ||
+                              pair.highProfileId === own) &&
+                            pair.leaderProfileId !== null &&
+                            pair.leaderProfileId !== p.id,
+                        );
+                      return (
+                        <li key={p.id}>
+                          <span>
+                            {p.name}
+                            {p.id === own ? " (you)" : ""}{" "}
+                            {trailing && <b className="rival-tag">mogged</b>}
+                          </span>
+                          <span>
+                            {p.totalMinutes} min · {p.streak} day best
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <p className="fine-print">
+                    Recorded local totals, not verified study time. A tie keeps
+                    the tag. Pull ahead to send it back. Your host’s village
+                    upgrades appear while you visit.
+                  </p>
+                </>
+              )}
               {room.credentials?.invite && (
                 <>
                   <Button variant="outline" onClick={() => void copyInvite()}>
@@ -1294,14 +1597,20 @@ function Game() {
               </Button>
             </>
           )}
+          {room.profileError && (
+            <p className="error" role="status">
+              {room.profileError}
+            </p>
+          )}
           {room.error && (
             <p className="error" role="status">
               {room.error}
             </p>
           )}
           <p className="fine-print">
-            Rooms last up to 24 hours. Anyone with the invitation can join. Room
-            time is shared; your personal journal stays separate.
+            Rooms last up to 24 hours. Anyone with the invitation can join.
+            Completed shared focus earns personal rewards for the ready players.
+            Your save stays on this device.
           </p>
         </Modal>
       )}
@@ -1361,6 +1670,33 @@ function Game() {
           {panel.lines?.map((line, i) => (
             <p key={i}>{line}</p>
           ))}
+          {discoveryNote && (
+            <p className="discovery-note" role="status">
+              {discoveryNote}
+            </p>
+          )}
+          {panel.id === "bell" &&
+            canAnswerBell(save) &&
+            !save.discoveries?.includes("quiet-bell") && (
+              <Button disabled={!canSave || bellTaps >= 3} onClick={tapBell}>
+                Tap the bell {bellTaps ? bellTaps + "/3" : ""}
+              </Button>
+            )}
+          {panel.id === "tea" && (
+            <Button
+              onClick={() => {
+                setPhase("short");
+                setPanel("sessions");
+              }}
+            >
+              Take a tea break
+            </Button>
+          )}
+          {panel.id === "rowan" && (
+            <Button onClick={() => setPanel("missions")}>
+              See the noticeboard
+            </Button>
+          )}
           {(panel.id === "mira" || panel.id === "library") && (
             <Button onClick={() => setPanel("journal")}>Open journal</Button>
           )}
