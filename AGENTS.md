@@ -1,4 +1,4 @@
-# Working on FocusRaid
+# Working on Focus Town
 
 - Continue the existing React, TypeScript, Vite, and Canvas project. Do not replace it with a separate hosted builder project.
 - For the current owner-requested workflow, enter code and documentation edits through VS Code and run development commands in its integrated terminal.

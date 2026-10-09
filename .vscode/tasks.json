@@ -2,25 +2,59 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "FocusRaid: start preview",
-            "type": "npm",
-            "script": "dev",
-            "problemMatcher": [],
+            "label": "Focus Town: start preview",
+            "type": "shell",
+            "command": "npm",
+            "args": [
+                "run",
+                "dev",
+                "--",
+                "--port",
+                "5173",
+                "--strictPort",
+                "--clearScreen",
+                "false"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "NO_COLOR": "1"
+                }
+            },
             "isBackground": true,
+            "problemMatcher": {
+                "owner": "vite",
+                "pattern": {
+                    "regexp": "^(.+):(\\d+):(\\d+): (error|warning): (.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "VITE .*",
+                    "endsPattern": "Local:.*http://127\\.0\\.0\\.1:5173/"
+                }
+            },
             "presentation": {
                 "reveal": "always",
                 "panel": "dedicated"
+            },
+            "runOptions": {
+                "instanceLimit": 1
             }
         },
         {
-            "label": "FocusRaid: test",
+            "label": "Focus Town: test",
             "type": "npm",
             "script": "test",
             "group": "test",
             "problemMatcher": []
         },
         {
-            "label": "FocusRaid: build",
+            "label": "Focus Town: build",
             "type": "npm",
             "script": "build",
             "group": {

@@ -1,6 +1,6 @@
-# FocusRaid
+# Focus Town
 
-I made FocusRaid because normal Pomodoro timers were boring. I wanted the time spent focusing to leave something behind: a lit window, a few coins, a place worth coming back to.
+I made Focus Town because normal Pomodoro timers were boring. I wanted the time spent focusing to leave something behind: a lit window, a few coins, a place worth coming back to.
 
 ```text
        .--.
@@ -9,7 +9,7 @@ I made FocusRaid because normal Pomodoro timers were boring. I wanted the time s
         ||
 ```
 
-FocusRaid is a small browser game about a lantern apprentice. Walk through Greenvale, head home, and sit at the desk. While you work, your apprentice studies too.
+Focus Town is a small browser game about a lantern apprentice. Walk through Greenvale, head home, and sit at the desk. While you work, your apprentice studies too.
 
 ## What you can do
 
@@ -23,17 +23,16 @@ The shop, library, forest, quests, and combat are still being built. Their signs
 
 ## Run it in VS Code
 
-Use a current Node.js release supported by Vite 8. This checkout was built and tested with Node 26.5.0.
+1. Open this folder in VS Code. On a fresh checkout, run `npm install` in its terminal once.
+2. Open **Run and Debug** and choose **Focus Town: start preview**.
+3. Press the green play button. VS Code starts the server, waits until it is ready, and opens the game.
+4. Click **Enter Greenvale**.
 
-1. Open this folder in VS Code.
-2. Choose **Terminal → New Terminal**.
-3. Run `npm install`, then `npm run dev`.
-4. Open the local address printed in the terminal. The usual address is `http://127.0.0.1:5173/`.
-5. Click **Enter Greenvale**.
+This checkout was built and tested with Node 26.5.0.
 
-For the built-in browser, keep the server running, open **Run and Debug**, choose **FocusRaid: open running preview**, then press the green play button. That configuration expects port 5173. If Vite chooses another port, use its printed link or stop the other server first. Do not open `index.html` directly from the filesystem.
+To play in Brave, choose **Terminal > Run Task > Focus Town: start preview**, then type `http://127.0.0.1:5173/` into Brave’s address bar. Keep the preview terminal open while playing. Do not open `index.html` directly.
 
-**Terminal → Run Task** also has tasks to start the preview, run the tests, and build the game.
+**Terminal > Run Task** also has tasks for tests and the production build.
 
 ## First walk
 
@@ -52,7 +51,7 @@ From the fountain, walk left and then up toward Lantern House. Enter through its
 
 Completed sessions earn rewards once. Ending early earns none. Breaks never earn focus rewards. A day counts toward the keeper-flame streak after 25 completed minutes; two 15-minute sessions count too. A session belongs to the local calendar date when its timer ends.
 
-Progress is stored in this browser under `focusraid-save-v1`. Running timers use a saved deadline, so closing the tab does not reset them. Paused timers stay paused. A browser lock lets one tab write to the notebook at a time; other tabs can explore while they wait.
+Progress is stored in this browser under `focusraid-save-v1`. The original key stays in place so the rename preserves existing saves. Running timers use a saved deadline, so closing the tab does not reset them. Paused timers stay paused. A browser lock lets one tab write to the notebook at a time; other tabs can explore while they wait.
 
 There is no account or cloud sync. Clearing browser data removes progress. Damaged or unsupported saves are kept intact and block new sessions rather than being silently replaced. If saving fails, the game shows a warning and does not apply the unsaved change.
 
@@ -80,8 +79,10 @@ React, TypeScript, Vite, and Canvas keep the first two rooms small enough to und
 
 ## References and credits
 
-[Spirit City](https://store.steampowered.com/app/2113850/Spirit_City_Lofi_Sessions/) and [Virtual Cottage](https://dui.itch.io/virtual-cottage) informed the quiet focus-companion direction. [Habitica](https://habitica.com/) and [Forest](https://www.forestapp.cc/) were references for progress tied to real tasks. FocusRaid uses its own setting, names, dialogue, and pixel designs.
+[Spirit City](https://store.steampowered.com/app/2113850/Spirit_City_Lofi_Sessions/) and [Virtual Cottage](https://dui.itch.io/virtual-cottage) informed the quiet focus-companion direction. [Habitica](https://habitica.com/) and [Forest](https://www.forestapp.cc/) were references for progress tied to real tasks. Focus Town uses its own setting, names, dialogue, and pixel designs.
 
 Useful art tools for future manual work: [Piskel](https://www.piskelapp.com/), [Aseprite](https://www.aseprite.org/), [Tiled](https://www.mapeditor.org/), and [Lospec](https://lospec.com/palette-list).
 
-AI helped with research, design, code, tests, and writing. See [AI_DISCLOSURE.md](AI_DISCLOSURE.md), [DEVLOG.md](DEVLOG.md), and [ROADMAP.md](ROADMAP.md). No tracked human hours or personal playtest results are claimed here.
+AI helped with research, design, code, tests, and writing. See [DEVLOG.md](DEVLOG.md) and [ROADMAP.md](ROADMAP.md). No tracked human hours or personal playtest results are claimed here.
+
+The `.wakatime-project` identifier stays `focusraid` to preserve the project’s tracking history.

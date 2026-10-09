@@ -28,3 +28,11 @@ Browser preview access was declined during this development session, so these re
 This update adds a village, a house, and the first focus loop. The apprentice can reach the desk, choose a session, and save its timer and progress locally. I used AI assistance for the implementation, pixel drawings, tests, and documentation. Automated checks passed, but the full browser playtest is still pending. The next useful test is the complete walk from the fountain to the desk, followed by a pause and reload.
 
 This draft describes project changes. It does not claim human coding hours or a personal playtest. Before posting it, add what you worked on yourself, what confused you, and what you noticed while playing. Any required time entry must match verified Hackatime records.
+
+## 9 October 2026: Focus Town
+
+Renamed the game to Focus Town. The original save key and time-tracking identifier remain in place so existing history stays together. Removed the separate AI disclosure file at the owner’s request; disclosure belongs in the submission form when it is filled out.
+
+The local preview had no running server. The VS Code Run configuration now starts Vite, waits for its ready address, and then opens the game.
+
+The owner will run the game and do the next debugging pass. The updated Run configuration has not yet been tested interactively.

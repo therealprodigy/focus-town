@@ -1,8 +1,8 @@
-# FocusRaid: the first chapter
+# Focus Town: the first chapter
 
 ## The feeling
 
-Greenvale is a quiet village near a magical academy: warm windows, crooked roofs, old books, a lantern with a job to do. The player is an original apprentice in a teal robe carrying a copper lantern. Familiar school-of-magic atmosphere guides the mood; the setting, people, and lore belong to FocusRaid.
+Greenvale is a quiet village near a magical academy: warm windows, crooked roofs, old books, a lantern with a job to do. The player is an original apprentice in a teal robe carrying a copper lantern. Familiar school-of-magic atmosphere guides the mood; the setting, people, and lore belong to Focus Town.
 
 Small details should reward curiosity. The pond has a midnight choir. A shelf carries an apprentice’s unfinished note. Rowan and Mira have their own short conversations. ASCII belongs in these scraps and field notes, not across every surface.
 

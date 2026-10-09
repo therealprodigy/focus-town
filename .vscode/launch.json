@@ -4,8 +4,10 @@
         {
             "type": "editor-browser",
             "request": "launch",
-            "name": "FocusRaid: open running preview",
-            "url": "http://127.0.0.1:5173/"
+            "name": "Focus Town: start preview",
+            "url": "http://127.0.0.1:5173/",
+            "webRoot": "${workspaceFolder}",
+            "preLaunchTask": "Focus Town: start preview"
         }
     ]
 }
