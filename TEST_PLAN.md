@@ -1,48 +1,54 @@
-# Test plan
+# Owner playtest
 
-## Automated result
+Automated baseline on 9 October 2026: 59 tests and the production build passed. These checks are still for the owner to perform in a browser. Record what you actually observe, including failures.
 
-On 8 October 2026, `npm run test` passed 20 tests and `npm run build` completed successfully. These checks cover the game rules and compilation. They do not establish that the browser integration works.
+## Open the game
 
-Covered: reward amounts and single claims; reloads; pause/resume; cancellation at and before expiry; overlapping timer prevention; break persistence; midnight completion dates; backward clock changes; corrupt saves; streaks; diagonal speed; frame-rate independence; wall collision; and routes to every interaction.
+1. In VS Code, click Run and Debug on the left.
+2. Choose Focus Town: start preview and click the green play button.
+3. If the preview is already running, open http://127.0.0.1:5173/ in Brave.
+4. Keep VS Code's preview terminal open. Do not start a second copy if port 5173 is in use.
 
-## Browser checks still pending
+## First ten minutes
 
-- [ ] Open the local preview and enter Greenvale without an error or a permanent save warning.
-- [ ] Walk with WASD and arrows. Confirm diagonal movement feels the same speed.
-- [ ] Walk against walls, trees, water, and furniture. Check that the character does not clip through them.
-- [ ] Enter Lantern House and return through the doorway. Check that the nearby prompt changes correctly.
-- [ ] Read both villagers and each sign. Close dialogs with the button and Escape; resume movement.
-- [ ] Start a session at the desk. Check that the apprentice sits, the timer counts down, and movement stops.
-- [ ] Pause, reload, and resume. Check that paused time is preserved.
-- [ ] Reload a running timer. Check that its deadline is preserved.
-- [ ] Finish a real session. Record the before/after resources and reload to check that rewards are not duplicated.
-- [ ] Take the suggested break. Watch the desk-to-bed route, sleep, and wake sequence.
-- [ ] End a focus session early and confirm it earns no rewards. End a break early and confirm prior rewards remain.
-- [ ] Open the game in a second tab. Confirm it cannot start a second session or write over the first. Close the first tab and confirm the second acquires the newest save.
-- [ ] In a disposable browser profile, simulate unavailable storage and a malformed save. Confirm there is a readable warning and no silent replacement.
-- [ ] Check desktop and phone widths, touch press-and-hold, keyboard focus outlines, and reduced ambient motion.
-- [ ] Test the VS Code Run and Debug entry while the preview server is running.
+- [ ] Resize the window. Check that the clock, Start button and bottom dock remain visible, including at phone size and browser zoom 200%.
+- [ ] Click the dock's full-screen corners icon. Press Escape to return.
+- [ ] Open Sessions. Set focus, short break and long break to 1 minute, with 2 rounds. Start.
+- [ ] Pause after a few seconds, reload, and check that it remains paused. Resume and wait for completion.
+- [ ] Check that one session appears in Journal, with one reward. Reload again and check it is not duplicated.
+- [ ] Finish the short break, start round two, then check the final break is labelled Long break even though both breaks are 1 minute.
+- [ ] Try automatic breaks. Confirm the next focus round still waits for Start.
 
-Browser access was declined during the current development session. No browser checks above have been marked as passed.
+## Explore
 
-## A first playtest for the project owner
+- [ ] Click Town, click the game and use WASD or arrow keys. Enter Lantern House and talk to Rowan or Mira outside.
+- [ ] Hide movement controls; restore them in Settings.
+- [ ] On a touch device, check each movement button releases after lifting or cancelling a touch.
+- [ ] Check the day/night cycle, foreground depth and larger character silhouette.
+- [ ] Open a dialog with the keyboard. Tab through it, close it with Escape, and continue moving.
+- [ ] Turn on Reduce motion. Check that ambient movement stops.
 
-Open the preview from VS Code’s terminal. Click Enter town. Walk left from the fountain, then up to Lantern House. Press E at its door, find the desk, and start 15 minutes. Pause it and reload once.
+## Saves
 
-Write down three things: where you got lost, whether walking felt too slow or too fast, and one line of dialogue you would rewrite. Those observations belong in the journal; an invented playtest does not.
+- [ ] Export a save. End any session and import the exported file; check the replacement confirmation before restoring.
+- [ ] Check the same save in a second tab. Only one tab should be allowed to change personal progress.
+- [ ] Try invalid JSON and an unrelated file. The existing save must remain intact.
+- [ ] Read Privacy and Storage & cookies. Check an unknown address shows the custom 404 and a return link.
 
-## Pixel interface and session-options checks
+## Two-player check
 
-On 9 October 2026, the suite passed 41 tests and the production build passed. New automated coverage includes custom durations and their bounds, preserved selected breaks, legacy saves, empty days in the activity chart, year boundaries, and the twelve-minute world clock.
+Use two browser sessions with access to the same Site. A localhost link is only for this Mac; a private Site invitation does not grant hosting access.
 
-Still to playtest:
-- [ ] Hide Controls, reload, and restore them from the top menu.
-- [ ] Start 30 minutes with a custom 17-minute break; pause, reload, resume and verify the chosen break after completion.
-- [ ] Start both a short and a long break; check that they award no focus rewards.
-- [ ] Check invalid, empty and fractional minute inputs.
-- [ ] Look at the village during day and night, and check the window sky indoors.
-- [ ] Walk behind the larger trees, villagers and lamps, then focus and rest in the house.
-- [ ] Check pixel-font readability and menu scrolling at desktop and phone widths.
+- [ ] Host creates a room; guest joins with its invitation. Both see the two names.
+- [ ] Both enter Town. Walk and change rooms; companions should appear only in the same scene.
+- [ ] Host starts a 1-minute interval. Guest sees it and cannot control it.
+- [ ] Pause, resume and complete it. Shared minutes should increase by one, once; the beacon should light.
+- [ ] Disconnect the guest and leave locally. Solo focus should remain available.
+- [ ] Disconnect the host and try Close room. It should show a failure and keep retry access.
+- [ ] Reconnect and close as host. Guest should return to solo when the closed room is detected.
 
-These browser checks remain unverified.
+## Write a useful bug report
+
+Use: what you clicked, what you expected, what happened, browser/device and whether a reload changes it. Include a screenshot if the layout is wrong. Do not include room secrets or private save files in a public issue.
+
+These observations are the human part of the journal. Do not mark unchecked items as passed or invent time spent testing.

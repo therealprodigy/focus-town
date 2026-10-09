@@ -1,96 +1,68 @@
 # Focus Town
 
-I made Focus Town because normal Pomodoro timers were boring. I wanted the time spent focusing to leave something behind: a lit window, a few coins, a place worth coming back to.
+A quiet place to finish something. Set a timer in the observatory, or walk through Greenvale with a lantern and a few friends.
 
 ```text
        .--.
-       |::|    GREENVALE / CHAPTER 01
+       |::|    GREENVALE
       _|__|_   one page at a time
         ||
 ```
 
-Focus Town is a small browser game about a lantern apprentice. Walk through Greenvale, head home, and sit at the desk. While you work, your apprentice studies too.
+## Start in VS Code
 
-## What you can do
+1. Open this folder. On a fresh checkout, run **npm install** in the integrated terminal. Use Node 26 or newer; local co-op uses its built-in SQLite.
+2. Click **Run and Debug** in the left sidebar.
+3. Select **Focus Town: start preview**, then click the green play button. This starts the server and opens the game.
+4. If the server is already running, open [the local game](http://127.0.0.1:5173/) in Brave. Keep the preview terminal open.
 
-- Walk through the village and enter Lantern House.
-- Talk to Rowan and Mira, read village notices, and find a few odd scraps of lore.
-- Choose a custom focus length, or use the 15, 25, 45 and 60 minute presets. Pause, resume, or end early.
-- Collect energy, XP, and coins after a completed session, then take an optional rest.
-- Set separate short and long breaks.
-- Check seven days of focus, current streak and best streak in the journal.
-- Watch a twelve-minute day/night cycle and hide the controls helper.
+The game opens in **Focus**. Open **Sessions**, pick a preset or enter your own times, then press **Start focus**. Use **Town** to explore. WASD or arrow keys move; E interacts. The corners icon in the bottom dock enters full screen. Escape exits full screen or closes a dialog.
 
-The shop, library, forest, quests, and combat are still being built. Their signs are readable; their gameplay is not available yet. This is a local prototype, with no verified public demo.
+If the address cannot connect, use **Terminal > Run Task > Focus Town: start preview**. If port 5173 is already in use, use the existing preview. Do not open index.html directly.
 
-## Run it in VS Code
+## What is here
 
-1. Open this folder in VS Code. On a fresh checkout, run `npm install` in its terminal once.
-2. Open **Run and Debug** and choose **Focus Town: start preview**.
-3. Press the green play button. VS Code starts the server, waits until it is ready, and opens the game.
-4. Click **Enter town**.
+- An original observatory scene, a large clock, one editable task line and a compact dock.
+- Focus, short breaks and long breaks from 1 to 720 whole minutes.
+- Four presets and custom Pomodoro plans with 1 to 12 rounds. The final round leads to a long break. Breaks can start automatically; the next focus round waits for you.
+- Pause, resume, reload recovery, rewards and a seven-day journal.
+- Two walkable rooms, larger pixel characters, villagers, small pieces of lore and a twelve-minute day/night cycle.
+- Five story chapters unlocked by completed solo focus.
+- Invite rooms for up to eight people, with a shared timer, companion positions and a river beacon.
+- Save backups, storage information, privacy and terms pages, and a custom 404.
 
-This checkout was built and tested with Node 26.5.0.
+The shop, library interior, forest, combat, equipment and music are planned. Their notices are readable; those systems are not working features yet.
 
-To play in Brave, choose **Terminal > Run Task > Focus Town: start preview**, then type `http://127.0.0.1:5173/` into Brave’s address bar. Keep the preview terminal open while playing. Do not open `index.html` directly.
+## Together
 
-**Terminal > Run Task** also has tasks for tests and the production build.
+Open **Together**, enter a nickname and create a room. Copy its invitation for someone who can access the same hosted site. The host controls the timer. Guests can leave without changing everyone else's session.
 
-## First walk
+Positions update about once per second in Town, more slowly in Focus or a hidden tab. This is relaxed companion play. Completed co-op time lights the river beacon; it does not award solo coins or write to another player's journal. Rooms expire after 24 hours. Closing as host requires a confirmed server response.
 
-Use **WASD** or the **arrow keys** to move. Press **E** near a person, sign, door, desk, or bed. **Escape** closes a dialog. On a touch screen, use the arrow buttons below the game.
+A localhost invitation works only on this Mac. The initial hosted Site is owner-private. A room invitation does not bypass the Site's access controls.
 
-From the fountain, walk left and then up toward Lantern House. Enter through its door. Inside, the desk is at the top left; the bed is across the rug. Click the game again if movement stops after using a menu.
+## Where progress lives
 
-## Sessions and saving
+Solo progress stays in this browser on this device. **Settings > Export save** makes a backup; **Import save** restores one after confirmation. Clearing site data removes the local copy. There is no account-based personal save sync.
 
-Choose any whole-minute focus length from 1 to 720. Short and long breaks have separate editable lengths, starting at 5 and 15 minutes. The break selected before a focus session is saved with that session.
+The original focusraid-save-v1 storage key and focusraid-save-writer lock preserve earlier progress through the rename. Completion and rewards are saved together. One tab holds the writing lock; another waits. A damaged save blocks ordinary writes but can be replaced with a valid backup.
 
-| Focus | Energy | XP | Coins |
-| --- | ---: | ---: | ---: |
-| 15 minutes | 15 | 12 | 6 |
-| 25 minutes | 25 | 25 | 12 |
-| 45 minutes | 45 | 50 | 22 |
-| 60 minutes | 60 | 70 | 30 |
+A streak day needs 25 completed minutes. Several sessions can add up to that total. Missing a day never removes coins or XP. Running timers retain their deadline; paused timers retain their remaining time. Personal time uses the device clock and is not verified attendance or work time.
 
-These are the reward anchors. Custom sessions interpolate between them; durations above 60 continue the last rate. Energy equals completed minutes.
+Hosted rooms store nicknames, hashed membership secrets, presence, character positions and shared timer state in a separate database. Task text and personal journals stay local. Development rooms live in the ignored .sites-runtime folder.
 
-Completed sessions earn rewards once. Ending early earns none. Breaks never earn focus rewards. A day counts toward the keeper-flame streak after 25 completed minutes; two 15-minute sessions count too. A session belongs to the local calendar date when its timer ends.
+## Checks and your debugging pass
 
-Progress is stored in this browser under `focusraid-save-v1`. The original key stays in place so the rename preserves existing saves. Running timers use a saved deadline, so closing the tab does not reset them. Paused timers stay paused. A browser lock lets one tab write to the notebook at a time; other tabs can explore while they wait.
+**Terminal > Run Task** includes **Focus Town: test** and **Focus Town: build**.
 
-There is no account or cloud sync. Clearing browser data removes progress. Damaged or unsupported saves are kept intact and block new sessions rather than being silently replaced. If saving fails, the game shows a warning and does not apply the unsaved change.
+On 9 October 2026, **59 automated tests and the production build passed**. They cover timer transitions, rewards, reloads, streaks, movement, room permissions, concurrent controls, expiry, membership limits and stale companion updates.
 
-This is a personal focus companion, not proof of study time. It uses the device clock.
-
-## Checks
-
-```sh
-npm run test
-npm run build
-```
-
-On 9 October 2026, 41 automated tests and the production build passed. The tests cover timer rewards, reloads, pause/resume, cancellation, dates, damaged saves, movement, collision, and routes to every interaction. Browser playtesting and visual review of this update are still pending.
+Browser layout, full screen, touch controls, backup dialogs and two-device co-op still need the owner's manual pass. Start with [TEST_PLAN.md](TEST_PLAN.md). Automated checks do not establish visual quality.
 
 ## Inside the project
 
-- `src/game/world.ts`: rooms, collision areas, conversations, and interactions.
-- `src/game/renderer.ts`: original pixel characters and scenery drawn on Canvas.
-- `src/game/engine.ts`: movement, input, scene changes, and desk-to-bed movement.
-- `src/game/state.ts`: saved progress, timer transitions, rewards, and streaks.
-- `src/App.tsx`: accessible menus, notebook, and session controls.
-- `tests/core.test.ts`: the main rules and route checks.
+React, Vite, TypeScript and Tailwind handle the interface. A shadcn-style Radix/CVA button supplies the shared controls. Canvas draws the town. Pure timer rules live in src/game/state.ts. The room service uses Drizzle migrations with local SQLite and hosted D1. See [ARCHITECTURE.md](ARCHITECTURE.md).
 
-React, TypeScript, Vite, and Canvas keep the first two rooms small enough to understand. No game-art downloads are bundled. Silkscreen and VT323 are bundled locally under SIL Open Font License 1.1. See [ASSETS.md](ASSETS.md) for their source and license notices.
+[Flocus](https://flocus.com/features/pomodoro-timer) informed the timer hierarchy; [Aceternity](https://ui.aceternity.com/components/floating-dock) informed the compact dock. Their artwork and site code are not bundled. [ASSETS.md](ASSETS.md) records the scene and font licenses.
 
-## References and credits
-
-[Spirit City](https://store.steampowered.com/app/2113850/Spirit_City_Lofi_Sessions/) and [Virtual Cottage](https://dui.itch.io/virtual-cottage) informed the quiet focus-companion direction. [Habitica](https://habitica.com/) and [Forest](https://www.forestapp.cc/) were references for progress tied to real tasks. Focus Town uses its own setting, names, dialogue, and pixel designs.
-
-The owner requested Terraria as an art reference. [Stardew Valley official screenshots](https://www.stardewvalley.net/media/) informed the terrain detail. All game sprites remain original.
-
-Useful art tools for future manual work: [Piskel](https://www.piskelapp.com/), [Aseprite](https://www.aseprite.org/), [Tiled](https://www.mapeditor.org/), and [Lospec](https://lospec.com/palette-list).
-
-AI helped with research, design, code, tests, and writing. See [DEVLOG.md](DEVLOG.md) and [ROADMAP.md](ROADMAP.md). No tracked human hours or personal playtest results are claimed here.
-
-The `.wakatime-project` identifier stays `focusraid` to preserve the project’s tracking history.
+AI assisted implementation, artwork, tests and documentation. The owner supplies design direction and manual playtesting. No human coding hours or Pixl submission are claimed. The .wakatime-project identifier remains focusraid to preserve tracking history.

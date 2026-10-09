@@ -46,3 +46,15 @@ Greenvale now has textured paths, fuller trees, flowers, reeds, stone details an
 Focus and break lengths accept whole minutes from 1 to 720. A selected break is retained through pause, reload and completion. The journal shows seven days of completed focus, the current streak and the best streak. Days still require 25 completed minutes; an unfinished day does not erase yesterday's streak.
 
 Verified through commands run in VS Code: 41 automated tests passed and the production build passed. Browser appearance and interaction checks are still pending. AI assisted the code, artwork and documentation; this entry claims no human coding hours or personal playtest results.
+
+## 9 October 2026: the observatory and shared rooms
+
+The owner wanted the page to feel calmer and more deliberate. The opening view now places a large timer over an original observatory illustration. Focus and Town are separate views, with a small dock for sessions, company, journal and settings. The town still uses original pixel characters and changing daylight. The example hero was a composition reference; its brand, video and copy were not used.
+
+Pomodoro plans now capture their intervals and round count, lead to a final long break, and optionally start breaks automatically. New focus rounds wait for a click. Backup export and explicit restoration explain where personal progress lives. Damaged saves can be recovered without letting ordinary actions overwrite them.
+
+Co-op now has a real room service: eight-member invitations, host controls, presence, approximate companion movement and a river beacon. Review caught room-closure recovery, joining-versus-solo races, stale position updates and ambiguous break labels. Those were corrected. Shared completion is counted once, while personal progress remains local.
+
+The source was edited and development commands ran through VS Code. The implementation uses React, TypeScript, Vite, Tailwind, Canvas and SQLite/D1 migrations. Fonts are local; the scene and licenses are recorded in ASSETS.md. Privacy, storage, terms and a custom 404 are included. No separate AI disclosure file was created.
+
+The latest automated run passed 59 tests and the production build. Browser layout and two-device play remain unverified because the owner chose to do that pass. TEST_PLAN.md lists the clicks and expected behavior. AI assisted implementation, artwork, testing and writing; this entry claims no human coding hours or personal playtest observations.

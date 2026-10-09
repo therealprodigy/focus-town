@@ -1,36 +1,25 @@
-# The next chapters
+# Next chapters
 
-## First playable loop
+## Implemented
 
-Implemented: village and house, movement and collisions, nearby interactions, two villagers, focus sessions, optional sleep breaks, local progress, rewards, streaks, notebook, and reduced ambient motion.
+The observatory focus view, custom Pomodoro plans, short and long breaks, local backups, streak journal, five story chapters, two walkable rooms, day/night lighting, and invite-based companion rooms are implemented. Shared rooms have a host timer, approximate character positions and a beacon fed by shared focus.
 
-Verified: 20 automated tests and the production build. Browser playtesting is still required before calling this a tested playable release.
+The automated baseline is 59 tests and a successful production build on 9 October 2026. Browser playtesting remains with the owner. A private hosted deployment is not a public launch.
 
-## Next: make the loop feel right
+## Next: the owner's playtest
 
-- Play the full route with keyboard and touch controls.
-- Check small-screen text, focus outlines, and every dialog.
-- Verify reloads, storage warnings, and two-tab save handoff in the browser.
-- Tune the character silhouette, walk cycle, room spacing, and interaction distance from actual playtest notes.
-- Add only the sounds and animation that improve the quiet atmosphere, with a mute control.
+Use TEST_PLAN.md. Check phone layout, full screen, keyboard and touch input, dialog focus, backup recovery, and two-player room behavior. Tune spacing and character readability from actual observations.
 
-## After that: give the village a reason to grow
+## After the visual pass
 
-- Open Lottie’s shop with a small, tested inventory and clear prices.
-- Add equipment and cosmetic descriptions that fit Greenvale.
-- Introduce a quest that uses earned energy to repair the bridge.
-- Build the first forest encounter and the planned 1,200 HP boss after progression rules are stable.
-- Open the library with useful lore and a reason to revisit it.
+- Add music and ambient sound with mute, volume and reduced-distraction controls. Use licensed or original audio.
+- Open Lottie's shop with a small inventory and tested prices.
+- Add a bridge-repair quest that uses earned energy.
+- Build the first forest encounter after progression rules are stable.
+- Open the library and add equipment descriptions that fit its setting.
 
-These are plans, not hidden working features.
+Combat, weapon skins and later regions are plans, not hidden working features.
 
 ## Before a public release or Pixl submission
 
-- Finish the browser playtest and fix its findings.
-- Publish a working demo and verify the public link.
-- Capture real screenshots for the README and project thumbnail.
-- Confirm the public repository and its meaningful development commits.
-- Check current Pixl requirements and the project’s actual Hackatime linkage.
-- Write a journal from verified changes and the owner’s own experience, with AI assistance disclosed.
-
-No reward eligibility, tracked hours, form submission, or release has been verified yet.
+Finish the manual checks, confirm the intended sharing audience, capture real screenshots, and verify current Pixl requirements and Hackatime linkage. Journal the owner's own work and observations, with AI assistance disclosed in the required form. Never invent human coding hours or completed playtests.

@@ -7,3 +7,8 @@ coverage/
 .DS_Store
 *.log
 *.tsbuildinfo
+
+.sites-runtime/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
