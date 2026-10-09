@@ -1173,3 +1173,72 @@ dialog .fine-print {
   animation: none !important;
   transition: none !important;
 }
+
+@media (max-height: 500px) and (min-width: 651px) {
+  .topbar {
+    padding: 12px 24px;
+  }
+  .wordmark {
+    font-size: 1.5rem;
+  }
+  .wordmark span,
+  .local-clock span,
+  .chapter-teaser,
+  .today-teaser,
+  .storage-notice {
+    display: none;
+  }
+  .focus-space {
+    top: 65px;
+    bottom: 82px;
+    width: min(740px, 90%);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 24px;
+    align-content: center;
+    align-items: center;
+  }
+  .phase-tabs,
+  .task-line {
+    grid-column: 1 / -1;
+    margin: 0 auto;
+  }
+  .phase-tabs {
+    gap: 28px;
+  }
+  .phase-tabs button {
+    padding: 4px 2px;
+  }
+  .task-line {
+    width: 100%;
+  }
+  .task-line input {
+    padding: 3px 8px;
+  }
+  .hero-clock {
+    grid-column: 1;
+    font-size: 4.5rem;
+    margin: 0;
+  }
+  .timer-buttons {
+    grid-column: 2;
+    grid-row: 3;
+    margin: 0;
+  }
+  .round-line {
+    grid-column: 1;
+    grid-row: 4;
+  }
+  .completion-line,
+  .small-link {
+    grid-column: 2;
+    margin: 0;
+    font-size: 0.75rem;
+  }
+  .bottom-dock {
+    bottom: 12px;
+  }
+  .bottom-dock button {
+    padding: 10px 14px;
+  }
+}
