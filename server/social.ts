@@ -1,6 +1,6 @@
-import type { Database } from "./room-service";
-import { validUpgrades, type UpgradeId } from "../src/game/townCatalog";
-import { pendingSharedGrants, acknowledgeSharedGrants } from "./shared-focus";
+import type { Database } from "./room-service.js";
+import { validUpgrades, type UpgradeId } from "../src/game/townCatalog.js";
+import { pendingSharedGrants, acknowledgeSharedGrants } from "./shared-focus.js";
 export class SocialError extends Error {
   constructor(
     message: string,

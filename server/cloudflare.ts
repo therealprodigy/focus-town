@@ -1,4 +1,4 @@
-import { handleApi, type Env } from "./room-service";
+import { handleApi, type Env } from "./room-service.js";
 
 export type CloudflareEnv = Env & {
   ASSETS: { fetch(request: Request): Promise<Response> };

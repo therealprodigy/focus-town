@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { handleApi } from "../server/room-service";
-import { openDatabase } from "../server/sqlite";
+import { openTestDatabase } from "./database";
 import type { RoomSnapshot } from "../src/roomClient";
 type Credentials = {
   roomId: string;
@@ -13,10 +13,10 @@ type Reply = {
   snapshot: RoomSnapshot;
   error?: string;
 };
-let db: ReturnType<typeof openDatabase>;
+let db: Awaited<ReturnType<typeof openTestDatabase>>;
 const now = Date.UTC(2026, 9, 9, 8);
-beforeEach(() => {
-  db = openDatabase();
+beforeEach(async () => {
+  db = await openTestDatabase();
 });
 afterEach(() => db.close());
 async function call(

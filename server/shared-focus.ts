@@ -1,5 +1,5 @@
-import type { Database } from "./room-service";
-import { getRewards } from "../src/game/state";
+import type { Database } from "./room-service.js";
+import { getRewards } from "../src/game/state.js";
 export class SharedFocusError extends Error {
   constructor(
     message: string,

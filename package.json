@@ -12,9 +12,12 @@
     "format": "prettier --write src server db scripts tests *.ts *.json *.md .vscode",
     "build:cloudflare": "tsc -b && vite build --outDir dist-cloudflare",
     "deploy:cloudflare": "wrangler deploy",
-    "db:migrate:cloudflare": "wrangler d1 migrations apply DB --remote"
+    "db:migrate:cloudflare": "wrangler d1 migrations apply DB --remote",
+    "build:hosted": "tsc -b && vite build --config vite.hosted.config.ts",
+    "db:migrate:turso": "node scripts/migrate-libsql.ts"
   },
   "dependencies": {
+    "@libsql/client": "^0.18.0",
     "@radix-ui/react-slot": "^1.4.0",
     "@tailwindcss/vite": "^4.3.3",
     "class-variance-authority": "^0.7.1",
@@ -34,11 +37,15 @@
     "esbuild": "^0.28.2",
     "prettier": "^3.9.9",
     "typescript": "^7.0.2",
+    "vercel": "^63.1.0",
     "vite": "^8.3.3",
     "vitest": "^5.0.3",
     "wrangler": "^4.149.0"
   },
   "overrides": {
     "esbuild": "$esbuild"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

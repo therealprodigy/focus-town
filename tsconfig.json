@@ -22,6 +22,9 @@
     "vite.config.ts",
     "server",
     "db",
-    "drizzle.config.ts"
+    "drizzle.config.ts",
+    "api",
+    "vite.hosted.config.ts",
+    "scripts/migrate-libsql.ts"
   ]
 }

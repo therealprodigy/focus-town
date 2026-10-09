@@ -1,5 +1,7 @@
 # Focus Town
 
+[**Play Focus Town**](https://focus-town-greenvale.vercel.app) · [Download ZIP](https://github.com/therealprodigy/focus-town/archive/refs/heads/main.zip) · [Development journal](DEVLOG.md)
+
 A small town for the thing you keep putting off. Pick a task, light the desk lamp, and give it one interval. Greenvale will still be here when you need a break.
 
        .--.
@@ -11,7 +13,7 @@ A small town for the thing you keep putting off. Pick a task, light the desk lam
 
 [**Download Focus Town ZIP**](https://github.com/therealprodigy/focus-town/archive/refs/heads/main.zip)
 
-For Windows, macOS or Linux, install [Node.js 26 or newer](https://nodejs.org/en/download) and [Git](https://git-scm.com/downloads) first. Paste the matching block into a terminal in the folder where you want to keep the game. It downloads the project, installs its dependencies and opens the game in your browser.
+For Windows, macOS or Linux, install [Node.js 24 or newer](https://nodejs.org/en/download) and [Git](https://git-scm.com/downloads) first. Paste the matching block into a terminal in the folder where you want to keep the game. It downloads the project, installs its dependencies and opens the game in your browser.
 
 **Mac or Linux**
 
@@ -30,15 +32,15 @@ if ($LASTEXITCODE -ne 0) { throw "Setup failed. Check the error above and your N
 npm.cmd run dev -- --strictPort --open
 ```
 
-Leave the terminal open while playing. If the browser does not open, visit [Focus Town on this computer](http://127.0.0.1:5173/). Press **Ctrl+C** in the terminal to stop it. If port 5173 is already occupied by Focus Town, use the running copy.
+Leave the terminal open while playing. If the browser does not open, visit the local address printed by Vite. Press **Ctrl+C** in the terminal to stop it. If port 5173 is already occupied by Focus Town, use the running copy.
 
 **Downloaded the ZIP?** Extract it, open a terminal inside the extracted folder and run `npm install`, then `npm run dev -- --strictPort --open`. In Windows PowerShell, use `npm.cmd` instead of `npm` if script execution is restricted. The ZIP route does not require Git. To play again, open the same folder and run the second command.
 
-**Phones and tablets:** the game runs in a browser, but the local setup above is for desktop computers. A public playable link is being prepared. Nothing needs installing on mobile once that link is live.
+**Phones and tablets:** open [Play Focus Town](https://focus-town-greenvale.vercel.app). No terminal or installation is needed. The commands above are for running your own desktop copy.
 
 ## Run and debug in VS Code
 
-Open the downloaded folder in VS Code, then choose **Run and Debug → Focus Town: start preview → Play**. If the server is already running, open [Focus Town](http://127.0.0.1:5173/) in Brave instead.
+Open the downloaded folder in VS Code, then choose **Run and Debug → Focus Town: start preview → Play**. If the server is already running, open the local address printed in its terminal.
 
 A connection error usually means the preview stopped. **Terminal → Run Task → Focus Town: start preview** starts it again. Keep that terminal open and avoid starting another copy on port 5173.
 
@@ -62,7 +64,7 @@ Guests see the host's village upgrades. Recorded focus minutes and best streaks 
 
 Rooms expire after 24 hours. Earned receipts survive room expiry and are collected when the same browser reconnects. Personal saves do not sync between devices. Town presence updates about once per second: this is a shared study space, not fast-action multiplayer.
 
-A localhost invitation works only on this Mac. Hosting must be live and accessible to both players before remote invitations work.
+Use the public Play link for remote invitations. A localhost invitation works only on the computer running that local copy.
 
 ## Your save
 
@@ -74,12 +76,12 @@ The old `focusraid-save-v1` storage key remains for save compatibility. One tab 
 
 `npm test` checks game and server rules. `npm run build` checks TypeScript and builds the app and Worker. `node scripts/check-worker.mjs` checks the built document routes and audio delivery without opening a browser.
 
-The 9 October 2026 build passed **103 automated tests**, both production builds and the Cloudflare deployment dry run. The earlier town upgrade also passed Worker checks and decoding checks for all five sound files. Visual layout, sound levels and two-device play remain for the owner to test using [TEST_PLAN.md](TEST_PLAN.md).
+The 9 October 2026 build passed **113 automated tests**. Another run passed 22 existing room and reward tests against the libSQL adapter. The production build and Vercel deployment succeeded. Public checks passed for the custom 404, audio range delivery, room invitations, timer synchronization, host permissions, reward acknowledgements and mogging ties/overtakes. The earlier town upgrade also passed Worker checks and decoding checks for all five sound files. Visual layout, sound levels and two-device play remain for the owner to test using [TEST_PLAN.md](TEST_PLAN.md).
 
-React, Vite, TypeScript, Tailwind, Canvas and SQLite/D1 power the game. [ARCHITECTURE.md](ARCHITECTURE.md) covers saving and co-op. [ASSETS.md](ASSETS.md) records artwork, fonts and the locally bundled CC0 sound library. Flocus informed timer hierarchy; its assets and code are not bundled.
+React, Vite, TypeScript, Tailwind and Canvas power the game. Local development uses SQLite; the public shared-room service uses Turso/libSQL. A Cloudflare D1 adapter is also available. [ARCHITECTURE.md](ARCHITECTURE.md) covers saving and co-op. [ASSETS.md](ASSETS.md) records artwork, fonts and the locally bundled CC0 sound library. Flocus informed timer hierarchy; its assets and code are not bundled.
 
 Hackatime's local project name is now **Focus Town**. Historical project grouping in Pixl is separate from that setting and does not change previously recorded categories or hours.
 
 ## Public hosting
 
-The Cloudflare adapter supports the full game and co-op backend on one address. [DEPLOYMENT.md](DEPLOYMENT.md) covers account setup, database migrations and publishing. Its packaging checks pass; account authorization and a live public deployment are still pending.
+The public game runs on Vercel with a Turso database for shared rooms. Both were configured on their free plans. [DEPLOYMENT.md](DEPLOYMENT.md) covers updates, migrations and the optional Cloudflare adapter. GitHub pushes do not automatically deploy yet; publishing currently uses the Vercel CLI.

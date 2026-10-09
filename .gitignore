@@ -17,3 +17,8 @@ dist-cloudflare/
 .wrangler/
 .dev.vars
 .dev.vars.*
+
+dist-web/
+.vercel/
+.vercel
+.env*

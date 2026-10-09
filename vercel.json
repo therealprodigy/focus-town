@@ -1,0 +1,59 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run db:migrate:turso && npm run build:hosted",
+  "outputDirectory": "dist-web",
+  "functions": {
+    "api/[...path].ts": {
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "Referrer-Policy": "no-referrer",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; base-uri 'self'; object-src 'none'"
+      },
+      "continue": true
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/[...path]"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(privacy|terms|cookies)",
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "dest": "/index.html",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "status": 404,
+      "dest": "/index.html",
+      "headers": {
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "src": "/(.*)",
+      "status": 405,
+      "headers": {
+        "Allow": "GET, HEAD"
+      }
+    }
+  ]
+}

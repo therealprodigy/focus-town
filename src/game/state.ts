@@ -1,11 +1,11 @@
-import { validDiscoveries, type DiscoveryId } from "./discoveries";
+import { validDiscoveries, type DiscoveryId } from "./discoveries.js";
 import {
   validUpgrades,
   validMissionClaims,
   validStreakClaims,
   type UpgradeId,
   type MissionId,
-} from "./townCatalog";
+} from "./townCatalog.js";
 export type FocusMinutes = number;
 export type BreakMinutes = number;
 export type Rewards = { energy: number; xp: number; coins: number };

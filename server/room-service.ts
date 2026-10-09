@@ -3,14 +3,14 @@ import {
   handleProfile,
   roomSocial,
   SocialError,
-} from "./social";
+} from "./social.js";
 import {
   setMemberReady,
   startSharedFocus,
   controlSharedFocus,
   settleRoomFocus,
   SharedFocusError,
-} from "./shared-focus";
+} from "./shared-focus.js";
 export type SqlResult = {
   meta: { changes: number };
   results?: Record<string, unknown>[];

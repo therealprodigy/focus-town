@@ -68,3 +68,21 @@ Town now has its own collapsible timer. Focus and Town share Start, Pause, Resum
 Review caught invalid host durations closing the session dialog, timer overlap on short portrait screens, and the drawing order of the new props. These were corrected. Through VS Code, 65 automated tests, the production build and the built Worker checks passed. The route checks still reach every interaction, including the new objects. Browser appearance, touch controls and the complete in-town session flow await the owner’s manual pass.
 
 AI assisted implementation, artwork, review and documentation. This entry records project changes and automated results, not personal coding hours or a completed human playtest.
+
+## 9 October 2026: one page, then a walk
+
+I wanted a study timer that gives you somewhere to go when the interval ends. The idea became Greenvale: a small village with a library, a tea stall and a cat with no interest in your deadlines.
+
+The first problem was consistency. The focus page felt calm, but the town looked like a different project. I asked for the same blue-hour mood, pixel lettering and a clearer timer. Custom focus and break lengths, session presets and multi-round plans were added. The controls were also adjusted for short landscape screens.
+
+The town now has noticeboard missions, discoveries and a shop. Coins buy porch lanterns, moonflowers, a fountain repair and festival bunting. Those purchases change the scenery and survive a missed streak. I also spotted a route around the broken bridge: the forest was supposed to be closed, but you could walk straight past it. That boundary was fixed and checked for reachable gaps.
+
+Together rooms add invitations, ready checks and one timer controlled by the host. Completed intervals produce server receipts so reconnecting does not lose a reward or award it twice. Friends can compare recorded focus totals and see the host's upgrades. The totals are reported by the device; they are not proof that someone studied.
+
+The sound library includes five credited CC0 files. Saves stay in the browser, with export and import for backups. The old save key was kept during the rename from FocusRaid so existing progress would still load.
+
+Publishing took longer than expected. The first hosting route failed during upload, and Cloudflare setup stalled. The game is now at https://focus-town-greenvale.vercel.app on Vercel, with Turso for shared rooms. The public site and custom 404 respond correctly. A live API check caught an import-path error that local tests had missed; the imports were corrected and the deployed service was checked again. Two test profiles joined a room, shared a timer and received one saved reward each. Repeating reward collection kept the same receipt until acknowledgement. The mogging comparison also kept its leader on a tie and switched when the other total overtook it.
+
+The automated suite passed 113 tests. Another run checked 22 existing room and reward tests against the hosted database adapter. Visual layout, audio levels and two-device play still need my manual pass.
+
+I supplied the concept, design direction, feedback and bug reports, and contributed bug fixes and work on the friends feature. Codex did much of the implementation, debugging and automated testing. The observatory background used image generation; the asset credits record it. This entry describes the linked Focus Town work, not unrelated projects or extra claimed hours.

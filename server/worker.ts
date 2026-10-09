@@ -1,4 +1,4 @@
-import { handleApi, type Env } from "./room-service";
+import { handleApi, type Env } from "./room-service.js";
 import assets from "virtual:focus-town-assets";
 const pages = new Set(["/", "/privacy", "/terms", "/cookies"]);
 export default {

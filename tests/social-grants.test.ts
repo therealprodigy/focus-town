@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, it, expect } from "vitest";
-import { openDatabase } from "../server/sqlite";
+import { openTestDatabase } from "./database";
 import { handleApi } from "../server/room-service";
 import { roomSocial } from "../server/social";
 import {
@@ -11,7 +11,7 @@ import {
   acknowledgeSharedGrants,
 } from "../server/shared-focus";
 const NOW = 1000000;
-let db: ReturnType<typeof openDatabase>, sequence: number;
+let db: Awaited<ReturnType<typeof openTestDatabase>>, sequence: number;
 const id = () => (++sequence).toString(16).padStart(32, "0");
 const req = (path: string, token: string, body: unknown) =>
   new Request("https://focus.test" + path, {
@@ -112,9 +112,9 @@ async function ready(r: Awaited<ReturnType<typeof room>>) {
   await setMemberReady(db, r.roomId, r.hostId, true, NOW);
   await setMemberReady(db, r.roomId, r.guestId, true, NOW);
 }
-beforeEach(() => {
+beforeEach(async () => {
   sequence = 0;
-  db = openDatabase();
+  db = await openTestDatabase();
 });
 afterEach(() => db.close());
 describe("private stable profiles", () => {
