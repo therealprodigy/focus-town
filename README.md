@@ -15,9 +15,11 @@ Focus Town is a small browser game about a lantern apprentice. Walk through Gree
 
 - Walk through the village and enter Lantern House.
 - Talk to Rowan and Mira, read village notices, and find a few odd scraps of lore.
-- Focus for 15, 25, 45, or 60 minutes. Pause, resume, or end a session early.
+- Choose a custom focus length, or use the 15, 25, 45 and 60 minute presets. Pause, resume, or end early.
 - Collect energy, XP, and coins after a completed session, then take an optional rest.
-- Check completed sessions and streaks in the notebook.
+- Set separate short and long breaks.
+- Check seven days of focus, current streak and best streak in the journal.
+- Watch a twelve-minute day/night cycle and hide the controls helper.
 
 The shop, library, forest, quests, and combat are still being built. Their signs are readable; their gameplay is not available yet. This is a local prototype, with no verified public demo.
 
@@ -26,7 +28,7 @@ The shop, library, forest, quests, and combat are still being built. Their signs
 1. Open this folder in VS Code. On a fresh checkout, run `npm install` in its terminal once.
 2. Open **Run and Debug** and choose **Focus Town: start preview**.
 3. Press the green play button. VS Code starts the server, waits until it is ready, and opens the game.
-4. Click **Enter Greenvale**.
+4. Click **Enter town**.
 
 This checkout was built and tested with Node 26.5.0.
 
@@ -42,12 +44,16 @@ From the fountain, walk left and then up toward Lantern House. Enter through its
 
 ## Sessions and saving
 
-| Focus | Energy | XP | Coins | Suggested rest |
-| --- | ---: | ---: | ---: | --- |
-| 15 minutes | 15 | 12 | 6 | 3 minutes |
-| 25 minutes | 25 | 25 | 12 | 5 minutes |
-| 45 minutes | 45 | 50 | 22 | 8 minutes |
-| 60 minutes | 60 | 70 | 30 | 10 minutes |
+Choose any whole-minute focus length from 1 to 720. Short and long breaks have separate editable lengths, starting at 5 and 15 minutes. The break selected before a focus session is saved with that session.
+
+| Focus | Energy | XP | Coins |
+| --- | ---: | ---: | ---: |
+| 15 minutes | 15 | 12 | 6 |
+| 25 minutes | 25 | 25 | 12 |
+| 45 minutes | 45 | 50 | 22 |
+| 60 minutes | 60 | 70 | 30 |
+
+These are the reward anchors. Custom sessions interpolate between them; durations above 60 continue the last rate. Energy equals completed minutes.
 
 Completed sessions earn rewards once. Ending early earns none. Breaks never earn focus rewards. A day counts toward the keeper-flame streak after 25 completed minutes; two 15-minute sessions count too. A session belongs to the local calendar date when its timer ends.
 
@@ -64,7 +70,7 @@ npm run test
 npm run build
 ```
 
-On 8 October 2026, 20 automated tests and the production build passed. The tests cover timer rewards, reloads, pause/resume, cancellation, dates, damaged saves, movement, collision, and routes to every interaction. Browser playtesting and visual review are still pending.
+On 9 October 2026, 41 automated tests and the production build passed. The tests cover timer rewards, reloads, pause/resume, cancellation, dates, damaged saves, movement, collision, and routes to every interaction. Browser playtesting and visual review of this update are still pending.
 
 ## Inside the project
 
@@ -75,11 +81,13 @@ On 8 October 2026, 20 automated tests and the production build passed. The tests
 - `src/App.tsx`: accessible menus, notebook, and session controls.
 - `tests/core.test.ts`: the main rules and route checks.
 
-React, TypeScript, Vite, and Canvas keep the first two rooms small enough to understand. No game-art downloads are bundled. Google Fonts serves DM Sans and Fraunces; system fonts are used if those requests fail.
+React, TypeScript, Vite, and Canvas keep the first two rooms small enough to understand. No game-art downloads are bundled. Silkscreen and VT323 are bundled locally under SIL Open Font License 1.1. See [ASSETS.md](ASSETS.md) for their source and license notices.
 
 ## References and credits
 
 [Spirit City](https://store.steampowered.com/app/2113850/Spirit_City_Lofi_Sessions/) and [Virtual Cottage](https://dui.itch.io/virtual-cottage) informed the quiet focus-companion direction. [Habitica](https://habitica.com/) and [Forest](https://www.forestapp.cc/) were references for progress tied to real tasks. Focus Town uses its own setting, names, dialogue, and pixel designs.
+
+The owner requested Terraria as an art reference. [Stardew Valley official screenshots](https://www.stardewvalley.net/media/) informed the terrain detail. All game sprites remain original.
 
 Useful art tools for future manual work: [Piskel](https://www.piskelapp.com/), [Aseprite](https://www.aseprite.org/), [Tiled](https://www.mapeditor.org/), and [Lospec](https://lospec.com/palette-list).
 

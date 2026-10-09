@@ -36,3 +36,13 @@ Renamed the game to Focus Town. The original save key and time-tracking identifi
 The local preview had no running server. The VS Code Run configuration now starts Vite, waits for its ready address, and then opens the game.
 
 The owner will run the game and do the next debugging pass. The updated Run configuration has not yet been tested interactively.
+
+## 9 October 2026: pixel interface and a changing sky
+
+The owner reported that the game worked, but the page felt generic. This update removes the serif welcome card, chapter captions and framed resource stats. Silkscreen and VT323 are bundled locally. The controls helper can be hidden and restored; its preference survives a reload.
+
+Greenvale now has textured paths, fuller trees, flowers, reeds, stone details and larger characters. Rowan and Mira have different palettes. A full day lasts twelve real minutes, with dawn, daylight, dusk and night. The house window shows the sky, and lanterns light up at night. Review caught lights drawing over the apprentice; they now follow the same depth order as the buildings and furniture.
+
+Focus and break lengths accept whole minutes from 1 to 720. A selected break is retained through pause, reload and completion. The journal shows seven days of completed focus, the current streak and the best streak. Days still require 25 completed minutes; an unfinished day does not erase yesterday's streak.
+
+Verified through commands run in VS Code: 41 automated tests passed and the production build passed. Browser appearance and interaction checks are still pending. AI assisted the code, artwork and documentation; this entry claims no human coding hours or personal playtest results.

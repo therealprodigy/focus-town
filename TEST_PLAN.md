@@ -28,6 +28,21 @@ Browser access was declined during the current development session. No browser c
 
 ## A first playtest for the project owner
 
-Open the preview from VS Code’s terminal. Click Enter Greenvale. Walk left from the fountain, then up to Lantern House. Press E at its door, find the desk, and start 15 minutes. Pause it and reload once.
+Open the preview from VS Code’s terminal. Click Enter town. Walk left from the fountain, then up to Lantern House. Press E at its door, find the desk, and start 15 minutes. Pause it and reload once.
 
 Write down three things: where you got lost, whether walking felt too slow or too fast, and one line of dialogue you would rewrite. Those observations belong in the journal; an invented playtest does not.
+
+## Pixel interface and session-options checks
+
+On 9 October 2026, the suite passed 41 tests and the production build passed. New automated coverage includes custom durations and their bounds, preserved selected breaks, legacy saves, empty days in the activity chart, year boundaries, and the twelve-minute world clock.
+
+Still to playtest:
+- [ ] Hide Controls, reload, and restore them from the top menu.
+- [ ] Start 30 minutes with a custom 17-minute break; pause, reload, resume and verify the chosen break after completion.
+- [ ] Start both a short and a long break; check that they award no focus rewards.
+- [ ] Check invalid, empty and fractional minute inputs.
+- [ ] Look at the village during day and night, and check the window sky indoors.
+- [ ] Walk behind the larger trees, villagers and lamps, then focus and rest in the house.
+- [ ] Check pixel-font readability and menu scrolling at desktop and phone widths.
+
+These browser checks remain unverified.

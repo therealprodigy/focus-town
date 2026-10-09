@@ -1,66 +1,128 @@
 import { BUILDINGS, VILLAGE_TREES, WORLDS, type Player, type SceneId } from './world';
-type Options = { time:number; activity:'idle'|'walking'|'focusing'|'sleeping'; streak:number; interactionId?:string };
-const C={ink:'#192c32',grass:'#48604a',path:'#a5916a',pale:'#d9c49a',wood:'#79513d',amber:'#e5b866',teal:'#4e9692',water:'#355d68'};
-const hash=(n:number)=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v)};
-const palette:Record<string,string>={X:C.ink,H:'#513d37',h:'#80604a',S:'#d7a67e',s:'#ad775e',T:'#397a7d',t:'#61aaa0',B:'#284e56',A:'#d5a35a',L:'#ffe3a0',W:'#eee0b7',E:'#202c32'};
-const front=['....HHH.....','...HHhHH....','..HHHHhHH...','..HSSSSSH...','...SESES....','...SSSSS....','....sss.....','...XTTTX....','..XTTtTTX...','..STTtTTSA..','...TTtTT.AL.','...TTTTT.AA.','..XTTTTTX...','...BB.BB....','...XX.XX....'];
-const back=front.map((r,i)=>i>=3&&i<=5?'...HHHHH....':r);
-const side=['....HHH.....','...HHhHH....','...HHHHHH...','...HSSSS....','...HSESS....','....SSSSS...','....sss.....','....XTTX....','...XTTtTX...','...TTtSSA...','...TTtT.AL..','...TTTT.AA..','...XTTTX....','....BBBB....','....XXXX....'];
-function matrix(ctx:CanvasRenderingContext2D,rows:string[],x:number,y:number,scale=3){rows.forEach((r,j)=>[...r].forEach((cell,i)=>{if(palette[cell]){ctx.fillStyle=palette[cell];ctx.fillRect(Math.round(x+i*scale),Math.round(y+j*scale),scale,scale)}}))}
-export function renderWorld(ctx:CanvasRenderingContext2D,sceneId:SceneId,player:Player,o:Options){
- const t=o.time/1000;
- const rect=(x:number,y:number,w:number,h:number,c:string)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h)};
- const text=(v:string,x:number,y:number,c=C.pale,size=10)=>{ctx.font=size+'px monospace';ctx.textAlign='center';ctx.fillStyle=C.ink;ctx.fillText(v,x+1,y+1);ctx.fillStyle=c;ctx.fillText(v,x,y)};
- const shadow=(x:number,y:number,w:number)=>{rect(x-w/2+4,y-4,w-8,8,'#213b3666');rect(x-w/2,y-2,w,4,'#213b3666')};
- const candle=(x:number,y:number)=>{rect(x-8,y+8,20,4,C.wood);rect(x,y-8,4,16,C.pale);rect(x-4,y-16,12,8,'#e5b86622');rect(x,y-16-(Math.floor(t*3)%2)*2,4,8,C.amber);rect(x,y-12,4,4,'#fff0c1')};
- const sign=(x:number,y:number,v:string)=>{rect(x-2,y,4,24,C.wood);rect(x-20,y-12,40,20,C.ink);rect(x-18,y-10,36,16,C.wood);text(v,x,y+1,C.pale,8)};
- const tree=(x:number,y:number,seed:number)=>{
-  shadow(x,y,64);rect(x-12,y-44,24,44,'#493e32');rect(x-8,y-44,8,40,'#82634a');rect(x+4,y-28,4,28,'#332f2b');
-  [[-20,-104,40,16],[-32,-88,64,20],[-40,-68,80,24],[-32,-44,64,12]].forEach(([dx,dy,w,h],i)=>{rect(x+dx,y+dy,w,h,i%2?'#2e5146':'#375c49');rect(x+dx+4,y+dy,w-12,4,'#617650');for(let k=0;k<6;k++)rect(x+dx+4+Math.floor(hash(seed+i*8+k)*(w-12)/4)*4,y+dy+8+k%2*4,8,4,k%2?'#496d4e':'#3f6249')});rect(x-24,y-84,8,4,'#86945e');rect(x+12,y-52,12,4,'#708455');
- };
- const building=(b:typeof BUILDINGS[number])=>{
-  const {x,y,width:w,height:h,doorX}=b;shadow(x+w/2,y+h,w+20);rect(x-4,y-4,w+8,h+4,C.ink);rect(x,y,w,h,'#b19a70');
-  for(let j=0;j<h;j+=12){rect(x,y+j,w,2,'#8b7859');for(let i=12;i<w-12;i+=32)rect(x+i+(j%24?12:0),y+j,2,12,'#958362')}
-  rect(x+4,y,8,h,C.wood);rect(x+w-12,y,8,h,C.wood);rect(x,y+60,w,8,C.wood);
-  [x+28,x+w-60].forEach(wx=>{rect(wx-4,y+28,40,44,C.wood);rect(wx,y+32,32,36,'#d9b96c');rect(wx+4,y+36,24,28,'#edce86');rect(wx+12,y+32,4,36,C.wood);rect(wx,y+48,32,4,C.wood);rect(wx-4,y+72,40,8,'#6b7751');rect(wx+4,y+68,4,8,'#dfa292');rect(wx+24,y+68,4,8,'#d7ba78')});
-  rect(doorX-20,y+h-60,40,60,'#4b3d36');rect(doorX-16,y+h-56,32,52,'#6b5140');rect(doorX-12,y+h-52,24,12,'#baad7a');rect(doorX-2,y+h-52,4,12,C.wood);rect(doorX+8,y+h-28,4,4,C.amber);rect(doorX-24,y+h,48,8,'#7b8580');
-  for(let row=0;row<8;row++){const inset=(7-row)*7,ry=y-76+row*12;rect(x-16+inset,ry,w+32-inset*2,16,C.ink);rect(x-12+inset,ry,w+24-inset*2,12,b.roof);for(let tx=x-8+inset;tx<x+w+8-inset;tx+=24){rect(tx+row%2*4,ry+2,16,2,'#bd94776b');rect(tx+row%2*4+16,ry+4,2,8,'#25303c66')}}
-  rect(x+w-44,y-96,24,48,'#7c7163');rect(x+w-48,y-100,32,8,C.ink);for(let j=0;j<3;j++){const phase=(t*8+j*14)%44;rect(x+w-36+Math.sin(t+j)*5,y-108-phase,12+j*4,8,'#b9c7bd28')}rect(x+16,y+80,w-32,16,C.ink);text(b.name,x+w/2,y+92,C.pale,9);
- };
- const character=(x:number,y:number,facing:Player['facing'],npc=false)=>{
-  const walking=!npc&&o.activity==='walking',step=walking?Math.floor(player.walkFrame)%2:0,bob=walking?step*2:Math.floor(t*.8)%2;
-  shadow(x,y,28);ctx.save();ctx.translate(Math.round(x),Math.round(y-bob));if(facing==='left')ctx.scale(-1,1);matrix(ctx,facing==='up'?back:facing==='left'||facing==='right'?side:front,-18,-45);
-  if(walking){rect(-9,-3,6,3,C.ink);rect(3,-3,6,3,C.ink);rect(step?3:-9,0,6,3,'#b79b70')}
-  if(npc){rect(-9,-42,21,6,'#8b6575');rect(-12,-36,27,3,C.pale);rect(-9,-21,18,3,'#b18d73')}ctx.restore();
- };
- ctx.save();ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,960,600);const layers:{y:number;paint:()=>void}[]=[];
- if(sceneId==='village'){
-  rect(0,0,960,600,C.grass);for(let i=0;i<1150;i++){const x=Math.floor(hash(i)*240)*4,y=Math.floor(hash(i+1900)*150)*4;rect(x,y,i%5?4:8,4,i%3?'#526b4d':'#3f5744');if(i%7===0)rect(x+4,y-4,4,8,'#617550')}
-  const path=(x:number,y:number,w:number,h:number)=>{rect(x-4,y-4,w+8,h+8,'#697252');rect(x,y,w,h,C.path);for(let i=0;i<w*h/500;i++)rect(x+Math.floor(hash(i+x)*(w-8)/4)*4,y+Math.floor(hash(i+y+99)*(h-4)/4)*4,8,4,'#baa57b')};
-  path(220,280,48,148);path(220,396,512,48);path(484,244,48,164);path(724,272,48,100);path(408,312,100,124);path(432,428,48,136);
-  rect(740,316,64,284,'#96a17b');rect(748,320,48,280,C.water);for(let i=0;i<26;i++)rect(752+((i*12+Math.floor(t*3)*4)%32),324+i*12,12,4,i%2?'#5c8c8d':'#45757c');for(let y=336;y<600;y+=44){rect(736,y,4,16,'#7c925f');rect(800,y+12,4,16,'#7c925f')}
-  [724,788].forEach(x=>{rect(x,400,24,56,'#543f35');for(let y=404;y<456;y+=12)rect(x,y,24,8,'#aa8055');rect(x+4,392,4,16,C.wood);rect(x+4,448,4,16,C.wood)});rect(748,416,8,8,'#aa8055');rect(780,428,8,8,'#aa8055');
-  rect(584,432,92,48,'#74815b');rect(592,436,76,40,C.water);rect(584,444,92,24,C.water);[604,632,652].forEach((x,i)=>{rect(x,448+i%2*12,16,8,'#85965e');rect(x+8,448+i%2*12,4,4,C.water)});rect(620,438,12,8,'#a8b678');rect(620,434,4,4,C.pale);rect(628,434,4,4,C.pale);rect(620,434,2,2,C.ink);rect(628,434,2,2,C.ink);
-  for(let i=0;i<80;i++){const x=140+Math.floor(hash(i+42)*138)*4,y=456+Math.floor(hash(i+142)*22)*4;if(x>576&&x<688)continue;rect(x,y,4,8,'#78915b');rect(x-4,y-4,12,4,i%3?'#d9ad84':'#a69ac2');rect(x,y-4,4,4,'#e8d08e')}
-  BUILDINGS.forEach(b=>layers.push({y:b.y+b.height,paint:()=>building(b)}));VILLAGE_TREES.forEach((p,i)=>layers.push({y:p.y,paint:()=>tree(p.x,p.y,i*23)}));
-  layers.push({y:380,paint:()=>{shadow(456,380,84);rect(424,344,64,36,'#344e50');rect(420,340,72,12,'#89968a');rect(428,344,56,24,'#395f6a');rect(444,320,24,36,'#6a837e');rect(448,308,16,20,'#9db8a5');rect(452,296,8,16,C.teal);rect(452,300,4,8,'#d3efca');rect(432+Math.floor(t*4)%3*12,356,12,4,'#82aca1')}});
-  layers.push({y:352,paint:()=>character(352,352,'down',true)},{y:314,paint:()=>character(600,314,'left',true)});
-  layers.push({y:344,paint:()=>{rect(204,328,24,16,'#5c6355');rect(208,316,16,16,'#393c38');const hue=o.streak>=7?'#8cdbd0':'#edba6d',height=o.streak>=30?32:20;rect(208,316-height,16,height,hue);rect(212,308-height,8,height,'#eee1a4');rect(212,300-height+Math.floor(t*4)%2*4,4,8,hue);if(!o.streak)rect(208,304,16,20,'#829b86')}});
-  layers.push({y:440,paint:()=>sign(710,420,'CLOSED')},{y:488,paint:()=>sign(672,468,'CHOIR')},{y:388,paint:()=>sign(872,368,'SEALED')});text('GREENVALE',448,484,'#d9c49a99',12);
- }else{
-  rect(0,0,960,600,'#14272d');rect(208,72,544,456,'#293a38');rect(224,80,512,64,'#7b6751');for(let x=224;x<736;x+=32){rect(x,84,28,52,'#8d7859');rect(x,136,32,8,'#4e4235')}rect(224,144,512,368,'#7d5943');
-  for(let y=144;y<512;y+=24){rect(224,y,512,2,'#4a3d34');for(let x=224;x<736;x+=64){rect(x+(y%48?28:0),y,2,24,'#4a3d34');rect(x+12,y+8,28,2,'#936b4c')}}
-  rect(216,144,8,376,C.ink);rect(736,144,8,376,C.ink);rect(224,504,232,16,'#493a32');rect(504,504,232,16,'#493a32');rect(456,500,48,20,'#b59c71');text('OUT',480,516,C.ink,8);
-  rect(436,80,88,56,C.ink);rect(440,84,80,48,'#486775');rect(496,88,12,12,'#d8dbb4');rect(500,84,12,12,'#486775');rect(476,84,8,48,'#463f37');rect(440,108,80,4,'#463f37');rect(432,80,8,56,'#a39179');rect(520,80,8,56,'#a39179');rect(440,144,80,80,'#bbd9bf0b');
-  rect(380,328,184,112,'#383a40');rect(384,332,176,104,'#8b665c');rect(392,340,160,88,'#b09470');rect(400,348,144,72,'#4d7773');for(let x=400;x<544;x+=16){rect(x,348,8,4,'#b8b58b');rect(x,416,8,4,'#b8b58b');rect(x,324,4,4,'#b09470');rect(x,440,4,4,'#b09470')}rect(456,372,32,24,'#899d81');rect(464,364,16,40,'#899d81');rect(464,376,16,16,'#d3be89');
-  rect(240,156,112,32,'#4e3c31');for(let i=0;i<12;i++)rect(248+i*8,156+i%3*4,6,24-i%3*4,['#6b8d87','#b79261','#8e6f7a'][i%3]);rect(240,180,112,8,'#aa8056');
-  layers.push({y:254,paint:()=>{shadow(356,254,128);rect(308,240,8,28,'#493b32');rect(396,240,8,28,'#493b32');rect(296,204,120,40,'#493b32');rect(300,200,112,40,'#ac8056');rect(304,204,104,4,'#c69c6b');rect(332,212,44,24,C.ink);rect(336,208,36,24,'#dfd2a7');rect(352,208,4,24,'#baa782');for(let y=212;y<228;y+=8){rect(340,y,8,2,'#968774');rect(360,y,8,2,'#968774')}rect(380,216,8,12,'#385c61');rect(384,200,4,20,'#c6c1a0');candle(312,212);rect(340,268,32,8,'#4e3c31');rect(344,264,24,8,'#a07853');rect(344,276,4,16,'#4e3c31');rect(364,276,4,16,'#4e3c31')}});
-  layers.push({y:350,paint:()=>{shadow(644,350,104);rect(596,218,96,132,'#493c36');rect(600,218,88,16,'#ae8c62');rect(604,234,80,108,'#c5baa0');rect(612,238,64,28,'#e5d9b2');rect(616,242,56,16,'#f0e5c5');rect(604,272,80,68,'#456d76');rect(608,276,72,8,'#6b9b9a');for(let y=292;y<336;y+=16)rect(608,y,72,4,'#638b8b');rect(600,336,88,12,'#997450');rect(600,348,8,12,'#4e3c31');rect(680,348,8,12,'#4e3c31');if(o.activity==='sleeping'){matrix(ctx,['.HHHHH.','HSSSSSH','HSESESH','.SSSSS.','..sss..'],632,242,3);text('z',670+Math.floor(t)%2*4,222-Math.floor(t*5)%20,'#c9d8c2',12)}}});
-  layers.push({y:192,paint:()=>{rect(660,164,60,28,'#614936');rect(660,156,60,12,'#a77e52');candle(684,156);rect(704,144,8,12,'#456d62');rect(700,140,16,4,'#8f9b64')}});
-  layers.push({y:448,paint:()=>{rect(248,388,48,60,'#4c3a30');rect(248,388,48,8,'#af8457');rect(248,436,48,8,'#af8457');rect(256,396,8,32,'#64867c');rect(268,400,8,28,'#a87762');rect(280,396,8,32,'#bea16a');rect(252,380,40,8,'#d3c59a')}});
- }
- if(o.activity!=='sleeping')layers.push({y:player.y,paint:()=>{character(player.x,player.y,o.activity==='focusing'?'up':player.facing);if(o.activity==='focusing'){rect(player.x-6,player.y-8,12,8,'#a07853');if(Math.floor(t*2)%2)rect(player.x+12,player.y-30,4,4,C.pale)}}});
- layers.sort((a,b)=>a.y-b.y).forEach(l=>l.paint());
- if(sceneId==='village')for(let i=0;i<16;i++){const x=40+hash(i+400)*880+Math.sin(t*.2+i)*16,y=70+hash(i+700)*470+Math.cos(t*.4+i)*8;if(i%3)rect(x,y,3,3,Math.sin(t+i)>0?'#e2d68a88':'#b8c68d33');else rect((x+t*5)%940,y,6,3,'#b2a26977')}
- if(o.interactionId){const i=WORLDS[sceneId].interactions.find(v=>v.id===o.interactionId);if(i){const x=i.bounds.x+i.bounds.width/2,y=i.bounds.y-12+Math.floor(t*2)%2*2;rect(x-8,y-12,16,16,C.ink);rect(x-6,y-10,12,12,C.pale);text('E',x,y,C.ink,10)}}ctx.restore();
+type Options = { time: number; activity: 'idle' | 'walking' | 'focusing' | 'sleeping'; streak: number; interactionId?: string };
+export const WORLD_DAY_MS = 12 * 60 * 1000;
+export function getWorldClock(now = Date.now()) {
+    const safe = Number.isFinite(now) ? now : 0;
+    const hourFloat = (((safe % WORLD_DAY_MS) / WORLD_DAY_MS * 24 + 8) % 24 + 24) % 24;
+    const hour = Math.floor(hourFloat), minute = Math.floor((hourFloat % 1) * 60);
+    const label = hour < 5 || hour >= 20 ? 'Night' : hour < 8 ? 'Dawn' : hour < 17 ? 'Day' : 'Dusk';
+    const daylight = Math.max(0, Math.min(1, (Math.sin((hourFloat - 6) / 24 * Math.PI * 2) + .18) * 1.5));
+    return { hour, minute, label, daylight };
+}
+const C = { ink: '#24312f', grass: '#62814b', path: '#bda374', pale: '#f0dbac', wood: '#76503b', amber: '#f3c66b', teal: '#6ca49a', water: '#3c7880' };
+const hash = (n: number) => { const v = Math.sin(n * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v) };
+const palette: Record<string, string> = { X: '#243139', H: '#253d49', h: '#416271', S: '#e0af83', s: '#bb805f', T: '#376f70', t: '#67a79c', B: '#4c4540', A: '#d9af65', L: '#fff0b1', W: '#e7d9b0', E: '#253139' };
+const front = ['.......HH.......', '......HhHH......', '.....HhhhHH.....', '....HHHHHHHH....', '...HHAAAAAHHH...', '.....hSSSSh.....', '.....SESESS.....', '......SSSS......', '.....XATAX......', '....XTTtTTX.....', '...XTTTtTTTX....', '...STTTtTTSA....', '....TTTTTT.AL...', '...XTTTTTTXAA...', '.....BB.BB......', '.....XX.XX......'];
+const back = front.map((r, i) => i === 5 ? '.....hhhhhh.....' : i === 6 ? '.....hHHHhh.....' : i === 7 ? '......hhhh......' : i === 8 ? '.....XTTTX......' : r);
+const side = ['.......HH.......', '......HhHH......', '......HhhHH.....', '.....HHHHHHH....', '....HHAAAAAHHH..', '......hSSSS.....', '......hSESS.....', '.......SSSSS....', '......XTAX......', '.....XTTtTX.....', '....XTTTtTX.....', '.....TTTSSA.....', '.....TTTT.AL....', '.....XTTTXAA....', '......BBBB......', '......XXXX......'];
+function matrix(ctx: CanvasRenderingContext2D, rows: string[], x: number, y: number, scale = 4, colors = palette) {
+    rows.forEach((row, j) => [...row].forEach((cell, i) => { if (colors[cell]) { ctx.fillStyle = colors[cell]; ctx.fillRect(Math.round(x + i * scale), Math.round(y + j * scale), scale, scale) } }));
+}
+export function renderWorld(ctx: CanvasRenderingContext2D, sceneId: SceneId, player: Player, o: Options) {
+    const t = o.time / 1000, clock = getWorldClock(), darkness = 1 - clock.daylight;
+    const layers: { y: number; paint: () => void }[] = [];
+    const rect = (x: number, y: number, w: number, h: number, color: string) => { ctx.fillStyle = color; ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)) };
+    const text = (value: string, x: number, y: number, color = C.pale, size = 10) => { ctx.font = size + 'px "Silkscreen", monospace'; ctx.textAlign = 'center'; ctx.fillStyle = C.ink; ctx.fillText(value, x + 1, y + 1); ctx.fillStyle = color; ctx.fillText(value, x, y) };
+    const shadow = (x: number, y: number, w: number) => { rect(x - w / 2 + 6, y - 5, w - 12, 10, '#263f3540'); rect(x - w / 2, y - 2, w, 4, '#263f3540') };
+    const lightPatch = (x: number, y: number, w: number, h: number, strength = 1) => {
+        if (darkness < .1) return;
+        ctx.save(); ctx.globalAlpha = darkness * strength;
+        rect(x - w / 2 + 8, y, w - 16, h, '#e8b56620'); rect(x - w / 2, y + 8, w, h - 16, '#e8b56618'); rect(x - w / 2 + 16, y + 4, w - 32, h - 8, '#f4cd7624'); ctx.restore();
+    };
+    const candle = (x: number, y: number) => { rect(x - 8, y + 8, 20, 4, C.wood); rect(x, y - 8, 4, 16, C.pale); rect(x - 4, y - 16, 12, 8, '#e5b86622'); rect(x, y - 16 - Math.floor(t * 3) % 2 * 2, 4, 8, C.amber); rect(x, y - 12, 4, 4, '#fff0c1') };
+    const sign = (x: number, y: number, value: string) => { shadow(x, y + 22, 32); rect(x - 2, y, 4, 24, '#634932'); rect(x - 22, y - 14, 44, 22, C.ink); rect(x - 20, y - 12, 40, 18, '#936d45'); rect(x - 18, y - 10, 36, 2, '#ba915e'); rect(x - 18, y + 2, 36, 2, '#6b4d37'); text(value, x, y + 1, C.pale, 8) };
+    const flower = (x: number, y: number, seed: number) => { rect(x, y, 2, 8, '#476739'); rect(x - 4, y + 4, 4, 2, '#8aa05b'); const color = ['#e8b69a', '#c3aad6', '#edcd76', '#e0d5ad'][seed % 4]; rect(x - 2, y - 4, 6, 6, color); rect(x - 4, y - 2, 10, 2, color); rect(x, y - 2, 2, 2, '#f8e0a0') };
+    const rock = (x: number, y: number, seed: number) => { const w = seed % 3 === 0 ? 16 : 10; shadow(x + w / 2, y + 4, w + 4); rect(x + 2, y - 6, w - 4, 10, '#647367'); rect(x, y - 2, w, 6, '#748477'); rect(x + 2, y - 6, w - 6, 3, '#a1ad8b'); rect(x + w - 4, y - 2, 4, 6, '#526457'); rect(x + 2, y + 2, 4, 2, '#526457') };
+    const tree = (x: number, y: number, seed: number) => {
+        shadow(x, y, 80); rect(x - 16, y - 8, 32, 8, '#455139'); rect(x - 12, y - 52, 24, 48, '#614634'); rect(x - 8, y - 48, 8, 44, '#99704a'); rect(x + 4, y - 44, 4, 40, '#45382e'); rect(x - 20, y - 4, 12, 4, '#77563b'); rect(x + 8, y - 4, 12, 4, '#45382e'); rect(x - 20, y - 52, 12, 8, '#614634'); rect(x - 24, y - 60, 8, 12, '#614634'); rect(x + 8, y - 64, 16, 8, '#614634');
+        [[-20, -120, 40, 24], [-36, -104, 68, 28], [-48, -84, 96, 32], [-40, -60, 80, 24], [-24, -44, 48, 12]].forEach(([dx, dy, w, h], index) => {
+            rect(x + dx + 4, y + dy - 4, w - 8, h + 8, '#294b38'); rect(x + dx, y + dy, w, h, '#315c3d'); rect(x + dx + 4, y + dy, w - 12, h - 8, '#447441'); rect(x + dx + 8, y + dy, w - 24, 4, '#70924b');
+            for (let k = 0; k < 13; k++) { const lx = x + dx + 4 + Math.floor(hash(seed + index * 47 + k) * (w - 12) / 4) * 4, ly = y + dy + 4 + Math.floor(hash(seed + index * 73 + k + 500) * (h - 8) / 4) * 4; rect(lx, ly, k % 3 ? 8 : 4, 4, k % 4 ? '#578246' : '#89a451'); if (k % 5 === 0) rect(lx + 4, ly + 4, 4, 4, '#365e3a') }
+        });
+        rect(x - 28, y - 90, 12, 4, '#9bb65b'); rect(x - 32, y - 86, 4, 4, '#809e4e'); rect(x + 20, y - 62, 12, 4, '#6d9348'); rect(x + 8, y - 40, 8, 4, '#496c3d');
+        if (seed % 3 === 0) { rect(x - 22, y - 2, 4, 6, '#d6c59a'); rect(x - 26, y - 4, 12, 4, '#bd7859'); rect(x - 22, y - 4, 2, 2, '#f0d7aa') }
+    };
+    const building = (b: typeof BUILDINGS[number]) => {
+        const { x, y, width: w, height: h, doorX } = b;
+        shadow(x + w / 2, y + h, w + 24); rect(x - 4, y - 4, w + 8, h + 4, C.ink); rect(x, y, w, h, '#bda781');
+        for (let row = 0; row < h; row += 12) { rect(x, y + row, w, 2, '#a18d6d'); for (let col = 12; col < w - 12; col += 32) { rect(x + col + (row % 24 ? 12 : 0), y + row + 2, 2, 10, '#aa9573'); if ((col + row) % 3 === 0) rect(x + col, y + row + 5, 10, 2, '#cfbb90') } }
+        rect(x, y + h - 12, w, 12, '#7e806c'); for (let col = 4; col < w; col += 20) rect(x + col, y + h - 8, 14, 2, '#a2a18a');
+        rect(x + 4, y, 8, h, C.wood); rect(x + w - 12, y, 8, h, C.wood); rect(x, y + 60, w, 8, '#765540'); rect(x + 12, y + 64, w - 24, 2, '#d4bd8f');
+        [x + 28, x + w - 60].forEach(wx => {
+            rect(wx - 6, y + 26, 44, 48, '#604632'); rect(wx - 2, y + 30, 36, 40, '#d2b778'); rect(wx + 2, y + 34, 28, 32, '#83a69b'); rect(wx + 4, y + 36, 10, 14, '#b6ccc0'); rect(wx + 18, y + 52, 10, 12, '#668b83'); rect(wx + 12, y + 32, 4, 36, '#6e513c'); rect(wx, y + 48, 32, 4, '#6e513c'); rect(wx - 6, y + 72, 44, 8, '#624a37'); rect(wx - 2, y + 70, 36, 6, '#587b48');
+            [4, 16, 26].forEach((offset, i) => { rect(wx + offset, y + 66 - i % 2 * 4, 4, 8, '#78914b'); rect(wx + offset - 2, y + 64 - i % 2 * 4, 8, 4, i % 2 ? '#d3b2c1' : '#edc69a') });
+        });
+        rect(doorX - 20, y + h - 60, 40, 60, '#463d32'); rect(doorX - 16, y + h - 56, 32, 52, '#805e40'); for (let dx = -12; dx <= 12; dx += 8) rect(doorX + dx, y + h - 50, 2, 44, '#624730'); rect(doorX - 12, y + h - 52, 24, 12, '#a9b391'); rect(doorX - 2, y + h - 52, 4, 12, '#624730'); rect(doorX + 8, y + h - 28, 4, 4, C.amber); rect(doorX - 24, y + h, 48, 8, '#7c8673'); rect(doorX - 20, y + h, 40, 2, '#b8b497');
+        for (let row = 0; row < 8; row++) { const inset = (7 - row) * 7, ry = y - 76 + row * 12; rect(x - 16 + inset, ry, w + 32 - inset * 2, 16, '#35433c'); rect(x - 12 + inset, ry, w + 24 - inset * 2, 12, b.roof); for (let tx = x - 8 + inset; tx < x + w + 8 - inset; tx += 24) { rect(tx + row % 2 * 4, ry + 2, 16, 2, '#e2bd864c'); rect(tx + row % 2 * 4 + 16, ry + 4, 2, 8, '#263a3f55'); rect(tx + row % 2 * 4, ry + 10, 18, 2, '#263a3f44') } }
+        rect(x - 16, y + 20, w + 32, 6, '#5d4838'); rect(x - 12, y + 20, w + 24, 2, '#c59b68'); rect(x + w - 44, y - 96, 24, 48, '#807663'); for (let cy = y - 92; cy < y - 52; cy += 8) rect(x + w - 44, cy, 24, 2, '#b7a187'); rect(x + w - 32, y - 90, 2, 10, '#5f5b50'); rect(x + w - 48, y - 100, 32, 8, '#3c443e');
+        for (let j = 0; j < 3; j++) { const phase = (t * 8 + j * 14) % 44; rect(x + w - 36 + Math.sin(t + j) * 4, y - 108 - phase, 12 + j * 4, 8, '#d5d8be35') }
+        rect(x + 16, y + 80, w - 32, 16, '#384438'); rect(x + 18, y + 80, w - 36, 2, '#89956a'); text(b.name, x + w / 2, y + 92, C.pale, 9);
+        for (let k = 0; k < 6; k++) { rect(x + w - 8 + k % 2 * 4, y + 28 + k * 12, 4, 16, '#4f713d'); rect(x + w - 12 + k % 2 * 8, y + 36 + k * 12, 8, 4, '#82974c') }
+        rect(doorX + 28, y + h - 54, 4, 12, '#4a4033'); rect(doorX + 24, y + h - 46, 12, 16, '#544839'); rect(doorX + 28, y + h - 42, 4, 8, '#e8c276');
+        if (darkness > .1) { ctx.save(); ctx.globalAlpha = darkness * .9;[x + 28, x + w - 60].forEach(wx => { rect(wx + 2, y + 34, 10, 14, '#f3d38c'); rect(wx + 16, y + 34, 14, 14, '#e6b970'); rect(wx + 2, y + 52, 10, 14, '#e6b970'); rect(wx + 16, y + 52, 14, 14, '#f3d38c') }); rect(doorX + 28, y + h - 42, 4, 8, '#ffdc8c'); ctx.restore() }
+    };
+    const character = (x: number, y: number, facing: Player['facing'], npc = false) => {
+        const walking = !npc && o.activity === 'walking', step = walking ? Math.floor(player.walkFrame) % 2 : 0, bob = walking ? step * 2 : Math.floor(t * .8) % 2;
+        shadow(x, y, 36); ctx.save(); ctx.translate(Math.round(x), Math.round(y - bob)); if (facing === 'left') ctx.scale(-1, 1);
+        const colors = npc ? x < 500 ? { ...palette, H: '#65513b', h: '#97724a', T: '#5d7950', t: '#94a86a', A: '#dbaf64' } : { ...palette, H: '#5c4a61', h: '#94738c', T: '#795b76', t: '#b08898', A: '#c9b78a' } : palette;
+        matrix(ctx, facing === 'up' ? back : facing === 'left' || facing === 'right' ? side : front, -32, -64, 4, colors);
+        if (walking) { rect(-12, -4, 8, 4, '#243139'); rect(0, -4, 8, 4, '#243139'); rect(step ? 0 : -12, -6, 8, 2, '#9a8061') }
+        if (!npc) { rect(16, -20, 4, 4, '#fff0b1'); rect(16, -16, 4, 2, '#f3c66b') } ctx.restore();
+    };
+    ctx.save(); ctx.imageSmoothingEnabled = false; ctx.clearRect(0, 0, 960, 600);
+    if (sceneId === 'village') {
+        rect(0, 0, 960, 600, C.grass);
+        for (let i = 0; i < 360; i++) { const x = Math.floor(hash(i + 6000) * 240) * 4, y = Math.floor(hash(i + 9000) * 150) * 4; rect(x, y, 12 + i % 4 * 4, 4 + i % 3 * 4, i % 2 ? '#6b884d' : '#587746'); if (i % 4 === 0) rect(x + 4, y + 4, 12, 4, '#718e50') }
+        for (let i = 0; i < 1250; i++) { const x = Math.floor(hash(i) * 240) * 4, y = Math.floor(hash(i + 1900) * 150) * 4; rect(x, y, i % 5 ? 4 : 8, 2, i % 3 ? '#78944f' : '#496e40'); if (i % 7 === 0) { rect(x + 2, y - 4, 2, 6, '#86a152'); rect(x + 6, y - 2, 2, 4, '#86a152') } }
+        const path = (x: number, y: number, w: number, h: number) => {
+            rect(x - 6, y - 4, w + 12, h + 8, '#7c8d51'); rect(x - 2, y - 2, w + 4, h + 4, '#9a995f'); rect(x, y, w, h, C.path);
+            for (let i = 0; i < w * h / 150; i++) { const px = x + Math.floor(hash(i + x) * (w - 8) / 4) * 4, py = y + Math.floor(hash(i + y + 99) * (h - 4) / 4) * 4; rect(px, py, i % 3 ? 4 : 8, 2, i % 2 ? '#d0b585' : '#a48b64'); if (i % 11 === 0) rect(px + 2, py - 2, 6, 2, '#dbc497') }
+            for (let i = 0; i < h / 18; i++) { rect(x - 4, y + i * 18 + 4, 4, 6, '#58763f'); rect(x + w, y + i * 18 + 10, 4, 4, '#6b8546') }
+        };
+        path(220, 280, 48, 148); path(220, 396, 512, 48); path(484, 244, 48, 164); path(724, 272, 48, 100); path(408, 312, 100, 124); path(432, 428, 48, 136);
+        rect(736, 312, 72, 288, '#819361'); rect(740, 316, 64, 284, '#a4aa75'); rect(744, 320, 56, 280, '#527e76'); rect(748, 320, 48, 280, C.water); rect(756, 320, 32, 280, '#39727b');
+        for (let i = 0; i < 35; i++) { const x = 752 + (i * 12 + Math.floor(t * 3) * 4) % 32; rect(x, 324 + i * 8, 8 + i % 2 * 4, 2, i % 2 ? '#7caf9f' : '#548f8d'); if (i % 4 === 0) rect(748, 324 + i * 8, 4, 6, '#adc2a1') }
+        for (let y = 336; y < 600; y += 44) { rect(734, y, 2, 16, '#4c6a3d'); rect(740, y + 4, 2, 12, '#788c49'); rect(734, y - 2, 2, 6, '#b79e68'); rect(802, y + 12, 2, 16, '#4c6a3d'); rect(808, y + 16, 2, 12, '#788c49'); rock(802, y + 36, y) }
+        [724, 788].forEach(x => { rect(x, 400, 24, 56, '#543f35'); for (let y = 404; y < 456; y += 12) { rect(x, y, 24, 8, '#b18b5c'); rect(x + 2, y, 20, 2, '#d1ac74'); rect(x + 4, y + 4, 2, 2, '#634b35') } rect(x + 4, 392, 4, 16, C.wood); rect(x + 4, 448, 4, 16, C.wood) }); rect(748, 416, 8, 8, '#aa8055'); rect(780, 428, 8, 8, '#aa8055');
+        rect(580, 432, 100, 48, '#8b9d67'); rect(588, 428, 84, 56, '#8b9d67'); rect(584, 436, 92, 40, '#aab184'); rect(592, 436, 76, 40, C.water); rect(584, 444, 92, 24, C.water); rect(596, 448, 68, 20, '#386e77');
+        for (let i = 0; i < 6; i++) rect(596 + i * 12, 442 + i % 3 * 10, 8, 2, '#7aa69b');
+        [604, 632, 652].forEach((x, i) => { rect(x, 448 + i % 2 * 12, 16, 8, '#95af60'); rect(x + 8, 448 + i % 2 * 12, 4, 4, C.water); rect(x + 2, 448 + i % 2 * 12, 6, 2, '#b7c777') });
+        rect(620, 438, 12, 8, '#a8b678'); rect(620, 434, 4, 4, C.pale); rect(628, 434, 4, 4, C.pale); rect(620, 434, 2, 2, C.ink); rect(628, 434, 2, 2, C.ink);
+        for (let i = 0; i < 78; i++) { const x = 140 + Math.floor(hash(i + 42) * 138) * 4, y = 456 + Math.floor(hash(i + 142) * 22) * 4; if ((x > 576 && x < 688) || (x > 420 && x < 492)) continue; flower(x, y, i) }
+        [[146, 366], [302, 360], [556, 292], [832, 462], [340, 474], [566, 402], [150, 470]].forEach(([x, y], i) => { rock(x, y, i); flower(x + 16, y - 4, i + 1); rect(x - 8, y, 2, 8, '#8da458') });
+        for (let i = 0; i < 12; i++) { const x = 834 + i % 4 * 18, y = 236 + Math.floor(i / 4) * 14; rect(x, y, 10, 2, '#7f9450'); if (i % 3 === 0) flower(x, y, i) }
+        BUILDINGS.forEach(b => { lightPatch(b.doorX, b.y + b.height + 4, 76, 44, .8); layers.push({ y: b.y + b.height, paint: () => building(b) }) });
+        VILLAGE_TREES.forEach((p, i) => layers.push({ y: p.y, paint: () => tree(p.x, p.y, i * 23) })); lightPatch(216, 340, 72, 40);
+        layers.push({ y: 380, paint: () => { shadow(456, 380, 84); rect(424, 344, 64, 36, '#516f66'); rect(428, 368, 56, 12, '#39574e'); rect(420, 340, 72, 12, '#9ead8d'); rect(424, 340, 64, 4, '#cad0aa'); rect(428, 348, 56, 16, '#407984'); rect(436, 352, 40, 4, '#619b9a'); rect(444, 320, 24, 36, '#7c9b84'); rect(448, 308, 16, 20, '#b0c4a0'); rect(452, 296, 8, 16, '#72b1a3'); rect(452, 300, 4, 8, '#d3efca'); rect(444, 328, 4, 12, '#b5ceab'); rect(464, 336, 4, 12, '#b5ceab'); rect(432 + Math.floor(t * 4) % 3 * 12, 356, 12, 2, '#a3c4ac') } });
+        layers.push({ y: 352, paint: () => character(352, 352, 'down', true) }, { y: 314, paint: () => character(600, 314, 'left', true) });
+        layers.push({ y: 344, paint: () => { shadow(216, 344, 40); rect(204, 328, 24, 16, '#667567'); rect(208, 328, 16, 4, '#a6ae86'); rect(208, 316, 16, 16, '#393c38'); const hue = o.streak >= 7 ? '#8cdbd0' : '#edba6d', h = o.streak >= 30 ? 32 : 20; rect(208, 316 - h, 16, h, hue); rect(212, 308 - h, 8, h, '#eee1a4'); rect(212, 300 - h + Math.floor(t * 4) % 2 * 4, 4, 8, hue); if (!o.streak) rect(208, 304, 16, 20, '#829b86') } });
+        layers.push({ y: 440, paint: () => sign(710, 420, 'CLOSED') }, { y: 488, paint: () => sign(672, 468, 'CHOIR') }, { y: 388, paint: () => sign(872, 368, 'SEALED') });
+    } else {
+        rect(0, 0, 960, 600, '#1c302e'); rect(204, 68, 552, 464, '#293b33'); rect(208, 72, 544, 456, '#465143'); rect(216, 76, 528, 444, '#534a38'); rect(224, 80, 512, 64, '#927856');
+        for (let x = 224; x < 736; x += 32) { rect(x, 84, 28, 52, '#a48a63'); rect(x + 4, 88, 2, 44, '#bda079'); rect(x, 136, 32, 8, '#5d4935') } rect(224, 144, 512, 368, '#997149');
+        for (let y = 144; y < 512; y += 24) { rect(224, y, 512, 2, '#674b35'); for (let x = 224; x < 736; x += 64) { const offset = y % 48 ? 28 : 0; if (x + offset < 736) rect(x + offset, y, 2, 24, '#674b35'); rect(x + 12, y + 8, 28, 2, '#b28a59'); rect(x + 24, y + 16, 16, 2, '#89613f'); rect(x + 5, y + 4, 2, 2, '#6a4b34') } }
+        rect(216, 144, 8, 376, C.ink); rect(736, 144, 8, 376, C.ink); rect(224, 144, 512, 8, '#564a32'); rect(224, 504, 232, 16, '#5c4631'); rect(504, 504, 232, 16, '#5c4631'); rect(456, 500, 48, 20, '#c1a571'); rect(456, 500, 48, 2, '#dfc78f'); text('OUT', 480, 516, C.ink, 8);
+        const sky = darkness > .7 ? '#26374f' : darkness > .2 ? '#c08d77' : '#91bac0'; rect(436, 80, 88, 56, C.ink); rect(440, 84, 80, 48, sky);
+        if (darkness > .5) { [[450, 94], [470, 88], [512, 116], [460, 116]].forEach(([x, y]) => rect(x, y, 2, 2, '#d7d4ac')); rect(496, 88, 12, 12, '#ebe2b8'); rect(500, 84, 12, 12, sky) } else { rect(496, 90, 12, 12, '#f4df9b'); rect(446, 96, 16, 4, '#d6dfc9'); rect(450, 92, 8, 4, '#d6dfc9') }
+        rect(440, 122, 80, 10, '#49694d'); rect(448, 118, 12, 8, '#49694d'); rect(508, 114, 12, 12, '#49694d'); rect(476, 84, 8, 48, '#674c36'); rect(440, 108, 80, 4, '#674c36'); rect(432, 80, 8, 56, '#b49a74'); rect(520, 80, 8, 56, '#b49a74'); rect(432, 132, 96, 8, '#c5a879'); rect(440, 144, 80, 48, '#e4d99c10'); rect(452, 192, 80, 24, '#e4d99c0b'); rect(426, 84, 6, 44, '#6d8576'); rect(528, 84, 6, 44, '#6d8576');
+        rect(380, 328, 184, 112, '#4b463d'); rect(384, 332, 176, 104, '#9c7960'); rect(392, 340, 160, 88, '#d0b686'); rect(400, 348, 144, 72, '#527d72');
+        for (let x = 400; x < 544; x += 16) { rect(x, 348, 8, 4, '#c6c195'); rect(x, 416, 8, 4, '#c6c195'); rect(x, 324, 4, 4, '#d0b686'); rect(x, 440, 4, 4, '#d0b686') }
+        for (let y = 356; y < 416; y += 16) { rect(400, y, 4, 8, '#c6c195'); rect(540, y, 4, 8, '#c6c195') }
+        rect(456, 372, 32, 24, '#a6b187'); rect(464, 364, 16, 40, '#a6b187'); rect(464, 376, 16, 16, '#e0c894'); rect(468, 380, 8, 8, '#7c9675');
+        rect(240, 156, 112, 32, '#60452f'); for (let i = 0; i < 12; i++) { const bx = 248 + i * 8, by = 156 + i % 3 * 4; rect(bx, by, 6, 24 - i % 3 * 4, ['#789a82', '#c29d63', '#9e7783'][i % 3]); rect(bx + 1, by + 4, 4, 2, '#e4cda0') } rect(240, 180, 112, 8, '#b68b56'); rect(240, 180, 112, 2, '#d2aa72');
+        lightPatch(314, 216, 88, 56, .8); lightPatch(686, 164, 72, 48, .7);
+        layers.push({ y: 254, paint: () => { shadow(356, 254, 128); rect(308, 240, 8, 28, '#57412f'); rect(396, 240, 8, 28, '#57412f'); rect(296, 204, 120, 40, '#57412f'); rect(300, 200, 112, 40, '#b88c59'); rect(304, 204, 104, 4, '#dab17a'); rect(304, 232, 104, 4, '#956d46'); rect(332, 212, 44, 24, C.ink); rect(336, 208, 36, 24, '#eee0b5'); rect(352, 208, 4, 24, '#baa782'); for (let y = 212; y < 228; y += 8) { rect(340, y, 8, 2, '#968774'); rect(360, y, 8, 2, '#968774') } rect(380, 216, 8, 12, '#385c61'); rect(384, 200, 4, 20, '#ddd1a4'); rect(388, 198, 4, 8, '#ddd1a4'); candle(312, 212); rect(340, 268, 32, 8, '#60442f'); rect(344, 264, 24, 8, '#b48b56'); rect(344, 276, 4, 16, '#60442f'); rect(364, 276, 4, 16, '#60442f') } });
+        layers.push({ y: 350, paint: () => { shadow(644, 350, 104); rect(596, 218, 96, 132, '#604831'); rect(600, 218, 88, 16, '#c29c68'); rect(604, 222, 80, 4, '#debd86'); rect(604, 234, 80, 108, '#d1c39a'); rect(612, 238, 64, 28, '#eee0b8'); rect(616, 242, 56, 16, '#f7eccc'); rect(616, 260, 56, 4, '#c9bb98'); rect(604, 272, 80, 68, '#547e7b'); rect(608, 276, 72, 8, '#83aaa0'); for (let y = 292; y < 336; y += 16) { rect(608, y, 72, 4, '#75a094'); rect(620, y - 4, 4, 12, '#9eb59d'); rect(660, y - 4, 4, 12, '#9eb59d') } rect(600, 336, 88, 12, '#ac8354'); rect(600, 336, 88, 2, '#d2a76d'); rect(600, 348, 8, 12, '#60442f'); rect(680, 348, 8, 12, '#60442f'); if (o.activity === 'sleeping') { matrix(ctx, ['.HHHHH.', 'HSSSSSH', 'HSESESH', '.SSSSS.', '..sss..'], 630, 240, 4); text('z', 670 + Math.floor(t) % 2 * 4, 222 - Math.floor(t * 5) % 20, '#dfdfb8', 12) } } });
+        layers.push({ y: 192, paint: () => { rect(660, 164, 60, 28, '#765436'); rect(660, 156, 60, 12, '#bd915b'); rect(664, 156, 52, 2, '#dfb578'); candle(684, 156); rect(704, 144, 8, 12, '#a77b52'); rect(700, 140, 16, 4, '#809954'); rect(704, 132, 4, 12, '#8fa85c'); rect(708, 136, 8, 4, '#a8b568') } });
+        layers.push({ y: 448, paint: () => { rect(248, 388, 48, 60, '#62462f'); rect(248, 388, 48, 8, '#bf935d'); rect(248, 436, 48, 8, '#bf935d'); rect(256, 396, 8, 32, '#789a82'); rect(268, 400, 8, 28, '#b57f67'); rect(280, 396, 8, 32, '#cfb06e'); rect(256, 404, 8, 2, '#d6c49a'); rect(280, 404, 8, 2, '#ede0b2'); rect(252, 380, 40, 8, '#e1d3a7') } });
+    }
+    if (o.activity !== 'sleeping') layers.push({ y: player.y, paint: () => { character(player.x, player.y, o.activity === 'focusing' ? 'up' : player.facing); if (o.activity === 'focusing') { rect(player.x - 6, player.y - 8, 12, 8, '#b48b56'); if (Math.floor(t * 2) % 2) rect(player.x + 18, player.y - 42, 4, 4, C.pale) } } });
+    layers.sort((a, b) => a.y - b.y).forEach(layer => layer.paint());
+    // A uniform tint keeps every pixel crisp; illumination uses rectangular patches.
+    ctx.save(); ctx.globalAlpha = darkness * (sceneId === 'village' ? .47 : .2); rect(0, 0, 960, 600, '#17243e'); ctx.restore();
+    if (sceneId === 'village') {
+        for (let i = 0; i < 16; i++) { const x = 40 + hash(i + 400) * 880 + Math.sin(t * .2 + i) * 16, y = 70 + hash(i + 700) * 470 + Math.cos(t * .4 + i) * 8; if (i % 3 && darkness > .25) rect(x, y, 2, 2, Math.sin(t + i) > 0 ? '#f4df8bbb' : '#cbd28c55'); else if (i % 3 === 0) rect((x + t * 5) % 940, y, 4, 2, '#d3c18b70') }
+    }
+    if (o.interactionId) { const interaction = WORLDS[sceneId].interactions.find(value => value.id === o.interactionId); if (interaction) { const x = interaction.bounds.x + interaction.bounds.width / 2, y = interaction.bounds.y - 16 + Math.floor(t * 2) % 2 * 2; rect(x - 10, y - 14, 20, 20, C.ink); rect(x - 8, y - 12, 16, 16, C.pale); rect(x - 2, y + 6, 4, 4, C.ink); text('E', x, y, C.ink, 11) } }
+    ctx.restore();
 }
