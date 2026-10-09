@@ -1,10 +1,20 @@
 import {
   BUILDINGS,
+  TOWN_LAMPS,
   VILLAGE_TREES,
   WORLDS,
   type Player,
   type SceneId,
 } from "./world";
+import {
+  paintSurroundings,
+  paintMoonCourt,
+  paintTownAccents,
+  paintLantern,
+  paintLampPools,
+  paintAtlas,
+  paintBell,
+} from "./townDetails";
 export type Peer = {
   id: string;
   name: string;
@@ -16,6 +26,7 @@ export type Peer = {
   walkFrame?: number;
 };
 type Options = {
+  camera?: { x: number; y: number; width: number; height: number };
   peers?: Peer[];
   sharedMinutes?: number;
   time: number;
@@ -45,14 +56,14 @@ export function getWorldClock(now = Date.now()) {
   return { hour, minute, label, daylight };
 }
 const C = {
-  ink: "#24312f",
-  grass: "#62814b",
-  path: "#bda374",
-  pale: "#f0dbac",
-  wood: "#76503b",
-  amber: "#f3c66b",
-  teal: "#6ca49a",
-  water: "#3c7880",
+  ink: "#192b42",
+  grass: "#32475f",
+  path: "#727b8f",
+  pale: "#eddbc2",
+  wood: "#69576a",
+  amber: "#f1c799",
+  teal: "#89b6bb",
+  water: "#3b6285",
 };
 const hash = (n: number) => {
   const v = Math.sin(n * 127.1 + 311.7) * 43758.5453;
@@ -170,8 +181,8 @@ export function renderWorld(
     ctx.fillText(value, x, y);
   };
   const shadow = (x: number, y: number, w: number) => {
-    rect(x - w / 2 + 6, y - 5, w - 12, 10, "#263f3540");
-    rect(x - w / 2, y - 2, w, 4, "#263f3540");
+    rect(x - w / 2 + 6, y - 5, w - 12, 10, "#111c354d");
+    rect(x - w / 2, y - 2, w, 4, "#111c354d");
   };
   const lightPatch = (
     x: number,
@@ -223,15 +234,15 @@ export function renderWorld(
   };
   const tree = (x: number, y: number, seed: number) => {
     shadow(x, y, 80);
-    rect(x - 16, y - 8, 32, 8, "#455139");
-    rect(x - 12, y - 52, 24, 48, "#614634");
-    rect(x - 8, y - 48, 8, 44, "#99704a");
-    rect(x + 4, y - 44, 4, 40, "#45382e");
-    rect(x - 20, y - 4, 12, 4, "#77563b");
-    rect(x + 8, y - 4, 12, 4, "#45382e");
-    rect(x - 20, y - 52, 12, 8, "#614634");
-    rect(x - 24, y - 60, 8, 12, "#614634");
-    rect(x + 8, y - 64, 16, 8, "#614634");
+    rect(x - 16, y - 8, 32, 8, "#243b50");
+    rect(x - 12, y - 52, 24, 48, "#434255");
+    rect(x - 8, y - 48, 8, 44, "#7b6d7c");
+    rect(x + 4, y - 44, 4, 40, "#2d3448");
+    rect(x - 20, y - 4, 12, 4, "#645668");
+    rect(x + 8, y - 4, 12, 4, "#2d3448");
+    rect(x - 20, y - 52, 12, 8, "#434255");
+    rect(x - 24, y - 60, 8, 12, "#434255");
+    rect(x + 8, y - 64, 16, 8, "#434255");
     [
       [-20, -120, 40, 24],
       [-36, -104, 68, 28],
@@ -239,10 +250,10 @@ export function renderWorld(
       [-40, -60, 80, 24],
       [-24, -44, 48, 12],
     ].forEach(([dx, dy, w, h], index) => {
-      rect(x + dx + 4, y + dy - 4, w - 8, h + 8, "#294b38");
-      rect(x + dx, y + dy, w, h, "#315c3d");
-      rect(x + dx + 4, y + dy, w - 12, h - 8, "#447441");
-      rect(x + dx + 8, y + dy, w - 24, 4, "#70924b");
+      rect(x + dx + 4, y + dy - 4, w - 8, h + 8, "#142d44");
+      rect(x + dx, y + dy, w, h, "#204157");
+      rect(x + dx + 4, y + dy, w - 12, h - 8, "#325b6e");
+      rect(x + dx + 8, y + dy, w - 24, 4, "#688e9b");
       for (let k = 0; k < 13; k++) {
         const lx =
             x +
@@ -254,14 +265,14 @@ export function renderWorld(
             dy +
             4 +
             Math.floor((hash(seed + index * 73 + k + 500) * (h - 8)) / 4) * 4;
-        rect(lx, ly, k % 3 ? 8 : 4, 4, k % 4 ? "#578246" : "#89a451");
-        if (k % 5 === 0) rect(lx + 4, ly + 4, 4, 4, "#365e3a");
+        rect(lx, ly, k % 3 ? 8 : 4, 4, k % 4 ? "#477687" : "#7ea1a7");
+        if (k % 5 === 0) rect(lx + 4, ly + 4, 4, 4, "#294b63");
       }
     });
-    rect(x - 28, y - 90, 12, 4, "#9bb65b");
-    rect(x - 32, y - 86, 4, 4, "#809e4e");
-    rect(x + 20, y - 62, 12, 4, "#6d9348");
-    rect(x + 8, y - 40, 8, 4, "#496c3d");
+    rect(x - 28, y - 90, 12, 4, "#9ab3b5");
+    rect(x - 32, y - 86, 4, 4, "#779fa7");
+    rect(x + 20, y - 62, 12, 4, "#608895");
+    rect(x + 8, y - 40, 8, 4, "#30556a");
     if (seed % 3 === 0) {
       rect(x - 22, y - 2, 4, 6, "#d6c59a");
       rect(x - 26, y - 4, 12, 4, "#bd7859");
@@ -272,21 +283,21 @@ export function renderWorld(
     const { x, y, width: w, height: h, doorX } = b;
     shadow(x + w / 2, y + h, w + 24);
     rect(x - 4, y - 4, w + 8, h + 4, C.ink);
-    rect(x, y, w, h, "#bda781");
+    rect(x, y, w, h, "#8b8d9b");
     for (let row = 0; row < h; row += 12) {
-      rect(x, y + row, w, 2, "#a18d6d");
+      rect(x, y + row, w, 2, "#73798b");
       for (let col = 12; col < w - 12; col += 32) {
-        rect(x + col + (row % 24 ? 12 : 0), y + row + 2, 2, 10, "#aa9573");
-        if ((col + row) % 3 === 0) rect(x + col, y + row + 5, 10, 2, "#cfbb90");
+        rect(x + col + (row % 24 ? 12 : 0), y + row + 2, 2, 10, "#798295");
+        if ((col + row) % 3 === 0) rect(x + col, y + row + 5, 10, 2, "#a8a5ad");
       }
     }
-    rect(x, y + h - 12, w, 12, "#7e806c");
+    rect(x, y + h - 12, w, 12, "#546379");
     for (let col = 4; col < w; col += 20)
-      rect(x + col, y + h - 8, 14, 2, "#a2a18a");
+      rect(x + col, y + h - 8, 14, 2, "#939dac");
     rect(x + 4, y, 8, h, C.wood);
     rect(x + w - 12, y, 8, h, C.wood);
-    rect(x, y + 60, w, 8, "#765540");
-    rect(x + 12, y + 64, w - 24, 2, "#d4bd8f");
+    rect(x, y + 60, w, 8, "#68576a");
+    rect(x + 12, y + 64, w - 24, 2, "#c3b6ac");
     [x + 28, x + w - 60].forEach((wx) => {
       rect(wx - 6, y + 26, 44, 48, "#604632");
       rect(wx - 2, y + 30, 36, 40, "#d2b778");
@@ -320,7 +331,7 @@ export function renderWorld(
     for (let row = 0; row < 8; row++) {
       const inset = (7 - row) * 7,
         ry = y - 76 + row * 12;
-      rect(x - 16 + inset, ry, w + 32 - inset * 2, 16, "#35433c");
+      rect(x - 16 + inset, ry, w + 32 - inset * 2, 16, "#1f304a");
       rect(x - 12 + inset, ry, w + 24 - inset * 2, 12, b.roof);
       for (let tx = x - 8 + inset; tx < x + w + 8 - inset; tx += 24) {
         rect(tx + (row % 2) * 4, ry + 2, 16, 2, "#e2bd864c");
@@ -328,8 +339,8 @@ export function renderWorld(
         rect(tx + (row % 2) * 4, ry + 10, 18, 2, "#263a3f44");
       }
     }
-    rect(x - 16, y + 20, w + 32, 6, "#5d4838");
-    rect(x - 12, y + 20, w + 24, 2, "#c59b68");
+    rect(x - 16, y + 20, w + 32, 6, "#3b405a");
+    rect(x - 12, y + 20, w + 24, 2, "#a39399");
     rect(x + w - 44, y - 96, 24, 48, "#807663");
     for (let cy = y - 92; cy < y - 52; cy += 8)
       rect(x + w - 44, cy, 24, 2, "#b7a187");
@@ -345,19 +356,19 @@ export function renderWorld(
         "#d5d8be35",
       );
     }
-    rect(x + 16, y + 80, w - 32, 16, "#384438");
-    rect(x + 18, y + 80, w - 36, 2, "#89956a");
+    rect(x + 16, y + 80, w - 32, 16, "#293e55");
+    rect(x + 18, y + 80, w - 36, 2, "#84949f");
     text(b.name, x + w / 2, y + 92, C.pale, 9);
     for (let k = 0; k < 6; k++) {
-      rect(x + w - 8 + (k % 2) * 4, y + 28 + k * 12, 4, 16, "#4f713d");
-      rect(x + w - 12 + (k % 2) * 8, y + 36 + k * 12, 8, 4, "#82974c");
+      rect(x + w - 8 + (k % 2) * 4, y + 28 + k * 12, 4, 16, "#3d6879");
+      rect(x + w - 12 + (k % 2) * 8, y + 36 + k * 12, 8, 4, "#739397");
     }
     rect(doorX + 28, y + h - 54, 4, 12, "#4a4033");
     rect(doorX + 24, y + h - 46, 12, 16, "#544839");
     rect(doorX + 28, y + h - 42, 4, 8, "#e8c276");
-    if (darkness > 0.1) {
+    {
       ctx.save();
-      ctx.globalAlpha = darkness * 0.9;
+      ctx.globalAlpha = 0.65 + darkness * 0.3;
       [x + 28, x + w - 60].forEach((wx) => {
         rect(wx + 2, y + 34, 10, 14, "#f3d38c");
         rect(wx + 16, y + 34, 14, 14, "#e6b970");
@@ -430,16 +441,18 @@ export function renderWorld(
     }
     if (!npc) {
       rect(16, -20, 4, 4, "#fff0b1");
-      rect(16, -16, 4, 2, "#f3c66b");
+      rect(16, -16, 4, 2, "#f1c799");
     }
     ctx.restore();
   };
   ctx.save();
   ctx.imageSmoothingEnabled = false;
-  ctx.clearRect(0, 0, 960, 600);
+  const frame = o.camera ?? { x: 0, y: 0, width: 960, height: 600 };
+  ctx.clearRect(frame.x, frame.y, frame.width, frame.height);
+  paintSurroundings(ctx, o.time, clock.daylight);
   if (sceneId === "village") {
     rect(0, 0, 960, 600, C.grass);
-    for (let i = 0; i < 360; i++) {
+    for (let i = 0; i < 170; i++) {
       const x = Math.floor(hash(i + 6000) * 240) * 4,
         y = Math.floor(hash(i + 9000) * 150) * 4;
       rect(
@@ -447,32 +460,32 @@ export function renderWorld(
         y,
         12 + (i % 4) * 4,
         4 + (i % 3) * 4,
-        i % 2 ? "#6b884d" : "#587746",
+        i % 2 ? "#384f64" : "#2c4158",
       );
-      if (i % 4 === 0) rect(x + 4, y + 4, 12, 4, "#718e50");
+      if (i % 4 === 0) rect(x + 4, y + 4, 12, 4, "#3e576b");
     }
-    for (let i = 0; i < 1250; i++) {
+    for (let i = 0; i < 520; i++) {
       const x = Math.floor(hash(i) * 240) * 4,
         y = Math.floor(hash(i + 1900) * 150) * 4;
-      rect(x, y, i % 5 ? 4 : 8, 2, i % 3 ? "#78944f" : "#496e40");
+      rect(x, y, i % 5 ? 4 : 8, 2, i % 3 ? "#547383" : "#2b435b");
       if (i % 7 === 0) {
-        rect(x + 2, y - 4, 2, 6, "#86a152");
-        rect(x + 6, y - 2, 2, 4, "#86a152");
+        rect(x + 2, y - 4, 2, 6, "#6b8d99");
+        rect(x + 6, y - 2, 2, 4, "#6b8d99");
       }
     }
     const path = (x: number, y: number, w: number, h: number) => {
-      rect(x - 6, y - 4, w + 12, h + 8, "#7c8d51");
-      rect(x - 2, y - 2, w + 4, h + 4, "#9a995f");
+      rect(x - 6, y - 4, w + 12, h + 8, "#41576c");
+      rect(x - 2, y - 2, w + 4, h + 4, "#5a6c7d");
       rect(x, y, w, h, C.path);
       for (let i = 0; i < (w * h) / 150; i++) {
         const px = x + Math.floor((hash(i + x) * (w - 8)) / 4) * 4,
           py = y + Math.floor((hash(i + y + 99) * (h - 4)) / 4) * 4;
-        rect(px, py, i % 3 ? 4 : 8, 2, i % 2 ? "#d0b585" : "#a48b64");
-        if (i % 11 === 0) rect(px + 2, py - 2, 6, 2, "#dbc497");
+        rect(px, py, i % 3 ? 4 : 8, 2, i % 2 ? "#8e98a6" : "#616d82");
+        if (i % 11 === 0) rect(px + 2, py - 2, 6, 2, "#b2b7be");
       }
       for (let i = 0; i < h / 18; i++) {
-        rect(x - 4, y + i * 18 + 4, 4, 6, "#58763f");
-        rect(x + w, y + i * 18 + 10, 4, 4, "#6b8546");
+        rect(x - 4, y + i * 18 + 4, 4, 6, "#3d5b70");
+        rect(x + w, y + i * 18 + 10, 4, 4, "#4a687a");
       }
     };
     path(220, 280, 48, 148);
@@ -481,15 +494,15 @@ export function renderWorld(
     path(724, 272, 48, 100);
     path(408, 312, 100, 124);
     path(432, 428, 48, 136);
-    rect(736, 312, 72, 288, "#819361");
-    rect(740, 316, 64, 284, "#a4aa75");
-    rect(744, 320, 56, 280, "#527e76");
+    rect(736, 312, 72, 288, "#405974");
+    rect(740, 316, 64, 284, "#8895a0");
+    rect(744, 320, 56, 280, "#4c748d");
     rect(748, 320, 48, 280, C.water);
-    rect(756, 320, 32, 280, "#39727b");
+    rect(756, 320, 32, 280, "#325375");
     for (let i = 0; i < 35; i++) {
       const x = 752 + ((i * 12 + Math.floor(t * 3) * 4) % 32);
-      rect(x, 324 + i * 8, 8 + (i % 2) * 4, 2, i % 2 ? "#7caf9f" : "#548f8d");
-      if (i % 4 === 0) rect(748, 324 + i * 8, 4, 6, "#adc2a1");
+      rect(x, 324 + i * 8, 8 + (i % 2) * 4, 2, i % 2 ? "#95b6c4" : "#628ca6");
+      if (i % 4 === 0) rect(748, 324 + i * 8, 4, 6, "#c2cfd0");
     }
     for (let y = 336; y < 600; y += 44) {
       rect(734, y, 2, 16, "#4c6a3d");
@@ -511,14 +524,14 @@ export function renderWorld(
     });
     rect(748, 416, 8, 8, "#aa8055");
     rect(780, 428, 8, 8, "#aa8055");
-    rect(580, 432, 100, 48, "#8b9d67");
-    rect(588, 428, 84, 56, "#8b9d67");
-    rect(584, 436, 92, 40, "#aab184");
+    rect(580, 432, 100, 48, "#4c697c");
+    rect(588, 428, 84, 56, "#4c697c");
+    rect(584, 436, 92, 40, "#8796a1");
     rect(592, 436, 76, 40, C.water);
     rect(584, 444, 92, 24, C.water);
-    rect(596, 448, 68, 20, "#386e77");
+    rect(596, 448, 68, 20, "#315573");
     for (let i = 0; i < 6; i++)
-      rect(596 + i * 12, 442 + (i % 3) * 10, 8, 2, "#7aa69b");
+      rect(596 + i * 12, 442 + (i % 3) * 10, 8, 2, "#8babbc");
     [604, 632, 652].forEach((x, i) => {
       rect(x, 448 + (i % 2) * 12, 16, 8, "#95af60");
       rect(x + 8, 448 + (i % 2) * 12, 4, 4, C.water);
@@ -554,6 +567,13 @@ export function renderWorld(
       rect(x, y, 10, 2, "#7f9450");
       if (i % 3 === 0) flower(x, y, i);
     }
+    paintMoonCourt(ctx);
+    paintLampPools(ctx, darkness);
+    for (const lamp of TOWN_LAMPS)
+      layers.push({
+        y: lamp.y,
+        paint: () => paintLantern(ctx, lamp.x, lamp.y, o.time),
+      });
     BUILDINGS.forEach((b) => {
       lightPatch(b.doorX, b.y + b.height + 4, 76, 44, 0.8);
       layers.push({ y: b.y + b.height, paint: () => building(b) });
@@ -582,6 +602,11 @@ export function renderWorld(
       },
     });
     layers.push(
+      { y: 290, paint: () => paintTownAccents(ctx, o.time) },
+      { y: 324, paint: () => paintAtlas(ctx) },
+      { y: 524, paint: () => paintBell(ctx) },
+    );
+    layers.push(
       { y: 352, paint: () => character(352, 352, "down", true) },
       { y: 314, paint: () => character(600, 314, "left", true) },
     );
@@ -606,32 +631,32 @@ export function renderWorld(
       { y: 388, paint: () => sign(872, 368, "SEALED") },
     );
   } else {
-    rect(0, 0, 960, 600, "#1c302e");
-    rect(204, 68, 552, 464, "#293b33");
-    rect(208, 72, 544, 456, "#465143");
-    rect(216, 76, 528, 444, "#534a38");
-    rect(224, 80, 512, 64, "#927856");
+    rect(frame.x, frame.y, frame.width, frame.height, "#19263c");
+    rect(204, 68, 552, 464, "#23344c");
+    rect(208, 72, 544, 456, "#485068");
+    rect(216, 76, 528, 444, "#4c4359");
+    rect(224, 80, 512, 64, "#73647a");
     for (let x = 224; x < 736; x += 32) {
-      rect(x, 84, 28, 52, "#a48a63");
-      rect(x + 4, 88, 2, 44, "#bda079");
-      rect(x, 136, 32, 8, "#5d4935");
+      rect(x, 84, 28, 52, "#8a788b");
+      rect(x + 4, 88, 2, 44, "#b39ba4");
+      rect(x, 136, 32, 8, "#4a3d53");
     }
-    rect(224, 144, 512, 368, "#997149");
+    rect(224, 144, 512, 368, "#77677a");
     for (let y = 144; y < 512; y += 24) {
-      rect(224, y, 512, 2, "#674b35");
+      rect(224, y, 512, 2, "#514758");
       for (let x = 224; x < 736; x += 64) {
         const offset = y % 48 ? 28 : 0;
-        if (x + offset < 736) rect(x + offset, y, 2, 24, "#674b35");
-        rect(x + 12, y + 8, 28, 2, "#b28a59");
-        rect(x + 24, y + 16, 16, 2, "#89613f");
-        rect(x + 5, y + 4, 2, 2, "#6a4b34");
+        if (x + offset < 736) rect(x + offset, y, 2, 24, "#514758");
+        rect(x + 12, y + 8, 28, 2, "#968693");
+        rect(x + 24, y + 16, 16, 2, "#6a5a6f");
+        rect(x + 5, y + 4, 2, 2, "#534559");
       }
     }
     rect(216, 144, 8, 376, C.ink);
     rect(736, 144, 8, 376, C.ink);
-    rect(224, 144, 512, 8, "#564a32");
-    rect(224, 504, 232, 16, "#5c4631");
-    rect(504, 504, 232, 16, "#5c4631");
+    rect(224, 144, 512, 8, "#463f55");
+    rect(224, 504, 232, 16, "#493c51");
+    rect(504, 504, 232, 16, "#493c51");
     rect(456, 500, 48, 20, "#c1a571");
     rect(456, 500, 48, 2, "#dfc78f");
     text("OUT", 480, 516, C.ink, 8);
@@ -668,7 +693,7 @@ export function renderWorld(
     rect(380, 328, 184, 112, "#4b463d");
     rect(384, 332, 176, 104, "#9c7960");
     rect(392, 340, 160, 88, "#d0b686");
-    rect(400, 348, 144, 72, "#527d72");
+    rect(400, 348, 144, 72, "#415b7d");
     for (let x = 400; x < 544; x += 16) {
       rect(x, 348, 8, 4, "#c6c195");
       rect(x, 416, 8, 4, "#c6c195");
@@ -738,12 +763,12 @@ export function renderWorld(
         rect(612, 238, 64, 28, "#eee0b8");
         rect(616, 242, 56, 16, "#f7eccc");
         rect(616, 260, 56, 4, "#c9bb98");
-        rect(604, 272, 80, 68, "#547e7b");
-        rect(608, 276, 72, 8, "#83aaa0");
+        rect(604, 272, 80, 68, "#4c628a");
+        rect(608, 276, 72, 8, "#899dc0");
         for (let y = 292; y < 336; y += 16) {
-          rect(608, y, 72, 4, "#75a094");
-          rect(620, y - 4, 4, 12, "#9eb59d");
-          rect(660, y - 4, 4, 12, "#9eb59d");
+          rect(608, y, 72, 4, "#7289ac");
+          rect(620, y - 4, 4, 12, "#a6b0c7");
+          rect(660, y - 4, 4, 12, "#a6b0c7");
         }
         rect(600, 336, 88, 12, "#ac8354");
         rect(600, 336, 88, 2, "#d2a76d");
@@ -858,8 +883,8 @@ export function renderWorld(
   layers.sort((a, b) => a.y - b.y).forEach((layer) => layer.paint());
   // A uniform tint keeps every pixel crisp; illumination uses rectangular patches.
   ctx.save();
-  ctx.globalAlpha = darkness * (sceneId === "village" ? 0.47 : 0.2);
-  rect(0, 0, 960, 600, "#17243e");
+  ctx.globalAlpha = darkness * (sceneId === "village" ? 0.24 : 0.14);
+  rect(frame.x, frame.y, frame.width, frame.height, "#15243e");
   ctx.restore();
   if (sceneId === "village") {
     for (let i = 0; i < 16; i++) {

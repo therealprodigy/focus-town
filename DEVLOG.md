@@ -58,3 +58,13 @@ Co-op now has a real room service: eight-member invitations, host controls, pres
 The source was edited and development commands ran through VS Code. The implementation uses React, TypeScript, Vite, Tailwind, Canvas and SQLite/D1 migrations. Fonts are local; the scene and licenses are recorded in ASSETS.md. Privacy, storage, terms and a custom 404 are included. No separate AI disclosure file was created.
 
 The latest automated run passed 59 tests and the production build. Browser layout and two-device play remain unverified because the owner chose to do that pass. TEST_PLAN.md lists the clicks and expected behavior. AI assisted implementation, artwork, testing and writing; this entry claims no human coding hours or personal playtest observations.
+
+## 9 October 2026: bringing the town into the same world
+
+The owner clarified that the existing town should keep its layout and movement. Its art now uses the observatory’s blue, lavender and brass palette. Lanterns, a striped shop awning, a library telescope, a roof cat and weathered compass stones give the square a few recognisable details. An atlas and a quiet bell carry two short pieces of the existing missing-hour story.
+
+Town now has its own collapsible timer. Focus and Town share Start, Pause, Resume, round transitions and completion feedback. The desk and bed open session choices in place. Closing those choices leaves the player in the same view. A camera fills the available window and follows the character on narrow screens without changing map or co-op coordinates.
+
+Review caught invalid host durations closing the session dialog, timer overlap on short portrait screens, and the drawing order of the new props. These were corrected. Through VS Code, 65 automated tests, the production build and the built Worker checks passed. The route checks still reach every interaction, including the new objects. Browser appearance, touch controls and the complete in-town session flow await the owner’s manual pass.
+
+AI assisted implementation, artwork, review and documentation. This entry records project changes and automated results, not personal coding hours or a completed human playtest.

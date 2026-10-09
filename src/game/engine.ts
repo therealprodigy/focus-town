@@ -11,6 +11,7 @@ import {
   type Interaction,
 } from "./world";
 import { renderWorld, type Peer } from "./renderer";
+import { getCamera } from "./camera";
 export const PLAYER_SPEED = 150;
 export function movePlayer(
   scene: WorldScene,
@@ -234,8 +235,26 @@ export class GameEngine {
       this.nearId = nearby?.id ?? "";
       this.callbacks.onNearby(nearby);
     }
-    if (this.visible)
+    if (this.visible) {
+      const bounds = this.canvas.getBoundingClientRect();
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      const width = Math.max(1, Math.round(bounds.width * ratio));
+      const height = Math.max(1, Math.round(bounds.height * ratio));
+      if (this.canvas.width !== width || this.canvas.height !== height) {
+        this.canvas.width = width;
+        this.canvas.height = height;
+      }
+      this.ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const camera = getCamera(
+        WORLDS[this.scene],
+        this.player,
+        bounds.width,
+        bounds.height,
+      );
+      this.ctx.scale(camera.scale, camera.scale);
+      this.ctx.translate(-Math.round(camera.x), -Math.round(camera.y));
       renderWorld(this.ctx, this.scene, this.player, {
+        camera,
         peers: this.peers,
         sharedMinutes: this.sharedMinutes,
         time: this.reducedMotion ? 0 : this.elapsed,
@@ -243,6 +262,7 @@ export class GameEngine {
         streak: this.streak,
         interactionId: nearby?.id,
       });
+    }
     this.frame = requestAnimationFrame(this.tick);
   };
   destroy() {

@@ -2,7 +2,7 @@
 
 ## Interface and town
 
-React owns the timer, settings, accessible dialogs and room roster. Tailwind and shared Radix/CVA button primitives support the interface. Focus uses an original static observatory illustration; Town uses a 960 by 600 Canvas world scaled to the available window. All fonts are served locally.
+React owns the timer, settings, accessible dialogs and room roster. Tailwind and shared Radix/CVA button primitives support the interface. Focus uses an original static observatory illustration; Town keeps a 960 by 600 world-coordinate map. A responsive camera fills the window, follows the apprentice on narrow screens and leaves room for the sprite at map edges. Rendering never changes collision or co-op coordinates. All fonts are served locally. Focus and Town reuse the same session actions, phase choices and permission checks. The town desk opens the session dialog in place.
 
 The engine keeps movement outside React renders, normalizes diagonal speed, subdivides collision steps and releases held keys on blur. World objects are drawn in ground-position order. Reduced motion stops ambient animation and companion interpolation.
 

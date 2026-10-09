@@ -32,6 +32,12 @@ export interface WorldScene {
 }
 export const HOUSE_DESK_SEAT: Point = { x: 356, y: 286 };
 export const HOUSE_BED_POSITION: Point = { x: 644, y: 294 };
+export const TOWN_LAMPS = [
+  { x: 136, y: 350 },
+  { x: 386, y: 430 },
+  { x: 560, y: 330 },
+  { x: 824, y: 488 },
+];
 export const VILLAGE_TREES: Point[] = [
   { x: 64, y: 160 },
   { x: 104, y: 228 },
@@ -61,7 +67,7 @@ export const BUILDINGS = [
     width: 176,
     height: 120,
     name: "LANTERN HOUSE",
-    roof: "#83504c",
+    roof: "#566580",
     doorX: 244,
   },
   {
@@ -70,7 +76,7 @@ export const BUILDINGS = [
     width: 168,
     height: 128,
     name: "LOTTIE’S GOODS",
-    roof: "#486b65",
+    roof: "#45677c",
     doorX: 508,
   },
   {
@@ -79,7 +85,7 @@ export const BUILDINGS = [
     width: 192,
     height: 140,
     name: "MOTHWICK LIBRARY",
-    roof: "#535576",
+    roof: "#615f89",
     doorX: 760,
   },
 ];
@@ -96,6 +102,9 @@ export const WORLDS: Record<SceneId, WorldScene> = {
     height: 600,
     spawn: { x: 448, y: 416 },
     solids: [
+      ...TOWN_LAMPS.map(({ x, y }) => r(x - 4, y - 8, 8, 8)),
+      r(374, 514, 24, 10),
+      r(702, 312, 30, 12),
       ...BUILDINGS.map(({ x, y, width, height }) => r(x, y, width, height)),
       ...VILLAGE_TREES.map(({ x, y }) => r(x - 12, y - 18, 24, 20)),
       r(748, 320, 48, 280),
@@ -106,6 +115,28 @@ export const WORLDS: Record<SceneId, WorldScene> = {
       r(584, 432, 92, 48),
     ],
     interactions: [
+      {
+        id: "atlas",
+        label: "Read the river atlas",
+        kind: "sign",
+        bounds: r(702, 312, 30, 12),
+        title: "A page left open",
+        lines: [
+          "An old route crosses the river, then stops at a drawing of a bell.",
+          "In the margin: If the lamps answer, you are on the right path.",
+        ],
+      },
+      {
+        id: "bell",
+        label: "Inspect the quiet bell",
+        kind: "sign",
+        bounds: r(374, 514, 24, 10),
+        title: "The bell without a tower",
+        lines: [
+          "Its clapper is warm. It has not rung in years.",
+          "Someone tied a note to the frame: Keep a little time for whoever is coming home.",
+        ],
+      },
       {
         id: "home",
         label: "Enter home",
@@ -127,13 +158,13 @@ export const WORLDS: Record<SceneId, WorldScene> = {
       },
       {
         id: "library",
-        label: "Read library notice",
+        label: "Visit Mira’s journal desk",
         kind: "door",
         bounds: r(744, 262, 32, 16),
-        title: "Mothwick Library / closed",
+        title: "Mothwick Library",
         lines: [
-          "The books have rearranged themselves again. Mira is negotiating.",
-          "The library opens in a later chapter.",
+          "Mira has left the journal outside. The shelves inside are still being repaired.",
+          "No need to count pages. We keep the time you gave them.",
         ],
       },
       {
@@ -143,8 +174,8 @@ export const WORLDS: Record<SceneId, WorldScene> = {
         bounds: r(338, 332, 28, 22),
         title: "Rowan / village keeper",
         lines: [
-          "New apprentice? Your lantern still has that first-day shine.",
-          "Your house is west of the fountain. The desk turns quiet work into a little magic.",
+          "The observatory lost an hour. Every clock in town stopped, except the one on your desk.",
+          "Home is west of the fountain. Keep that lamp on. We will work out the rest.",
         ],
       },
       {
@@ -154,8 +185,8 @@ export const WORLDS: Record<SceneId, WorldScene> = {
         bounds: r(586, 294, 28, 22),
         title: "Mira / librarian",
         lines: [
-          "A useful spell: put one thing on your desk, and finish it.",
-          "I tried that with the library. The library disagreed.",
+          "Rowan says the clocks stopped. The records say they are waiting.",
+          "I keep your finished sessions in the journal. Small entries count.",
         ],
       },
       {

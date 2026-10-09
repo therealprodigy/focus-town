@@ -454,7 +454,7 @@ small {
   inset: 0;
   display: grid;
   place-items: center;
-  background: #132720;
+  background: #1c2d47;
 }
 .world-stage[hidden] {
   display: none;
@@ -463,17 +463,18 @@ small {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: fill;
   image-rendering: pixelated;
   outline: none;
 }
 .town-view .topbar {
-  background: #10201b99;
-  backdrop-filter: blur(8px);
+  background: transparent;
+  backdrop-filter: none;
+  text-shadow: 0 2px 10px #10213c;
 }
 .town-view .chapter-teaser,
 .town-view .today-teaser {
-  background: #12281dd9;
+  background: #14253bdd;
   border-radius: 8px;
   padding: 10px 14px;
   bottom: 30px;
@@ -482,7 +483,7 @@ small {
   position: absolute;
   top: 116px;
   left: 40px;
-  background: #14271de6;
+  background: #14253be8;
   padding: 12px 16px;
   border-radius: 8px;
   display: flex;
@@ -490,11 +491,11 @@ small {
   gap: 4px;
 }
 .town-label span {
-  font-family: Silkscreen, monospace;
-  font-size: 0.8125rem;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
 }
 .town-label small {
-  color: #c2c7b3;
+  color: #b9c9d9;
 }
 .town-timer {
   position: absolute;
@@ -519,7 +520,7 @@ small {
   display: flex;
   gap: 12px;
   align-items: center;
-  background: #11251dec;
+  background: #15283deb;
   padding: 12px 20px;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -536,12 +537,12 @@ kbd {
   position: absolute;
   left: 40px;
   bottom: 126px;
-  background: #14271de6;
+  background: #14253be8;
   padding: 8px 12px;
   border-radius: 6px;
   display: flex;
   gap: 18px;
-  color: #d3dcc7;
+  color: #c5d1df;
   font-size: 0.75rem;
 }
 .touch-pad {
@@ -1146,8 +1147,8 @@ dialog .fine-print {
   }
   .touch-pad button {
     padding: 10px;
-    background: #10251de8;
-    border: 1px solid #bbcc9b33;
+    background: #15283deb;
+    border: 1px solid #bfc7d333;
     border-radius: 6px;
     font-size: 0.75rem;
     min-width: 44px;
@@ -1240,5 +1241,213 @@ dialog .fine-print {
   }
   .bottom-dock button {
     padding: 10px 14px;
+  }
+}
+
+/* Town and Focus share their type, quiet colours and interval controls. */
+.town-label {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  text-shadow: 0 2px 12px #101f36;
+}
+.town-label small {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+.town-view .chapter-teaser,
+.town-view .today-teaser {
+  background: #10243bcc;
+  border-radius: 3px;
+}
+.town-session {
+  position: absolute;
+  top: 112px;
+  right: 32px;
+  width: 250px;
+  padding: 14px 17px;
+  color: #f3eee4;
+  background: #132239e8;
+  border-radius: 3px;
+  box-shadow: 0 12px 36px #08142622;
+}
+.town-session-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  width: 100%;
+  padding: 0;
+  align-items: center;
+  font-size: 0.75rem;
+}
+.town-session-heading span:last-child {
+  color: #bdc9d9;
+  font-size: 0.6875rem;
+}
+.town-session .phase-tabs {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+.town-session .phase-tabs button {
+  font-size: 0.6875rem;
+  padding: 8px 0;
+}
+.town-session-clock {
+  font-family: Inter, sans-serif;
+  font-size: 3.7rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.065em;
+  font-variant-numeric: tabular-nums;
+  margin: 10px 0;
+}
+.town-session-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  color: #bccada;
+  font-size: 0.6875rem;
+}
+.town-session-options button {
+  color: #f0daba;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  padding: 4px 0;
+}
+.town-session .timer-buttons {
+  justify-content: flex-start;
+  margin-top: 14px;
+  gap: 10px;
+}
+.town-session .start-button {
+  min-width: 0;
+  font-size: 0.75rem;
+  padding: 10px 16px;
+  flex: 1;
+}
+.town-session .timer-buttons > button:not(.start-button) {
+  font-size: 0.75rem;
+  padding: 8px 0;
+}
+.town-session .completion-line,
+.town-session .small-link {
+  font-size: 0.6875rem;
+  margin-top: 12px;
+}
+.town-session .completion-line {
+  line-height: 1.6;
+}
+.modal .phase-tabs {
+  margin-bottom: 16px;
+}
+@media (max-width: 650px) {
+  .town-session {
+    top: 147px;
+    right: 12px;
+    width: 210px;
+    padding: 10px 12px;
+  }
+  .town-label {
+    top: 147px;
+    left: 16px;
+    max-width: 100px;
+  }
+  .town-label span {
+    font-size: 1.3rem;
+  }
+  .town-label small {
+    font-size: 0.6rem;
+    letter-spacing: 0;
+  }
+  .town-session-clock {
+    font-size: 3rem;
+    margin: 5px 0;
+  }
+  .town-session .phase-tabs {
+    margin-top: 8px;
+  }
+  .town-session .timer-buttons {
+    margin-top: 8px;
+  }
+}
+@media (max-height: 560px) and (min-width: 651px) {
+  .town-session {
+    top: 72px;
+    right: 18px;
+    width: 225px;
+    padding: 10px 13px;
+    max-height: calc(100dvh - 155px);
+    overflow-y: auto;
+  }
+  .town-session-clock {
+    font-size: 2.6rem;
+    margin: 3px 0;
+  }
+  .town-session .phase-tabs {
+    margin-top: 7px;
+  }
+  .town-session .timer-buttons {
+    margin-top: 8px;
+  }
+  .town-label {
+    top: 83px;
+    left: 24px;
+  }
+}
+
+.town-session {
+  background: none;
+  box-shadow: none;
+  text-shadow:
+    0 2px 5px #071a35,
+    0 0 18px #102540;
+}
+.town-session .button-primary {
+  text-shadow: none;
+}
+@media (max-width: 650px) {
+  .town-session {
+    top: 196px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    padding: 0;
+  }
+  #town-session-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 12px;
+    align-items: center;
+  }
+  .town-session .phase-tabs {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    gap: 22px;
+    margin: 8px 0 0;
+  }
+  .town-session-clock {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 2.6rem;
+  }
+  .town-session .timer-buttons {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0;
+  }
+  .town-session-options {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+  .town-session .completion-line,
+  .town-session .small-link {
+    grid-column: 1 / -1;
+    margin-top: 5px;
+  }
+  .town-label {
+    max-width: none;
   }
 }

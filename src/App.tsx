@@ -207,6 +207,11 @@ function Game() {
     room = useRoom();
   const [prefs, setPrefs] = useState(loadPrefs),
     [view, setView] = useState<"focus" | "town">("focus"),
+    [townTimerOpen, setTownTimerOpen] = useState(
+      () =>
+        !window.matchMedia("(max-width: 650px) and (max-height: 680px)")
+          .matches,
+    ),
     [panel, setPanel] = useState<Panel>(null),
     [phase, setPhase] = useState<Phase>("focus"),
     [now, setNow] = useState(Date.now),
@@ -305,7 +310,8 @@ function Game() {
     const game = new GameEngine(canvas.current, {
       onInteract: (i) => {
         if (i.kind === "desk" || i.kind === "bed") {
-          setView("focus");
+          setPanel("sessions");
+          setTownTimerOpen(true);
           setPhase(i.kind === "desk" ? "focus" : "short");
         } else setPanel(i);
       },
@@ -547,6 +553,68 @@ function Game() {
         : cycle?.next === "focus" && cycle.completed > 0
           ? "Start round " + (cycle.completed + 1)
           : "Start " + phaseLabel(currentPhase).toLowerCase();
+  const sessionTabs = (
+    <div className="phase-tabs" role="group" aria-label="Session type">
+      {(["focus", "short", "long"] as Phase[]).map((p) => (
+        <button
+          key={p}
+          aria-pressed={currentPhase === p}
+          disabled={active || (!inRoom && !!cycle && cycle.next !== "done")}
+          onClick={() => setPhase(p)}
+        >
+          {phaseLabel(p)}
+        </button>
+      ))}
+    </div>
+  );
+  const sessionActions = (
+    <>
+      <div className="timer-buttons">
+        <Button
+          className="start-button"
+          variant="default"
+          disabled={
+            (!active && !valid) ||
+            (inRoom
+              ? !room.isHost || !room.connected || room.busy
+              : !canSave || room.busy)
+          }
+          onClick={active ? togglePause : begin}
+        >
+          <Icon name={active && !isPaused ? "pause" : "play"} />
+          {inRoom && !room.isHost ? "Host controls the timer" : mainLabel}
+        </Button>
+        {((active && (!inRoom || room.isHost)) || (!inRoom && !!planned)) && (
+          <Button
+            aria-label="End current session or plan"
+            onClick={() => setPanel("cancel")}
+          >
+            {active ? "End" : "End plan"}
+          </Button>
+        )}
+      </div>
+      {!inRoom && cycle?.next === "break" && !timer && (
+        <button className="small-link" onClick={() => update(skipCycleBreak)}>
+          Skip break
+        </button>
+      )}
+      {!inRoom && cycle?.next === "done" && !timer && (
+        <p className="completion-line" role="status">
+          All {cycle.rounds} rounds finished. Take your time.
+        </p>
+      )}
+      {!inRoom && save.lastCompletion && !timer && (
+        <p className="completion-line" role="status">
+          {save.lastCompletion.focusMinutes} minutes saved · +
+          {save.lastCompletion.rewards.xp} XP{" "}
+          <button
+            aria-label="Dismiss session result"
+            onClick={() => update(dismissCompletion)}
+          ></button>
+        </p>
+      )}
+    </>
+  );
   return (
     <main
       className={
@@ -609,20 +677,7 @@ function Game() {
       </header>
       {view === "focus" && (
         <section className="focus-space" aria-label="Focus timer">
-          <div className="phase-tabs" role="group" aria-label="Session type">
-            {(["focus", "short", "long"] as Phase[]).map((p) => (
-              <button
-                key={p}
-                aria-pressed={currentPhase === p}
-                disabled={
-                  active || (!inRoom && !!cycle && cycle.next !== "done")
-                }
-                onClick={() => setPhase(p)}
-              >
-                {phaseLabel(p)}
-              </button>
-            ))}
-          </div>
+          {sessionTabs}
           <label className="task-line">
             <span className="sr-only">Your current task</span>
             <input
@@ -673,53 +728,7 @@ function Game() {
               </>
             )}
           </div>
-          <div className="timer-buttons">
-            <Button
-              className="start-button"
-              variant="default"
-              disabled={
-                inRoom
-                  ? !room.isHost || !room.connected || room.busy
-                  : !canSave || !valid || room.busy
-              }
-              onClick={active ? togglePause : begin}
-            >
-              <Icon name={active && !isPaused ? "pause" : "play"} />
-              {inRoom && !room.isHost ? "Host controls the timer" : mainLabel}
-            </Button>
-            {((active && (!inRoom || room.isHost)) ||
-              (!inRoom && !!planned)) && (
-              <Button
-                aria-label="End current session or plan"
-                onClick={() => setPanel("cancel")}
-              >
-                {active ? "End" : "End plan"}
-              </Button>
-            )}
-          </div>
-          {!inRoom && cycle?.next === "break" && !timer && (
-            <button
-              className="small-link"
-              onClick={() => update(skipCycleBreak)}
-            >
-              Skip break
-            </button>
-          )}
-          {!inRoom && cycle?.next === "done" && !timer && (
-            <p className="completion-line" role="status">
-              All {cycle.rounds} rounds finished. Take your time.
-            </p>
-          )}
-          {!inRoom && save.lastCompletion && !timer && (
-            <p className="completion-line" role="status">
-              {save.lastCompletion.focusMinutes} minutes saved · +
-              {save.lastCompletion.rewards.xp} XP{" "}
-              <button
-                aria-label="Dismiss session result"
-                onClick={() => update(dismissCompletion)}
-              ></button>
-            </p>
-          )}
+          {sessionActions}
           {inRoom && room.snapshot && (
             <p className="completion-line">
               {room.snapshot.sharedMinutes} shared minutes · the river beacon
@@ -737,12 +746,50 @@ function Game() {
               {String(getWorldClock(now).minute).padStart(2, "0")}
             </small>
           </div>
-          {active && (
-            <button className="town-timer" onClick={() => switchView("focus")}>
-              {phaseLabel(currentPhase)} <b>{clock(left)}</b>
+          <section className="town-session" aria-label="Town timer">
+            <button
+              className="town-session-heading"
+              aria-expanded={townTimerOpen}
+              aria-controls="town-session-body"
+              onClick={() => setTownTimerOpen((v) => !v)}
+            >
+              <span>{active ? phaseLabel(currentPhase) : "Your session"}</span>
+              <span>{townTimerOpen ? "Hide" : clock(left) + " · Open"}</span>
             </button>
-          )}
-          {nearby && !timer && !panel && (
+            {townTimerOpen && (
+              <div id="town-session-body">
+                {sessionTabs}
+                <div
+                  className="town-session-clock"
+                  role="timer"
+                  aria-label={phaseLabel(currentPhase) + " " + clock(left)}
+                >
+                  {clock(left)}
+                </div>
+                <div className="town-session-options">
+                  <span>
+                    {!inRoom && prefs.cycle
+                      ? cycle
+                        ? Math.min(
+                            cycle.completed +
+                              (currentPhase === "focus" ? 1 : 0),
+                            cycle.rounds,
+                          ) +
+                          " / " +
+                          cycle.rounds +
+                          " rounds"
+                        : rounds + " rounds"
+                      : phaseLabel(currentPhase)}
+                  </span>
+                  <button onClick={() => setPanel("sessions")}>
+                    Set sessions
+                  </button>
+                </div>
+                {sessionActions}
+              </div>
+            )}
+          </section>
+          {nearby && !active && !panel && (
             <button
               className="interact-prompt"
               onClick={() => engine.current?.interact()}
@@ -870,7 +917,8 @@ function Game() {
         onChange={(e) => void upload(e.target.files?.[0])}
       />
       {panel === "sessions" && (
-        <Modal title="Make time." onClose={close}>
+        <Modal title="Set your session" onClose={close}>
+          {sessionTabs}
           <p className="muted">
             Choose a rhythm. Leave the next round for when you are ready.
           </p>
@@ -946,16 +994,27 @@ function Game() {
             The next focus round starts when you press Start. Co-op intervals
             are controlled by the host.
           </p>
-          <Button
-            variant="default"
-            disabled={!valid}
-            onClick={() => {
-              setView("focus");
-              close();
-            }}
-          >
-            Done
+          <Button variant="default" disabled={!valid} onClick={close}>
+            Save settings
           </Button>
+          {!active && (
+            <Button
+              disabled={
+                !valid ||
+                (inRoom
+                  ? !room.isHost || !room.connected || room.busy
+                  : !canSave || room.busy)
+              }
+              onClick={() => {
+                if (valid) {
+                  begin();
+                  close();
+                }
+              }}
+            >
+              {mainLabel}
+            </Button>
+          )}
         </Modal>
       )}
       {panel === "journal" && (
@@ -1302,8 +1361,16 @@ function Game() {
           {panel.lines?.map((line, i) => (
             <p key={i}>{line}</p>
           ))}
+          {(panel.id === "mira" || panel.id === "library") && (
+            <Button onClick={() => setPanel("journal")}>Open journal</Button>
+          )}
+          {(panel.id === "atlas" ||
+            panel.id === "bell" ||
+            panel.id === "rowan") && (
+            <Button onClick={() => setPanel("story")}>The missing hour</Button>
+          )}
           <Button variant="default" onClick={close}>
-            Close
+            Back to town
           </Button>
         </Modal>
       )}

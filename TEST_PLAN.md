@@ -1,6 +1,6 @@
 # Owner playtest
 
-Automated baseline on 9 October 2026: 59 tests and the production build passed. These checks are still for the owner to perform in a browser. Record what you actually observe, including failures.
+Automated baseline on 9 October 2026: 65 tests and the production build passed. These checks are still for the owner to perform in a browser. Record what you actually observe, including failures.
 
 ## Open the game
 
@@ -18,6 +18,18 @@ Automated baseline on 9 October 2026: 59 tests and the production build passed. 
 - [ ] Check that one session appears in Journal, with one reward. Reload again and check it is not duplicated.
 - [ ] Finish the short break, start round two, then check the final break is labelled Long break even though both breaks are 1 minute.
 - [ ] Try automatic breaks. Confirm the next focus round still waits for Start.
+
+## Town refresh
+
+- [ ] Switch between Focus and Town. Compare their colours and lighting; record anything that feels out of place.
+- [ ] In Town, click Set sessions. Choose custom focus, short break, long break and rounds. Save settings; Town should stay open.
+- [ ] Start a one-minute interval from Town, then pause and resume. The apprentice should study in Lantern House while the town timer remains usable.
+- [ ] Complete the interval and take a break. Check the next-round action and the saved result without visiting Focus.
+- [ ] Hide and reopen the timer. On a short phone screen it starts collapsed; make sure the expanded controls leave room to see the character.
+- [ ] Walk to all map edges on a phone and a wide screen. The whole character should stay visible. Resizing should not move the character to a different map position.
+- [ ] Read the atlas outside the library and inspect the bell south of the square. Walk behind both and check their drawing order.
+- [ ] Talk to Mira and open the journal. Close it, then continue walking.
+- [ ] As co-op host, clear a duration field. Start should be disabled until it is valid. Guests must not gain timer control.
 
 ## Explore
 
