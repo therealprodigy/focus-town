@@ -9,6 +9,8 @@ A small town for the thing you keep putting off. Pick a task, light the desk lam
       _|__|_   one page at a time
         ||
 
+> Release status: the Old Crossing update is available in this source checkout. The public Play link still runs the preceding release; publishing the update is waiting for access to the existing Vercel project. Browser layout and a real two-device playtest are also pending.
+
 ## Play now
 
 Open [Focus Town](https://focus-town-greenvale.vercel.app) on a phone, tablet or computer. No account, terminal or download is needed. This is the easiest way to play with friends.
