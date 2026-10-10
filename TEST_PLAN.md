@@ -76,3 +76,13 @@ Save a name in Settings, visit Town and reload. Download a progress backup, then
 - [ ] Enable the chime, reload a save with a past completion and listen: that old completion must stay silent. A newly finished session should chime once.
 
 The six new regression tests cover clock labels and long durations, house reachability/collision, discovery save compatibility and audio-node disposal. Rendered layout and listening tests were not performed because the saved preview permission blocked browser access.
+
+## Personal desk manual pass
+
+- Try all three backgrounds, finishes and sizes at 320px width and a short desktop window. Check plain digits and 720-minute sessions too.
+- Collapse a running solo timer; pause, expand and reload. Confirm its deadline and progress are preserved. Repeat with a shared room as host and guest.
+- Reload after changing desk options. Reset the desk and confirm session lengths, character and rewards remain unchanged.
+- Replay the guide. Enter an invalid name, save a valid one, choose a task, reach the practice sign with keys and touch controls, then skip or finish. Real progress must not change during practice.
+- Check glass with reduced transparency and high contrast enabled. Paper and garden labels must remain readable.
+
+These browser checks have not been completed by the agent; the saved preview rule blocks access.

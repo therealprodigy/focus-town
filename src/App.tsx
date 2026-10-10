@@ -1,4 +1,7 @@
 import { DeskClock, TOUR_STEPS, TourPicture } from "./DeskClock";
+import { TourPractice } from "./TourPractice";
+import { deskDefaults, parseDeskPrefs } from "./deskPreferences";
+import { DeskBackdrop } from "./DeskBackdrop";
 import { TownPersonalization } from "./TownPersonalization";
 import { motivationLine } from "./game/personalization";
 import { coffeeActive } from "./game/state";
@@ -93,8 +96,7 @@ function loadPrefs() {
     controls: true,
     quiet: matchMedia("(prefers-reduced-motion: reduce)").matches,
     hour24: false,
-    deskTheme: "lamplight",
-    clockStyle: "flip",
+    ...deskDefaults,
     tutorialDone: false,
   };
   try {
@@ -117,10 +119,7 @@ function loadPrefs() {
       controls: p.controls !== false,
       quiet: p.quiet === true,
       hour24: p.hour24 === true,
-      deskTheme: ["lamplight", "moonlight", "ink"].includes(p.deskTheme)
-        ? p.deskTheme
-        : "lamplight",
-      clockStyle: p.clockStyle === "plain" ? "plain" : "flip",
+      ...parseDeskPrefs(p),
       tutorialDone: p.tutorialDone === true,
     };
   } catch {
@@ -346,6 +345,7 @@ function Game() {
   const [characterDraft, setCharacterDraft] = useState("");
   const [settingsError, setSettingsError] = useState("");
   const [tourStep, setTourStep] = useState(0);
+  const [tourNameNote, setTourNameNote] = useState("");
   const offeredTour = useRef(false);
   useEffect(() => {
     if (
@@ -939,6 +939,9 @@ function Game() {
   return (
     <main
       data-focus-theme={prefs.deskTheme}
+      data-desk-finish={prefs.deskFinish}
+      data-clock-size={prefs.clockSize}
+      data-background={prefs.background}
       className={
         "app-scene " +
         (view === "town" ? "town-view " : "") +
@@ -946,12 +949,7 @@ function Game() {
         (prefs.quiet ? "reduced-motion" : "")
       }
     >
-      <img
-        className="scene-backdrop"
-        src="/art/observatory.png"
-        alt=""
-        fetchPriority="high"
-      />
+      <DeskBackdrop kind={prefs.background} />
       <div className="world-stage" hidden={view !== "town"}>
         <canvas
           ref={canvas}
@@ -998,91 +996,216 @@ function Game() {
         </div>
       </header>
       {view === "focus" && (
-        <section className="focus-space" aria-label="Focus timer">
-          {sessionTabs}
-          <label className="task-line">
-            <span className="sr-only">Your current task</span>
-            <input
-              value={prefs.task}
-              maxLength={120}
-              placeholder="What are you working on?"
-              onChange={(e) => setting("task", e.target.value)}
-            />
-          </label>
-          <DeskClock
-            value={clock(left)}
-            label={phaseLabel(currentPhase)}
-            plain={prefs.clockStyle === "plain"}
-          />
-          <div className="round-line">
-            {inRoom ? (
+        <section
+          className={
+            "focus-space" + (prefs.focusCollapsed ? " is-compact" : "")
+          }
+          aria-label="Focus timer"
+        >
+          <button
+            className="timer-fold"
+            aria-expanded={!prefs.focusCollapsed}
+            aria-controls="focus-timer-body"
+            onClick={() => setting("focusCollapsed", !prefs.focusCollapsed)}
+          >
+            {prefs.focusCollapsed ? "Open full timer" : "Collapse timer"}
+          </button>
+          {prefs.focusCollapsed && (
+            <div className="compact-clock">
               <span>
-                {room.connected ? "Together in Greenvale" : "Reconnecting"} ·{" "}
-                {room.snapshot?.members.filter((m) => m.online).length ?? 0}{" "}
-                here
+                {phaseLabel(currentPhase)}
+                {active ? (isPaused ? " · Paused" : " · Running") : " · Ready"}
               </span>
-            ) : (
-              <>
-                <span>
-                  {cycle && cycle.next !== "done"
-                    ? "Round " +
-                      Math.min(
-                        cycle.completed + (currentPhase === "focus" ? 1 : 0),
-                        cycle.rounds,
-                      ) +
-                      " of " +
-                      cycle.rounds
-                    : prefs.cycle && phase === "focus"
-                      ? rounds +
-                        " rounds · " +
-                        prefs.focus +
-                        " / " +
-                        prefs.short +
-                        " / " +
-                        prefs.long
-                      : phaseLabel(phase)}
-                </span>
-                <button onClick={() => setPanel("sessions")} disabled={active}>
-                  Edit
-                </button>
-              </>
+              <strong
+                role="timer"
+                aria-label={phaseLabel(currentPhase) + " " + clock(left)}
+              >
+                {clock(left)}
+              </strong>
+            </div>
+          )}
+          <div
+            id="focus-timer-body"
+            className="focus-body"
+            hidden={prefs.focusCollapsed}
+          >
+            {sessionTabs}
+            {prefs.showTask && (
+              <label className="task-line">
+                <span className="sr-only">Your current task</span>
+                <input
+                  value={prefs.task}
+                  maxLength={120}
+                  placeholder="What are you working on?"
+                  onChange={(e) => setting("task", e.target.value)}
+                />
+              </label>
             )}
+            <DeskClock
+              value={clock(left)}
+              label={phaseLabel(currentPhase)}
+              plain={prefs.clockStyle === "plain"}
+            />
+            <div className="round-line">
+              {inRoom ? (
+                <span>
+                  {room.connected ? "Together in Greenvale" : "Reconnecting"} ·{" "}
+                  {room.snapshot?.members.filter((m) => m.online).length ?? 0}{" "}
+                  here
+                </span>
+              ) : (
+                <>
+                  <span>
+                    {cycle && cycle.next !== "done"
+                      ? "Round " +
+                        Math.min(
+                          cycle.completed + (currentPhase === "focus" ? 1 : 0),
+                          cycle.rounds,
+                        ) +
+                        " of " +
+                        cycle.rounds
+                      : prefs.cycle && phase === "focus"
+                        ? rounds +
+                          " rounds · " +
+                          prefs.focus +
+                          " / " +
+                          prefs.short +
+                          " / " +
+                          prefs.long
+                        : phaseLabel(phase)}
+                  </span>
+                  <button
+                    onClick={() => setPanel("sessions")}
+                    disabled={active}
+                  >
+                    Edit
+                  </button>
+                </>
+              )}
+            </div>
           </div>
           {sessionActions}
-          <details className="desk-customizer">
-            <summary>Arrange your desk</summary>
-            <label>
-              Light{" "}
-              <select
-                value={prefs.deskTheme}
-                onChange={(e) => setting("deskTheme", e.target.value)}
-              >
-                <option value="lamplight">Lamplight</option>
-                <option value="moonlight">Moonlight</option>
-                <option value="ink">Quiet ink</option>
-              </select>
-            </label>
-            <label>
-              Clock{" "}
-              <select
-                value={prefs.clockStyle}
-                onChange={(e) => setting("clockStyle", e.target.value)}
-              >
-                <option value="flip">Split-flap</option>
-                <option value="plain">Plain digits</option>
-              </select>
-            </label>
-            <button onClick={() => setPanel("audio")}>Choose a sound</button>
-          </details>
-          {!active && (save.motivation ?? "gentle") !== "off" && (
-            <p className="town-advice">
-              {motivationLine(
-                save.motivation ?? "gentle",
-                save.sessions.length,
-                Math.floor(now / 86400000),
-              )}
-            </p>
+          {!prefs.focusCollapsed && (
+            <details className="desk-customizer">
+              <summary>Arrange your desk</summary>
+              <label>
+                Light{" "}
+                <select
+                  value={prefs.deskTheme}
+                  disabled={prefs.background !== "observatory"}
+                  title={
+                    prefs.background !== "observatory"
+                      ? "Garden and paper have their own daylight palette"
+                      : undefined
+                  }
+                  onChange={(e) => setting("deskTheme", e.target.value)}
+                >
+                  <option value="lamplight">Lamplight</option>
+                  <option value="moonlight">Moonlight</option>
+                  <option value="ink">Quiet ink</option>
+                </select>
+              </label>
+              <label>
+                Clock{" "}
+                <select
+                  value={prefs.clockStyle}
+                  onChange={(e) => setting("clockStyle", e.target.value)}
+                >
+                  <option value="flip">Split-flap</option>
+                  <option value="plain">Plain digits</option>
+                </select>
+              </label>
+              <label>
+                Background{" "}
+                <select
+                  value={prefs.background}
+                  onChange={(e) =>
+                    setting(
+                      "background",
+                      e.target.value as typeof prefs.background,
+                    )
+                  }
+                >
+                  <option value="observatory">The observatory</option>
+                  <option value="paper">Paper desk</option>
+                  <option value="garden">Garden morning</option>
+                </select>
+              </label>
+              <label>
+                Finish{" "}
+                <select
+                  value={prefs.deskFinish}
+                  onChange={(e) =>
+                    setting(
+                      "deskFinish",
+                      e.target.value as typeof prefs.deskFinish,
+                    )
+                  }
+                >
+                  <option value="walnut">Walnut & brass</option>
+                  <option value="porcelain">Porcelain</option>
+                  <option value="terracotta">Terracotta</option>
+                </select>
+              </label>
+              <label>
+                Clock size{" "}
+                <select
+                  value={prefs.clockSize}
+                  onChange={(e) =>
+                    setting(
+                      "clockSize",
+                      e.target.value as typeof prefs.clockSize,
+                    )
+                  }
+                >
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                  <option value="large">Large</option>
+                </select>
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={prefs.showTask}
+                  onChange={(e) => setting("showTask", e.target.checked)}
+                />
+                Show task
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={prefs.showAdvice}
+                  onChange={(e) => setting("showAdvice", e.target.checked)}
+                />
+                Show a word before work
+              </label>
+              <div className="desk-tools">
+                <button onClick={() => setPanel("sessions")}>
+                  Set session lengths
+                </button>
+                <button onClick={() => setPanel("audio")}>
+                  Choose a sound
+                </button>
+                <button
+                  onClick={() => setPrefs((p) => ({ ...p, ...deskDefaults }))}
+                >
+                  Reset desk look
+                </button>
+              </div>
+            </details>
           )}
+          {!prefs.focusCollapsed &&
+            prefs.showAdvice &&
+            !active &&
+            (save.motivation ?? "gentle") !== "off" && (
+              <p className="town-advice">
+                {motivationLine(
+                  save.motivation ?? "gentle",
+                  save.sessions.length,
+                  Math.floor(now / 86400000),
+                )}
+              </p>
+            )}
           {inRoom && room.snapshot && (
             <p className="completion-line">
               {room.snapshot.sharedMinutes} shared minutes · the river beacon
@@ -1307,6 +1430,113 @@ function Game() {
           <TourPicture kind={TOUR_STEPS[tourStep].art} />
           <p className="tour-copy">{TOUR_STEPS[tourStep].body}</p>
           <p className="tour-hint">{TOUR_STEPS[tourStep].hint}</p>
+          {tourStep === 0 && (
+            <form
+              className="tour-try"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const next = characterNameFrom(characterDraft);
+                if (!next) {
+                  setTourNameNote("Choose a name with 1–24 characters.");
+                  return;
+                }
+                if (
+                  update((current) => ({ ...current, characterName: next }))
+                ) {
+                  setName(next);
+                  setTourNameNote("Welcome to Greenvale, " + next + ".");
+                } else {
+                  setTourNameNote(
+                    "That name could not be saved. Check Save & backup after the tour, then try again.",
+                  );
+                }
+              }}
+            >
+              <label className="text-field">
+                What should the town call you?
+                <input
+                  value={characterDraft}
+                  maxLength={24}
+                  placeholder="Your character name"
+                  onChange={(e) => setCharacterDraft(e.target.value)}
+                />
+              </label>
+              <Button type="submit" disabled={!canSave}>
+                Keep this name
+              </Button>
+              <p role="status">
+                {!canSave
+                  ? "Another tab or a storage problem is keeping this save read-only. You can continue the tour."
+                  : tourNameNote}
+              </p>
+            </form>
+          )}
+          {tourStep === 1 && (
+            <div className="tour-try">
+              <label className="text-field">
+                One thing to work on
+                <input
+                  value={prefs.task}
+                  maxLength={120}
+                  placeholder="e.g. finish the history notes"
+                  onChange={(e) => setting("task", e.target.value)}
+                />
+              </label>
+              <div className="tour-rhythm" aria-label="First focus length">
+                {[15, 25, 45].map((minutes) => (
+                  <button
+                    key={minutes}
+                    disabled={active || inRoom || !!planned}
+                    aria-pressed={Number(prefs.focus) === minutes}
+                    onClick={() => setting("focus", String(minutes))}
+                  >
+                    {minutes} min
+                  </button>
+                ))}
+              </div>
+              <small>
+                {active || inRoom || !!planned
+                  ? "Your current session keeps its settings."
+                  : "This sets your next focus length. Nothing starts yet."}
+              </small>
+            </div>
+          )}
+          {tourStep === 2 && <TourPractice />}
+          {tourStep === 3 && (
+            <details className="tour-secret">
+              <summary>Open a note from Miso</summary>
+              <p>
+                "The blue travel poster in Lantern House is bigger on the
+                inside. The room isn’t. I checked."
+              </p>
+              <small>Look beside the bedroom bookshelf and press E.</small>
+            </details>
+          )}
+          {tourStep === 4 && (
+            <div className="tour-try">
+              <label className="setting-row">
+                Your clock finish
+                <select
+                  value={prefs.deskFinish}
+                  onChange={(e) =>
+                    setting(
+                      "deskFinish",
+                      e.target.value as typeof prefs.deskFinish,
+                    )
+                  }
+                >
+                  <option value="walnut">Walnut & brass</option>
+                  <option value="porcelain">Porcelain</option>
+                  <option value="terracotta">Terracotta</option>
+                </select>
+              </label>
+              <p className="muted">
+                Your desk choices stay on this browser. You can change them
+                under Arrange your desk.
+              </p>
+            </div>
+          )}
+
           <div className="tour-actions">
             <button
               onClick={() => {
@@ -1653,6 +1883,7 @@ function Game() {
             className="tour-replay"
             onClick={() => {
               setTourStep(0);
+              setTourNameNote("");
               setPanel("tutorial");
             }}
           >

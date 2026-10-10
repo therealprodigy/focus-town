@@ -93,7 +93,7 @@ export function getWorldClock(now = Date.now(), mode: LightMode = "cycle") {
 }
 const C = {
   ink: "#192b42",
-  grass: "#7b8960",
+  grass: "#91a36c",
   path: "#b5a686",
   pale: "#eddbc2",
   wood: "#694b34",
@@ -527,7 +527,7 @@ export function renderWorld(
   ctx.clearRect(frame.x, frame.y, frame.width, frame.height);
   paintSurroundings(ctx, o.time, clock.daylight, WORLDS[sceneId].width);
   if (sceneId === "village") {
-    rect(0, 0, 1440, 600, clock.daylight > 0.6 ? "#7b8960" : C.grass);
+    rect(0, 0, 1440, 600, clock.daylight > 0.6 ? "#91a36c" : C.grass);
     for (let i = 0; i < 170; i++) {
       const x = Math.floor(hash(i + 6000) * 240) * 4,
         y = Math.floor(hash(i + 9000) * 150) * 4;
@@ -780,7 +780,7 @@ export function renderWorld(
       rect(x + 4, 88, 2, 44, "#f2e5c3");
       rect(x, 136, 32, 8, "#785534");
     }
-    rect(224, 144, 512, 368, "#b18a57");
+    rect(224, 144, 512, 368, "#c09a66");
     for (let y = 144; y < 512; y += 24) {
       rect(224, y, 512, 2, "#866441");
       for (let x = 224; x < 736; x += 64) {
@@ -1075,8 +1075,8 @@ export function renderWorld(
   }
   // A uniform tint keeps every pixel crisp; illumination uses rectangular patches.
   ctx.save();
-  ctx.globalAlpha = darkness * (sceneId === "village" ? 0.32 : 0.08);
-  rect(frame.x, frame.y, frame.width, frame.height, "#15243e");
+  ctx.globalAlpha = darkness * (sceneId === "village" ? 0.18 : 0.04);
+  rect(frame.x, frame.y, frame.width, frame.height, "#394a52");
   ctx.restore();
   if (sceneId === "village") {
     for (let i = 0; i < 16; i++) {

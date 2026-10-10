@@ -11,6 +11,10 @@ A small town for the thing you keep putting off. Pick a task, light the desk lam
 
 > Release status: the public Play link now includes the Old Crossing expansion and the warmer Clockworks redesign. Automated checks pass. Browser layout, sound levels and a real two-device playtest still need a manual pass; see TEST_PLAN.md.
 
+Choose **Arrange your desk** to switch between the observatory, an illustrated garden morning and a quiet paper desk. Pick a walnut, porcelain or terracotta clock, change its size, or hide the task and encouragement. **Collapse timer** keeps the countdown and session controls in a small panel. Desk choices save in this browser and do not change a running session.
+
+The first-visit guide lets you choose a name, set a task and practise walking to a sign with the keyboard or touch buttons. Replay it from **Settings → New here? Take the town tour**. Practice does not award coins or alter the town.
+
 ## Play now
 
 Open [Focus Town](https://focus-town-greenvale.vercel.app) on a phone, tablet or computer. No account, terminal or download is needed. This is the easiest way to play with friends.

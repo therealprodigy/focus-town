@@ -238,13 +238,13 @@
   color: #f3e5c7;
 }
 [data-focus-theme="lamplight"] .scene-backdrop {
-  filter: sepia(0.23) saturate(0.78) brightness(1.13);
+  filter: sepia(0.1) saturate(1.05) brightness(1.17);
 }
 [data-focus-theme="moonlight"] .scene-backdrop {
-  filter: saturate(0.8) brightness(0.85);
+  filter: saturate(0.95) brightness(0.98);
 }
 [data-focus-theme="ink"] .scene-backdrop {
-  filter: grayscale(0.85) brightness(0.45);
+  filter: grayscale(0.85) brightness(0.6);
 }
 [data-focus-theme="ink"] .desk-clock {
   background: #393b34;
@@ -471,7 +471,7 @@ dialog.wide {
   width: min(620px, calc(100vw - 28px));
 }
 dialog::backdrop {
-  background: #191a1bcc;
+  background: rgb(48 43 35 / 28%);
   backdrop-filter: blur(3px);
 }
 .dialog-top {
@@ -1045,4 +1045,434 @@ dialog .rival-tag {
     width: max-content;
     max-width: 100%;
   }
+}
+
+/* Clay at the desk, glass over the town, paper in the book. */
+:root {
+  --frost: #fff3dd;
+  --frost-edge: #fdf5e5;
+  --frost-ink: #49372b;
+}
+.view-switch,
+.bottom-dock,
+.town-label,
+.town-session,
+.interact-prompt,
+.controls-hint,
+.storage-notice,
+.town-view .storage-notice,
+.toast {
+  background: var(--frost);
+  color: var(--frost-ink);
+  border: 1px solid var(--frost-edge);
+  border-radius: 12px;
+  box-shadow:
+    inset 0 1px #ffffffb3,
+    0 4px 14px #43332a24;
+}
+.view-switch button,
+.bottom-dock button,
+.controls-hint,
+.storage-notice,
+.town-view .storage-notice {
+  color: var(--frost-ink);
+}
+.view-switch button[aria-pressed="true"] {
+  background: #e5d0a9;
+  color: #49372b;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 3px #b39b7866;
+}
+.bottom-dock button:hover {
+  background: #e5d0a9;
+  color: #49372b;
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .view-switch,
+  .bottom-dock,
+  .town-label,
+  .town-session,
+  .interact-prompt,
+  .controls-hint,
+  .storage-notice,
+  .town-view .storage-notice,
+  .toast {
+    background: rgb(255 245 225 / 86%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .town-session {
+    background: rgb(255 245 225 / 92%);
+  }
+}
+.focus-space .start-button,
+.focus-space .button-primary,
+.tour-rhythm button,
+.practice-buttons button {
+  background: #ead6b5;
+  color: #49372b;
+  border: 1px solid #c6a880;
+  border-radius: 10px;
+  box-shadow:
+    inset 2px 2px 3px #fff5dccc,
+    inset -2px -3px 4px #b3926455,
+    0 3px 0 #9b7a50;
+}
+.focus-space .start-button:hover,
+.practice-buttons button:hover:not(:disabled),
+.tour-rhythm button:hover:not(:disabled) {
+  background: #f3dfbc;
+}
+.focus-space .start-button:active:not(:disabled),
+.practice-buttons button:active:not(:disabled) {
+  box-shadow: inset 1px 2px 4px #9b7a5080;
+}
+.desk-customizer[open] {
+  background: #eee0c8;
+  color: #4c382a;
+  border: 1px solid #c2a888;
+  border-radius: 14px;
+  box-shadow:
+    inset 2px 2px 3px #fff9eb,
+    inset -2px -3px 4px #b39a7844;
+}
+.desk-customizer select {
+  background: #fcf1de;
+  color: #49372b;
+  border-color: #b69c78;
+  border-radius: 6px;
+  max-width: 185px;
+}
+.desk-customizer label {
+  margin: 7px;
+  flex-wrap: wrap;
+}
+.desk-customizer input[type="checkbox"] {
+  accent-color: #986444;
+  width: 16px;
+  height: 16px;
+}
+.desk-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  border-top: 1px solid #cdb697;
+  margin-top: 8px;
+  padding-top: 5px;
+}
+.desk-tools button {
+  margin: 0;
+  font-size: 1rem;
+}
+.timer-fold {
+  display: block;
+  margin: 0 auto 10px;
+  padding: 5px 13px;
+  border: 1px solid #c5aa84;
+  background: #f5e5ca;
+  color: #59412c;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.focus-body[hidden] {
+  display: none;
+}
+.focus-space {
+  max-height: calc(100dvh - clamp(100px, 19vh, 220px) - 100px);
+  overflow-y: auto;
+  padding: 0 6px 12px;
+  scrollbar-width: thin;
+}
+.focus-space.is-compact {
+  width: min(340px, 92vw);
+  padding: 16px 20px 22px;
+  border-radius: 16px;
+  background: #efdfc2;
+  color: #49372b;
+  border: 1px solid #c9af89;
+  box-shadow:
+    inset 2px 2px #fff3dc,
+    inset -2px -3px 5px #baa07855;
+}
+.compact-clock span {
+  display: block;
+  font-size: 1.1rem;
+}
+.compact-clock strong {
+  display: block;
+  font:
+    4.8rem/1.1 VT323,
+    monospace;
+  font-variant-numeric: tabular-nums;
+  color: #49372b;
+}
+.is-compact .timer-buttons {
+  margin-top: 10px;
+}
+.is-compact :is(.small-link, .completion-line) {
+  color: #654932;
+}
+[data-clock-size="small"] .clock-digits {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+}
+[data-clock-size="large"] .clock-digits {
+  font-size: clamp(3.6rem, 12vw, 9.5rem);
+}
+[data-desk-finish="porcelain"] .desk-clock:not(.plain-clock) {
+  background: #eadbc2;
+  border-color: #baac95;
+  box-shadow:
+    inset 0 2px #fff6e8,
+    inset 0 -4px #a8977c,
+    0 4px #4b403b40;
+}
+[data-desk-finish="porcelain"] .clock-maker,
+[data-desk-finish="porcelain"] .desk-clock:not(.plain-clock) .clock-colon {
+  color: #685442;
+}
+[data-desk-finish="terracotta"] .desk-clock:not(.plain-clock) {
+  background: #b16f50;
+  border-color: #875139;
+  box-shadow:
+    inset 0 2px #e6ad80,
+    inset 0 -4px #754b38,
+    0 4px #4b403b40;
+}
+[data-desk-finish="terracotta"] .clock-maker,
+[data-desk-finish="terracotta"] .desk-clock:not(.plain-clock) .clock-colon {
+  color: #fff1d7;
+}
+.scene-backdrop.drawn-backdrop {
+  filter: none;
+}
+.app-scene:not(.town-view):is(
+    [data-background="paper"],
+    [data-background="garden"]
+  ) {
+  color: #433b2c;
+  --muted-text: #66563f;
+}
+.app-scene:not(.town-view):is(
+    [data-background="paper"],
+    [data-background="garden"]
+  )
+  :is(
+    .wordmark span,
+    .local-clock span,
+    .phase-tabs button,
+    .task-line input,
+    .round-line,
+    .round-line button,
+    .small-link,
+    .completion-line,
+    .town-advice,
+    .desk-customizer,
+    .chapter-teaser > span,
+    .today-teaser > span
+  ) {
+  color: #574830;
+}
+.app-scene:not(.town-view):is(
+    [data-background="paper"],
+    [data-background="garden"]
+  )
+  .task-line
+  input::placeholder {
+  color: #574830;
+}
+.app-scene:not(.town-view):is(
+    [data-background="paper"],
+    [data-background="garden"]
+  )
+  .phase-tabs
+  button[aria-pressed="true"] {
+  color: #342c21;
+}
+.app-scene:not(.town-view):is(
+    [data-background="paper"],
+    [data-background="garden"]
+  )
+  .plain-clock
+  .clock-digit {
+  color: #44372a;
+}
+.app-scene:not(.town-view):is(
+    [data-background="paper"],
+    [data-background="garden"]
+  )
+  .plain-clock
+  .clock-colon {
+  color: #665038;
+}
+dialog {
+  background: #f6ead4;
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px #fffaf0,
+    0 5px 0 #76604644;
+}
+dialog::backdrop {
+  -webkit-backdrop-filter: blur(3px);
+}
+.tour-try,
+.tour-practice,
+.tour-secret {
+  border-top: 1px solid #cbb594;
+  padding-top: 12px;
+  margin: 12px 0 18px;
+}
+.tour-try .text-field input {
+  width: 100%;
+}
+.tour-rhythm,
+.practice-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.tour-rhythm button,
+.practice-buttons button {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 7px 10px;
+  font: inherit;
+}
+.tour-rhythm button[aria-pressed="true"] {
+  background: #a47047;
+  color: #fff5df;
+  box-shadow: inset 0 2px 3px #54382266;
+  border-color: #805735;
+}
+.practice-map {
+  max-width: 340px;
+  margin: 0 auto;
+  border: 4px solid #a48963;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.practice-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+.practice-map:focus-visible {
+  outline: 3px solid #775031;
+  outline-offset: 4px;
+}
+.practice-status {
+  min-height: 2.7em;
+  margin-top: 12px;
+}
+.tour-secret summary {
+  cursor: pointer;
+  padding: 8px 0;
+  color: #754d2f;
+}
+.tour-secret p {
+  margin-top: 10px;
+}
+@media (max-width: 650px) {
+  .desk-customizer {
+    position: static;
+    width: auto;
+  }
+  .desk-customizer label {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+  }
+  .desk-tools button {
+    font-size: 0.95rem;
+  }
+  [data-clock-size="large"] .clock-digits {
+    font-size: clamp(3.4rem, 11vw, 5.5rem);
+  }
+}
+@media (max-height: 650px) {
+  .focus-space {
+    top: 80px;
+    max-height: calc(100dvh - 166px);
+  }
+  [data-clock-size] .clock-digits {
+    font-size: clamp(3rem, 8vw, 4.5rem);
+  }
+  .desk-customizer {
+    position: static;
+    width: auto;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .view-switch,
+  .bottom-dock,
+  .town-label,
+  .town-session,
+  .interact-prompt,
+  .controls-hint,
+  .storage-notice,
+  .town-view .storage-notice,
+  .toast {
+    background: var(--frost);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  dialog::backdrop {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+@media (forced-colors: active) {
+  .view-switch,
+  .bottom-dock,
+  .town-label,
+  .town-session,
+  .interact-prompt,
+  .controls-hint,
+  .storage-notice,
+  .town-view .storage-notice,
+  .toast,
+  .focus-space.is-compact,
+  .desk-customizer[open],
+  dialog {
+    background: Canvas;
+    color: CanvasText;
+    border-color: ButtonBorder;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Keep the new timer structure out of the retired two-column short-screen layout. */
+.focus-space {
+  display: block;
+  bottom: auto;
+}
+.focus-space .timer-buttons {
+  flex-wrap: wrap;
+}
+.is-compact .start-button {
+  min-width: 0;
+  flex: 1 1 160px;
+  padding-inline: 12px;
+}
+.is-compact .shared-ready,
+.town-session .shared-ready {
+  color: #654932;
+}
+.app-scene:not(.town-view):is(
+    [data-background="paper"],
+    [data-background="garden"]
+  )
+  .focus-space {
+  color: #49372b;
+}
+.app-scene:not(.town-view):is(
+    [data-background="paper"],
+    [data-background="garden"]
+  )
+  .shared-ready {
+  color: #654932;
 }

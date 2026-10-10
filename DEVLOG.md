@@ -116,3 +116,15 @@ Greenvale now uses plaster walls, timber framing, clay and slate roofs, warmer p
 The focus page has a split-flap clock, three lighting choices and a plain-digit option. A short welcome guide explains movement, sessions, repairs and backups, and can be replayed. The listening shelf adds fan, pine-wind and shore loops made with Web Audio. Preferences persist, playback does not.
 
 Review caught two audio-switching races, an old completion that could chime after reloading, and a welcome guide that could interrupt a menu. Those were fixed. All 154 automated tests and both production builds pass. Six new tests check the clock, reachable house discoveries, saved discoveries and audio cleanup. Browser appearance and listening checks remain open because the preview permission is blocked. These are implementation notes, not a claim of manual playtesting or additional human coding hours.
+
+## 10 October 2026: a desk of your own
+
+The next pass gives each place its own material: clay controls around the focus desk, frosted glass over the village and paper for reading. Night still falls, but the blue tint is lighter. The grass and oak floor are brighter too.
+
+The desk can now use the observatory, a drawn garden morning or a quiet paper background. Clock finish, size, task visibility and encouragement are saved preferences. Collapsing the timer leaves its countdown and controls within reach. Resetting the desk leaves session lengths and progress alone.
+
+The welcome guide now asks for a character name and a first task, offers focus lengths, and includes a small practice yard. Walk around a stone, reach the sign and press E. Touch buttons do the same job. The practice has no connection to coins, discoveries or the actual player position.
+
+Automated verification passed 161 tests and the production build before final review. New checks cover preference migration, persistence, invalid settings, practice boundaries, interaction reach and built-in backgrounds. Review found an old short-screen grid conflicting with the compact timer and name feedback hidden behind the tutorial. Both were corrected. Visual and touch testing remain pending because the browser preview permission is still blocked. This entry records AI-assisted implementation; no additional human hours are claimed.
+
+Final source review found no remaining blockers. All 161 tests and both production builds passed after the fixes. Rendered appearance remains unverified.

@@ -52,3 +52,7 @@ MotionSites.ai was reviewed for interface motion references. Its glass, glow and
 The split-flap clock, guide illustrations, plaster-and-timber houses, fireplace, poster and interface treatments are original code in this repository, created with AI assistance. Three ambient sounds (study fan, pine wind and far shore) are synthesized locally with Web Audio; they contain no downloaded samples. Existing recording credits above still apply.
 
 Research used [Minecraft building advice](https://www.minecraft.net/en-us/article/make-your-houses-better) for roof depth and material contrast, [Aceternity floating docks](https://ui.aceternity.com/components/floating-dock) for compact controls, and [React effect guidance](https://react.dev/learn/synchronizing-with-effects) for cleanup. [Spline](https://spline.design/) and [MotionSites](https://motionsites.ai/) were reviewed as references; neither is embedded and no template or paid asset was imported. [MDN Web Audio guidance](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices) informed explicit playback and disposable audio sources.
+
+## Personal desk materials
+
+The paper-desk and garden-morning backdrops are original SVG drawings in src/DeskBackdrop.tsx. The practice yard is drawn in src/TourPractice.tsx. Both were created with AI assistance in VS Code; no external artwork or new downloads were used. The existing observatory credit still applies. Clay controls, frosted town chrome and the paper journal are CSS treatments written for this project.
