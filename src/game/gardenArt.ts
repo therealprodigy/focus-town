@@ -1,6 +1,7 @@
 import { townBrush, paintLantern } from "./townDetails";
 import { paintCat } from "./townLife";
 import type { UpgradeId } from "./townCatalog";
+import { getRoofGeometry } from "./buildingGeometry";
 type Layer = { y: number; paint: () => void };
 export function paintBuildingIdentity(
   ctx: CanvasRenderingContext2D,
@@ -38,13 +39,14 @@ export function paintBuildingIdentity(
         r(x + dx, y + 30 + i * 14, 12, 9, "#b4b8ae");
         r(x + dx, y + 30 + i * 14, 12, 2, "#d0ccb6");
       }
-    r(x + w / 2 - 22, y - 106, 44, 10, "#36595c");
-    r(x + w / 2 - 14, y - 130, 28, 24, "#708c81");
-    r(x + w / 2 - 10, y - 126, 20, 16, "#e2c281");
-    r(x + w / 2 - 2, y - 130, 4, 24, "#3c5554");
-    r(x + w / 2 - 18, y - 136, 36, 6, "#557b73");
-    r(x + w / 2 - 10, y - 144, 20, 8, "#739288");
-    r(x + w / 2 - 2, y - 151, 4, 8, "#dbbd7b");
+    const base = getRoofGeometry(b).lanternBaseY;
+    r(x + w / 2 - 22, base - 10, 44, 10, "#36595c");
+    r(x + w / 2 - 14, base - 34, 28, 24, "#708c81");
+    r(x + w / 2 - 10, base - 30, 20, 16, "#e2c281");
+    r(x + w / 2 - 2, base - 34, 4, 24, "#3c5554");
+    r(x + w / 2 - 18, base - 40, 36, 6, "#557b73");
+    r(x + w / 2 - 10, base - 48, 20, 8, "#739288");
+    r(x + w / 2 - 2, base - 55, 4, 8, "#dbbd7b");
   }
 }
 export function paintGarden(

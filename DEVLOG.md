@@ -136,3 +136,11 @@ The save warning was doing half a job. It protected progress from two tabs writi
 The tutorial review also found an accidental exit: tapping the panel's own padding counted as clicking outside it. The tour now closes only through its explicit controls or Escape. Next and Back return to the heading, including when the player has scrolled down, and Next saves a changed character name instead of silently leaving it behind.
 
 Twelve new automated cases cover tab switching, three waiting tabs, simultaneous requests, cleanup, unavailable messaging and a timer completing only once after a handoff. All 173 tests and both production builds passed. Source review found no remaining blocker. The rendered tour and real browser handoff still need a manual check; browser preview access remains blocked. These notes do not claim additional human coding hours.
+
+## 10 October: roofs need to hold things up
+
+The screenshots caught two small gaps with a large effect: Lottie's chimney and the library roof lantern were hanging in the air. Both still used fixed offsets after the buildings received different roof shapes. Their bases now sit on the roof geometry, with the chimney cap and smoke moving together. The other two chimneys keep their positions.
+
+The fountain's collision footprint now includes the rim on both sides. Standing below it still draws the character in front, as it should. The grey paving blocks use warmer stone, earth-filled joints and clipped corners to fit the path.
+
+Nine new checks inspect the actual drawing coordinates, front/back order and movement around all four fountain edges, including the coffee speed boost. All 182 tests and both production builds passed. Source review found no regression. The paving's appearance still needs a browser check; the automated checks do not establish visual quality. No additional human coding hours are claimed.

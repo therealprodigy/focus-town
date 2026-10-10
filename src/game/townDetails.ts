@@ -55,6 +55,15 @@ export function paintSurroundings(
 }
 export function paintMoonCourt(ctx: CanvasRenderingContext2D) {
   const r = townBrush(ctx);
+  const pavingStone = (x: number, y: number, w: number, h: number) => {
+    // Earth-filled joints and clipped corners keep these flush with the path.
+    r(x - 1, y + 1, w + 2, h - 2, "#978b6a");
+    r(x + 2, y, w - 4, h, "#b8ac8e");
+    r(x, y + 2, w, h - 4, "#b8ac8e");
+    r(x + 3, y + 1, w - 6, 1, "#cbc1a2");
+    r(x + 2, y + h - 2, w - 4, 2, "#a29779");
+    r(x + w - 6, y + 3, 3, 1, "#a29779");
+  };
   // Weathered compass stones, laid around the fountain rather than a UI ring.
   [
     [388, 360, 24, 8],
@@ -66,12 +75,10 @@ export function paintMoonCourt(ctx: CanvasRenderingContext2D) {
     [404, 400, 12, 8],
     [500, 400, 12, 8],
   ].forEach(([x, y, w, h]) => {
-    r(x, y, w, h, "#8794a1");
-    r(x + 2, y, w - 4, 2, "#b2b5b5");
+    pavingStone(x, y, w, h);
   });
   for (let i = 0; i < 5; i++) {
-    r(244 + i * 36, 407 + (i % 2) * 12, 24, 10, "#707c90");
-    r(246 + i * 36, 407 + (i % 2) * 12, 18, 2, "#a1a8b4");
+    pavingStone(244 + i * 36, 407 + (i % 2) * 12, 24, 10);
   }
   // Flower beds and moon-pale ferns soften the edge of the path.
   for (let i = 0; i < 18; i++) {

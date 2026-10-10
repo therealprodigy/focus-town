@@ -6,6 +6,7 @@ import {
   type LightMode,
 } from "./personalization";
 import { paintGarden, paintBuildingIdentity } from "./gardenArt";
+import { getRoofGeometry } from "./buildingGeometry";
 import {
   paintReadingCorner,
   paintMailbox,
@@ -377,34 +378,29 @@ export function renderWorld(
     rect(doorX + 8, y + h - 28, 4, 4, C.amber);
     rect(doorX - 24, y + h, 48, 8, "#7c8673");
     rect(doorX - 20, y + h, 40, 2, "#b8b497");
-    const roofRows = b.name.includes("GOODS")
-      ? 5
-      : b.name.includes("LIBRARY")
-        ? 9
-        : 8;
-    for (let row = 0; row < roofRows; row++) {
-      const inset = (roofRows - 1 - row) * 7,
-        ry = y - (roofRows * 12 - 20) + row * 12;
-      rect(x - 16 + inset, ry, w + 32 - inset * 2, 16, "#513e31");
-      rect(x - 12 + inset, ry, w + 24 - inset * 2, 12, b.roof);
-      for (let tx = x - 8 + inset; tx < x + w + 8 - inset; tx += 24) {
+    const roof = getRoofGeometry(b);
+    roof.courses.forEach(({ x: rx, y: ry, width: rw }, row) => {
+      rect(rx, ry, rw, 16, "#513e31");
+      rect(rx + 4, ry, rw - 8, 12, b.roof);
+      for (let tx = rx + 8; tx < rx + rw - 8; tx += 24) {
         rect(tx + (row % 2) * 4, ry + 2, 16, 2, "#e2bd864c");
         rect(tx + (row % 2) * 4 + 16, ry + 4, 2, 8, "#263a3f55");
         rect(tx + (row % 2) * 4, ry + 10, 18, 2, "#263a3f44");
       }
-    }
+    });
     rect(x - 16, y + 20, w + 32, 6, "#5e442f");
     rect(x - 12, y + 20, w + 24, 2, "#bf9361");
-    rect(x + w - 44, y - 96, 24, 48, "#807663");
-    for (let cy = y - 92; cy < y - 52; cy += 8)
-      rect(x + w - 44, cy, 24, 2, "#b7a187");
-    rect(x + w - 32, y - 90, 2, 10, "#5f5b50");
-    rect(x + w - 48, y - 100, 32, 8, "#3c443e");
+    const chimney = roof.chimney;
+    rect(chimney.x, chimney.y, chimney.width, chimney.height, "#807663");
+    for (let cy = chimney.y + 4; cy < chimney.y + 44; cy += 8)
+      rect(chimney.x, cy, chimney.width, 2, "#b7a187");
+    rect(chimney.x + 12, chimney.y + 6, 2, 10, "#5f5b50");
+    rect(chimney.x - 4, chimney.y - 4, 32, 8, "#3c443e");
     for (let j = 0; j < 3; j++) {
       const phase = (t * 8 + j * 14) % 44;
       rect(
-        x + w - 36 + Math.sin(t + j) * 4,
-        y - 108 - phase,
+        chimney.x + 8 + Math.sin(t + j) * 4,
+        chimney.y - 12 - phase,
         12 + j * 4,
         8,
         "#d5d8be35",
