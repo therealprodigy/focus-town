@@ -267,18 +267,28 @@ function Modal({
   children,
   onClose,
   wide = false,
+  pageKey,
+  dismissOnBackdrop = true,
 }: {
   title: string;
   children: ReactNode;
   onClose: () => void;
   wide?: boolean;
+  pageKey?: number;
+  dismissOnBackdrop?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     const d = ref.current;
     d?.showModal();
     return () => d?.close();
   }, []);
+  useEffect(() => {
+    if (pageKey === undefined) return;
+    ref.current?.scrollTo({ top: 0, behavior: "instant" });
+    heading.current?.focus({ preventScroll: true });
+  }, [pageKey]);
   return (
     <dialog
       ref={ref}
@@ -289,11 +299,21 @@ function Modal({
         onClose();
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (!dismissOnBackdrop || e.target !== e.currentTarget) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        if (
+          e.clientX < rect.left ||
+          e.clientX > rect.right ||
+          e.clientY < rect.top ||
+          e.clientY > rect.bottom
+        )
+          onClose();
       }}
     >
       <div className="dialog-top">
-        <h2 id="dialog-title">{title}</h2>
+        <h2 id="dialog-title" ref={heading} tabIndex={-1}>
+          {title}
+        </h2>
         <Button size="icon" aria-label="Close dialog" onClick={onClose}>
           <Icon name="close" />
         </Button>
@@ -317,6 +337,10 @@ function Game() {
       canRestore,
       recovery,
       storageStatus,
+      writerNotice,
+      canRequestThisTab,
+      requestThisTab,
+      dismissWriterNotice,
       retry,
     } = useSave(),
     room = useRoom();
@@ -848,6 +872,11 @@ function Game() {
   );
   const sessionActions = (
     <>
+      {canRequestThisTab && (
+        <Button variant="outline" onClick={requestThisTab}>
+          Use this tab
+        </Button>
+      )}
       {inRoom && !active && (
         <div className="shared-ready">
           <Button
@@ -1399,10 +1428,23 @@ function Game() {
           </button>
         </aside>
       )}
-      {(notice || room.error || message) && (
+      {(notice || writerNotice || room.error || message) && (
         <div className="toast" role="status">
-          <span>{notice || room.error || message}</span>
-          {!notice && !room.error && (
+          <span>{notice || writerNotice || room.error || message}</span>
+          {!notice && writerNotice && (
+            <>
+              {canRequestThisTab && (
+                <button onClick={requestThisTab}>Use this tab</button>
+              )}
+              <button
+                aria-label="Dismiss tab notice"
+                onClick={dismissWriterNotice}
+              >
+                ×
+              </button>
+            </>
+          )}
+          {!notice && !writerNotice && !room.error && (
             <button aria-label="Dismiss message" onClick={() => setMessage("")}>
               ×
             </button>
@@ -1419,6 +1461,8 @@ function Game() {
       {panel === "tutorial" && (
         <Modal
           title={TOUR_STEPS[tourStep].title}
+          pageKey={tourStep}
+          dismissOnBackdrop={false}
           onClose={() => {
             setting("tutorialDone", true);
             close();
@@ -1458,16 +1502,29 @@ function Game() {
                   value={characterDraft}
                   maxLength={24}
                   placeholder="Your character name"
-                  onChange={(e) => setCharacterDraft(e.target.value)}
+                  onChange={(e) => {
+                    setCharacterDraft(e.target.value);
+                    setTourNameNote("");
+                  }}
                 />
               </label>
               <Button type="submit" disabled={!canSave}>
                 Keep this name
               </Button>
+              {canRequestThisTab && (
+                <Button type="button" onClick={requestThisTab}>
+                  Use this tab
+                </Button>
+              )}
               <p role="status">
                 {!canSave
-                  ? "Another tab or a storage problem is keeping this save read-only. You can continue the tour."
-                  : tourNameNote}
+                  ? canRequestThisTab
+                    ? "This save is read-only. Switch to this tab to keep your name, or skip the tour and return later."
+                    : "This name cannot be saved yet. You can skip the tour and check Save & backup in Settings."
+                  : tourNameNote ||
+                    (characterDraft !== (save.characterName ?? "")
+                      ? "Name not saved yet. Choose Keep this name, or Next page to save it and continue."
+                      : "")}
               </p>
             </form>
           )}
@@ -1552,6 +1609,24 @@ function Game() {
             <Button
               variant="default"
               onClick={() => {
+                if (
+                  tourStep === 0 &&
+                  characterDraft.trim() &&
+                  characterDraft !== (save.characterName ?? "")
+                ) {
+                  const next = characterNameFrom(characterDraft);
+                  if (
+                    !next ||
+                    !update((current) => ({ ...current, characterName: next }))
+                  ) {
+                    setTourNameNote(
+                      "The name could not be saved. You can skip the tour and try again in Settings.",
+                    );
+                    return;
+                  }
+                  setName(next);
+                  setTourNameNote("Welcome to Greenvale, " + next + ".");
+                }
                 if (tourStep < TOUR_STEPS.length - 1) setTourStep((n) => n + 1);
                 else {
                   setting("tutorialDone", true);
@@ -1953,6 +2028,9 @@ function Game() {
           <h3>Your save</h3>
           <p role="status">{storageStatus}</p>
           {notice && <p role="alert">{notice}</p>}
+          {canRequestThisTab && (
+            <Button onClick={requestThisTab}>Use this tab</Button>
+          )}
           <p>
             {save.sessions.length} completed sessions · {save.coins} coins
           </p>

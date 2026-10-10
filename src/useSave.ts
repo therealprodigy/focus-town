@@ -7,6 +7,12 @@ import {
   type SaveData,
 } from "./game/state";
 import { readStoredSave, writeStoredSave } from "./saveStorage";
+import {
+  createSaveWriter,
+  WRITER_MESSAGES,
+  type WriterState,
+  type WriterChannel,
+} from "./saveWriter";
 export function useSave() {
   const [save, setSave] = useState<SaveData>(createSave),
     ref = useRef(save);
@@ -15,6 +21,11 @@ export function useSave() {
   const [ready, setReady] = useState(false),
     [notice, setNotice] = useState("Opening save...");
   const [storageStatus, setStorageStatus] = useState("Opening save...");
+  const [writerState, setWriterState] = useState<WriterState>("opening");
+  const [writerDismissed, setWriterDismissed] = useState(false);
+  const writer = useRef<ReturnType<typeof createSaveWriter> | null>(null);
+  const requestThisTab = useCallback(() => writer.current?.claim(), []);
+  const dismissWriterNotice = useCallback(() => setWriterDismissed(true), []);
   const [recovery, setRecovery] = useState<SaveData | null>(null);
   const persist = useCallback((next: SaveData) => {
     let result = { saved: false, mirrored: false };
@@ -73,9 +84,7 @@ export function useSave() {
     }
   };
   useEffect(() => {
-    let alive = true,
-      release: (() => void) | undefined;
-    const controller = new AbortController();
+    let alive = true;
     const load = () => {
       try {
         const parsed = readStoredSave(localStorage);
@@ -104,37 +113,44 @@ export function useSave() {
         alive = false;
       };
     }
-    setNotice(
-      "Save open in another tab. Close that tab to start sessions here.",
-    );
-    setReady(true);
-    void navigator.locks
-      .request(
-        "focusraid-save-writer",
-        { signal: controller.signal },
-        async () => {
-          if (!alive) return;
-          lock.current = true;
+    let channel: WriterChannel | null = null;
+    try {
+      const native = new BroadcastChannel("focus-town-save-handoff");
+      const endpoint: WriterChannel = {
+        onmessage: null,
+        postMessage: (data) => native.postMessage(data),
+        close: () => native.close(),
+      };
+      native.onmessage = (event) => endpoint.onmessage?.({ data: event.data });
+      channel = endpoint;
+    } catch {
+      // Web Locks still protect the save without cross-tab messages.
+    }
+    const coordinator = createSaveWriter({
+      id: crypto.randomUUID(),
+      channel,
+      request: (signal, hold) =>
+        navigator.locks.request("focusraid-save-writer", { signal }, hold),
+      onOwnership: (owned) => {
+        lock.current = false;
+        if (owned && alive) {
           load();
-          setReady(true);
-          await new Promise<void>((resolve) => {
-            release = resolve;
-          });
-          lock.current = false;
-        },
-      )
-      .catch(() => {
-        if (alive && !controller.signal.aborted) {
-          setStorageStatus("Saving unavailable");
-          setNotice("Could not open the save. Reload to try again.");
-          setReady(true);
+          lock.current = true;
         }
-      });
+      },
+      onState: (state) => {
+        if (!alive) return;
+        setWriterState(state);
+        setWriterDismissed(false);
+        setReady(true);
+      },
+    });
+    writer.current = coordinator;
+    setReady(true);
     return () => {
       alive = false;
-      lock.current = false;
-      controller.abort();
-      release?.();
+      coordinator.dispose();
+      if (writer.current === coordinator) writer.current = null;
     };
   }, []);
   return {
@@ -145,7 +161,19 @@ export function useSave() {
     ready,
     notice,
     recovery,
-    storageStatus,
+    storageStatus:
+      writerState === "owned" || writerState === "opening"
+        ? storageStatus
+        : WRITER_MESSAGES[writerState],
+    writerNotice: writerDismissed ? "" : WRITER_MESSAGES[writerState],
+    canRequestThisTab: [
+      "waiting",
+      "yielded",
+      "stalled",
+      "unavailable",
+    ].includes(writerState),
+    requestThisTab,
+    dismissWriterNotice,
     retry,
     canSave: lock.current && valid.current,
     canRestore: lock.current,

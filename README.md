@@ -82,6 +82,8 @@ Use the public Play link for remote invitations. A localhost invitation works on
 
 ## Your save
 
+If another Focus Town tab has your save open, choose **Use this tab** beside the timer or in Settings. Your saved timer and progress move over; the other tab becomes read-only. You can dismiss the notice without losing that option. An older tab may not understand the switch request: close other Focus Town tabs once, then the waiting tab opens your save automatically. Do not clear site data to fix this message.
+
 Choose a character name in **Settings** or click **Name your character** in Town. Your name, appearance, lighting, encouragement setting, coffee expiry, sessions, discoveries, purchases and journal progress save automatically in this browser. The save status in Settings reports whether the write succeeded.
 
 **Settings → Download progress backup** makes a portable copy of that progress. On another device, open the public game and choose **Import progress**. Importing replaces that browser's progress after confirmation and is blocked during a session or room visit. Timer preferences and online identity are not included.

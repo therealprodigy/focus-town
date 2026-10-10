@@ -1,6 +1,6 @@
 # Owner playtest
 
-Automated checks on 10 October 2026: 154 tests, TypeScript, both production builds and built Worker route/audio checks passed. The browser checks below are not marked complete. Record what you actually see.
+Automated checks on 10 October 2026: 173 tests, TypeScript and both production builds passed. Built Worker route/audio checks passed on the earlier clockworks build. The browser checks below are not marked complete. Record what you actually see.
 
 ## Open it
 
@@ -86,3 +86,13 @@ The six new regression tests cover clock labels and long durations, house reacha
 - Check glass with reduced transparency and high contrast enabled. Paper and garden labels must remain readable.
 
 These browser checks have not been completed by the agent; the saved preview rule blocks access.
+
+## Save handoff and tutorial follow-up
+
+- [ ] Open the same public game in two tabs. In the second, choose Use this tab. Confirm the warning clears, the saved timer continues, and only the second tab can change progress. Switch back.
+- [ ] Dismiss the tab notice. Confirm Use this tab remains beside the timer and in Settings. Repeat with three tabs open.
+- [ ] Keep an older game tab open, then request the save from the new version. Follow the close-tab hint; progress must remain intact without clearing storage.
+- [ ] In the guide, tap the panel padding and backdrop. Neither should skip the tour. Close, Skip and Escape should still work.
+- [ ] Scroll to the bottom of a guide page, then choose Next or Back. Confirm the heading becomes visible and receives keyboard focus. Enter a name and choose Next; return to confirm it saved.
+
+The twelve controller tests use a deterministic browser-lock model. They verify that aborting a granted request does not release its lock; the old holder must explicitly finish first. They are not a substitute for the browser checks above.

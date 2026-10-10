@@ -128,3 +128,11 @@ The welcome guide now asks for a character name and a first task, offers focus l
 Automated verification passed 161 tests and the production build before final review. New checks cover preference migration, persistence, invalid settings, practice boundaries, interaction reach and built-in backgrounds. Review found an old short-screen grid conflicting with the compact timer and name feedback hidden behind the tutorial. Both were corrected. Visual and touch testing remain pending because the browser preview permission is still blocked. This entry records AI-assisted implementation; no additional human hours are claimed.
 
 Final source review found no remaining blockers. All 161 tests and both production builds passed after the fixes. Rendered appearance remains unverified.
+
+## 10 October: the tab that would not let go
+
+The save warning was doing half a job. It protected progress from two tabs writing at once, but told the player to close a tab without offering a way to continue where they were. There is now a Use this tab button. The previous tab stops writing before it releases the browser lock; the selected tab reads the saved progress again before it can make changes. The notice can be dismissed, and the button stays beside the timer and in Settings. Tabs running the older version still need to be closed once.
+
+The tutorial review also found an accidental exit: tapping the panel's own padding counted as clicking outside it. The tour now closes only through its explicit controls or Escape. Next and Back return to the heading, including when the player has scrolled down, and Next saves a changed character name instead of silently leaving it behind.
+
+Twelve new automated cases cover tab switching, three waiting tabs, simultaneous requests, cleanup, unavailable messaging and a timer completing only once after a handoff. All 173 tests and both production builds passed. Source review found no remaining blocker. The rendered tour and real browser handoff still need a manual check; browser preview access remains blocked. These notes do not claim additional human coding hours.
