@@ -46,3 +46,9 @@ Direct OpenGameArt downloads returned HTTP 403 in this environment. The files ab
 The timber house details, shop crates, library cupola, glasshouse, orchard, garden paths, bench, telescope, workbench, outfit palettes and pixel interface symbols are original code-drawn assets in this repository, made with AI assistance. No new external artwork or sound files were added. The twenty-four encouragement lines and garden notes were written for Focus Town; they are not attributed quotations.
 
 MotionSites.ai was reviewed for interface motion references. Its glass, glow and template treatments were not adopted. Motion's reduced-motion guidance informed the decision to keep essential clocks running while ambient motion is disabled. No animation dependency was added.
+
+## Clockworks redesign references
+
+The split-flap clock, guide illustrations, plaster-and-timber houses, fireplace, poster and interface treatments are original code in this repository, created with AI assistance. Three ambient sounds (study fan, pine wind and far shore) are synthesized locally with Web Audio; they contain no downloaded samples. Existing recording credits above still apply.
+
+Research used [Minecraft building advice](https://www.minecraft.net/en-us/article/make-your-houses-better) for roof depth and material contrast, [Aceternity floating docks](https://ui.aceternity.com/components/floating-dock) for compact controls, and [React effect guidance](https://react.dev/learn/synchronizing-with-effects) for cleanup. [Spline](https://spline.design/) and [MotionSites](https://motionsites.ai/) were reviewed as references; neither is embedded and no template or paid asset was imported. [MDN Web Audio guidance](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices) informed explicit playback and disposable audio sources.

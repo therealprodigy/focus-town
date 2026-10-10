@@ -2,6 +2,14 @@ import type { SaveData } from "./state.js";
 import type { Interaction } from "./world.js";
 
 export const DISCOVERIES = {
+  "blue-door": {
+    title: "Room for one more",
+    text: "A blue box on a travel poster promises more room than the rent suggests. Delivery date: yesterday.",
+  },
+  hearth: {
+    title: "The fellowship of the kettle",
+    text: "Jun's meal schedule leaves no time for the quest. You have my mug. And my biscuit.",
+  },
   "field-notes": {
     title: "The missing hour",
     text: "The gardener kept a lamp beside the last row of moonflowers. The missing hour and the garden were waiting for the same traveller.",
@@ -92,6 +100,8 @@ export function recordDiscovery(
 export function discoveryAt(id: string): DiscoveryId | undefined {
   return (
     {
+      "blue-door": "blue-door",
+      hearth: "hearth",
       "field-notes": "field-notes",
       "garden-bench": "garden-bench",
       "copper-scope": "copper-scope",

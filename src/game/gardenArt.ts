@@ -52,7 +52,7 @@ export function paintGarden(
   layers: Layer[],
   time: number,
   upgrades: readonly UpgradeId[],
-  daylight: number,
+  _daylight: number,
 ) {
   const r = townBrush(ctx),
     open = upgrades.includes("crossing-lanterns");
@@ -70,13 +70,13 @@ export function paintGarden(
         r(xx, yy, 10, 2, (xx + yy) % 3 ? "#a0a596" : "#637773");
       }
   };
-  r(960, 0, 480, 600, daylight > 0.6 ? "#3c5757" : "#324b55");
+  r(960, 0, 480, 600, "#7b8960");
   for (let i = 0; i < 260; i++) {
     const x = 964 + ((i * 73) % 472),
       y = (i * 47) % 596;
-    r(x, y, 4, 2, i % 3 ? "#597a73" : "#2c4348");
+    r(x, y, 4, 2, i % 3 ? "#a4aa71" : "#647849");
     if (i % 7 === 0) {
-      r(x + 2, y - 4, 2, 6, "#819783");
+      r(x + 2, y - 4, 2, 6, "#a2b16f");
     }
   }
   path(808, 404, 340, 44);

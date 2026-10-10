@@ -20,3 +20,7 @@ Spoilers below. Each discovery is saved once; rereading it does not create extra
 The eastern discoveries require the three Old Crossing repairs in Lottie's catalogue. Night discoveries use the selected town lighting, so Always evening also works. The game's borrowed-time story advances with completed focus minutes; the garden adds a short side note rather than another long chapter.
 
 The references are written jokes and original drawings. No Minecraft, Terraria or Stardew Valley sprites are included.
+
+## Two things in Lantern House
+
+Walk to the blue travel poster beside the desk and press E. Its unreliable delivery date and generous interior measurements are a Doctor Who nod. Then inspect the fireplace on the right. The fellowship of the kettle has very modest equipment, and a firm opinion about second breakfast. Both discoveries appear in your journal; repeated visits do not pay extra coins.

@@ -1,6 +1,6 @@
 # Owner playtest
 
-Automated checks on 10 October 2026: 148 tests, TypeScript, both production builds and built Worker route/audio checks passed. The browser checks below are not marked complete. Record what you actually see.
+Automated checks on 10 October 2026: 154 tests, TypeScript, both production builds and built Worker route/audio checks passed. The browser checks below are not marked complete. Record what you actually see.
 
 ## Open it
 
@@ -28,7 +28,7 @@ In VS Code, select **Run and Debug → Focus Town: start preview → Play**. If 
 
 ## Sound and saves
 
-- [ ] Open Audio. Nothing should play until you click Play. Try all four tracks, volume, pause and switching tracks.
+- [ ] Open Audio. Nothing should play until you click Play. Try all seven sounds, volume, pause and switching tracks.
 - [ ] Enable the completion chime and test it. Finish a short focus session and listen for one chime. Note harsh volume changes or loop clicks.
 - [ ] Export a save. Import it only after checking the replacement confirmation. Invalid JSON must leave existing progress intact.
 - [ ] Open a second tab. It should not write personal progress, claim rewards or create/join rooms while the first tab owns the save.
@@ -66,3 +66,13 @@ Save a name in Settings, visit Town and reload. Download a progress backup, then
 - [ ] While visiting a host with the bridge repaired, walk across. Leave that room with your own bridge still broken. The player should return safely to the west bank.
 - [ ] View Focus and Town at narrow portrait size, short landscape size, full screen and 200% zoom. Check the opaque timer, dock and character name for overlap. Make sure the revised house and shop details do not cover their doors.
 - [ ] Set encouragement to Off, then try the other three styles. Lines should stay out of the way during an active session.
+
+## Clockworks redesign
+
+- [ ] On a fresh save, use the five-page guide, skip it, reload and replay it in Settings. It must not replace an open menu or a shared room.
+- [ ] Compare the three desk lighting options and flip/plain clocks. Try 1, 25 and 720 minutes, reduced motion and a short phone viewport.
+- [ ] Visit the oak-floored house. Walk to the blue poster, desk, bed and fireplace. The hearth must block movement without blocking those interactions.
+- [ ] Switch rapidly between recordings and ambient sounds while loading, then cancel. Only the latest sound should play. Check volume, pauses and loop seams by ear.
+- [ ] Enable the chime, reload a save with a past completion and listen: that old completion must stay silent. A newly finished session should chime once.
+
+The six new regression tests cover clock labels and long durations, house reachability/collision, discovery save compatibility and audio-node disposal. Rendered layout and listening tests were not performed because the saved preview permission blocked browser access.

@@ -1,3 +1,4 @@
+import { AMBIENT_SOUNDS, createAmbient } from "./ambientAudio";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "./components/ui/button";
 const TRACKS = [
@@ -30,11 +31,34 @@ const TRACKS = [
     url: "https://opengameart.org/content/lofi-hip-hop-loop",
   },
 ] as const;
-export function useSoundLibrary(completedId: string | undefined) {
-  const [track, setTrack] = useState("rain"),
+const ALL_SOUNDS = [...TRACKS, ...AMBIENT_SOUNDS];
+function readSoundPrefs() {
+  try {
+    const p = JSON.parse(localStorage.getItem("focus-town-sound-v1") || "{}");
+    return {
+      track: ALL_SOUNDS.some((t) => t.id === p.track)
+        ? (p.track as string)
+        : "rain",
+      volume:
+        typeof p.volume === "number" && Number.isFinite(p.volume)
+          ? Math.max(0, Math.min(1, p.volume))
+          : 0.35,
+      chime: p.chime === true,
+    };
+  } catch {
+    return { track: "rain", volume: 0.35, chime: false };
+  }
+}
+export function useSoundLibrary(completedId: string | undefined, ready = true) {
+  const [initial] = useState(readSoundPrefs);
+  const hydrated = useRef(false);
+  const wanted = useRef(false);
+  const [loading, setLoading] = useState(false);
+  const synth = useRef<ReturnType<typeof createAmbient> | null>(null);
+  const [track, setTrack] = useState(initial.track),
     [playing, setPlaying] = useState(false),
-    [volume, setVolume] = useState(0.35),
-    [chime, setChime] = useState(false),
+    [volume, setVolume] = useState(initial.volume),
+    [chime, setChime] = useState(initial.chime),
     [error, setError] = useState("");
   const audio = useRef<HTMLAudioElement | null>(null),
     bell = useRef<HTMLAudioElement | null>(null),
@@ -43,18 +67,59 @@ export function useSoundLibrary(completedId: string | undefined) {
   useEffect(
     () => () => {
       generation.current++;
+      wanted.current = false;
       audio.current?.pause();
+      synth.current?.stop();
       bell.current?.pause();
     },
     [],
   );
   useEffect(() => {
+    try {
+      localStorage.setItem(
+        "focus-town-sound-v1",
+        JSON.stringify({ track, volume, chime }),
+      );
+    } catch {
+      /* Sound works without preference storage. */
+    }
+  }, [track, volume, chime]);
+  useEffect(() => {
+    synth.current?.setVolume(volume);
     if (audio.current) audio.current.volume = volume;
     if (bell.current) bell.current.volume = volume;
   }, [volume]);
   const start = async (id = track) => {
     const gen = ++generation.current;
+    wanted.current = true;
+    setLoading(true);
     audio.current?.pause();
+    synth.current?.stop();
+    synth.current = null;
+    setPlaying(false);
+    setError("");
+    if (AMBIENT_SOUNDS.some((t) => t.id === id)) {
+      let next: ReturnType<typeof createAmbient> | undefined;
+      try {
+        next = createAmbient(id, volume);
+        synth.current = next;
+        await next.ready;
+        if (gen === generation.current) {
+          setPlaying(true);
+          setLoading(false);
+        } else next.stop();
+      } catch {
+        next?.stop();
+        if (gen === generation.current) {
+          wanted.current = false;
+          setLoading(false);
+          setError(
+            "This browser could not start the ambient sound. Try a recording instead.",
+          );
+        }
+      }
+      return;
+    }
     const a = new Audio("/audio/" + id + ".mp3");
     a.loop = true;
     a.preload = "none";
@@ -63,16 +128,22 @@ export function useSoundLibrary(completedId: string | undefined) {
     setError("");
     a.onerror = () => {
       if (gen === generation.current) {
+        wanted.current = false;
+        setLoading(false);
         setPlaying(false);
         setError("That sound could not load. Try it again.");
       }
     };
     try {
       await a.play();
-      if (gen === generation.current) setPlaying(true);
-      else a.pause();
+      if (gen === generation.current) {
+        setPlaying(true);
+        setLoading(false);
+      } else a.pause();
     } catch {
       if (gen === generation.current) {
+        wanted.current = false;
+        setLoading(false);
         setPlaying(false);
         setError("Press Play to allow sound in this browser.");
       }
@@ -80,7 +151,11 @@ export function useSoundLibrary(completedId: string | undefined) {
   };
   const stop = () => {
     generation.current++;
+    wanted.current = false;
+    setLoading(false);
     audio.current?.pause();
+    synth.current?.stop();
+    synth.current = null;
     setPlaying(false);
   };
   const testChime = async () => {
@@ -96,22 +171,29 @@ export function useSoundLibrary(completedId: string | undefined) {
     }
   };
   useEffect(() => {
+    if (!ready) return;
+    if (!hydrated.current) {
+      hydrated.current = true;
+      last.current = completedId;
+      return;
+    }
     if (completedId && completedId !== last.current && chime) void testChime();
     last.current = completedId;
-  }, [completedId, chime]);
+  }, [completedId, chime, ready]);
   return {
     track,
     playing,
+    loading,
     volume,
     chime,
     error,
     setVolume,
     setChime,
     testChime,
-    toggle: () => (playing ? stop() : void start()),
+    toggle: () => (wanted.current ? stop() : void start()),
     select: (id: string) => {
       setTrack(id);
-      if (playing) void start(id);
+      if (wanted.current) void start(id);
     },
   };
 }
@@ -123,10 +205,11 @@ export function SoundLibrary({
   return (
     <>
       <p className="muted">
-        Leave a little weather on. Sound starts only when you press Play.
+        Choose a recording or a quiet ambient loop. Nothing plays until you
+        press Play.
       </p>
       <div className="sound-list">
-        {TRACKS.map((t) => (
+        {ALL_SOUNDS.map((t) => (
           <button
             key={t.id}
             aria-pressed={sound.track === t.id}
@@ -145,7 +228,11 @@ export function SoundLibrary({
       </div>
       <div className="button-row">
         <Button variant="default" onClick={sound.toggle}>
-          {sound.playing ? "Pause sound" : "Play sound"}
+          {sound.loading
+            ? "Cancel loading"
+            : sound.playing
+              ? "Pause sound"
+              : "Play sound"}
         </Button>
         <label className="volume-control">
           Volume
@@ -179,7 +266,7 @@ export function SoundLibrary({
       <details className="audio-credits">
         <summary>Sound credits</summary>
         <p>
-          All five recordings are released under{" "}
+          The four recordings and completion chime are released under{" "}
           <a
             href="https://creativecommons.org/publicdomain/zero/1.0/"
             target="_blank"
@@ -188,6 +275,10 @@ export function SoundLibrary({
             CC0
           </a>
           .
+        </p>
+        <p>
+          The study fan, pine breeze and shore are synthesized in your browser.
+          They contain no external recordings.
         </p>
         {TRACKS.map((t) => (
           <p key={t.id}>

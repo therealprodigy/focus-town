@@ -13,7 +13,7 @@ Use the VS Code integrated terminal in this repository. Install Node.js 24 or ne
 1. Run `npm test` and `npm run build`.
 2. Run `npx vercel login` if this computer is not signed in. Complete authorization in your browser.
 3. If the checkout is not linked, run `npx vercel link` and choose the existing Focus Town project. Do not create another database or project for an ordinary update.
-4. Run `npx vercel deploy --prod`. The remote build applies migrations, builds the frontend and publishes the API.
+4. Run `npx vercel deploy --prod --scope ace-d3af`. The remote build applies migrations, builds the frontend and publishes the API.
 5. Check the production alias printed by Vercel. Verify a normal page, an unknown route, an audio range request and a shared-room invitation.
 
 GitHub is the source repository, but automatic deployments from pushes are not connected yet. A successful Git push alone does not publish a new game build.
@@ -34,4 +34,8 @@ The repository also includes `server/cloudflare.ts` and `wrangler.jsonc` for Wor
 
 A new hostname has separate browser storage. Export a save from the old address and import it at the new one to move personal progress. A save file does not transfer co-op credentials or old invitation links.
 
-The 10 October update passed 148 automated tests, both production builds and the built Worker route/audio checks. These cover the expanded village, coffee accounting, shared appearance, save compatibility and bridge prerequisites as well as the established room and timer rules. See TEST_PLAN.md for the still-required browser and two-device checks. Publication and live API verification are recorded separately from local tests.
+The 10 October update passed 154 automated tests, both production builds and the built Worker route/audio checks. These cover the expanded village, coffee accounting, shared appearance, save compatibility and bridge prerequisites as well as the established room and timer rules. See TEST_PLAN.md for the still-required browser and two-device checks. Publication and live API verification are recorded separately from local tests.
+
+The existing project was verified on 10 October under the ACE team (scope ace-d3af): focus-town-greenvale, project ID prj_82TJLcnZsFHKs52lJSAH8P2Yqu4E. Its ID matches the local link. The earlier account-access diagnosis was incorrect; a new project or database is not needed.
+
+Clockworks was published on 10 October 2026 at https://focus-town-greenvale.vercel.app. Public page and legal routes return 200, an unknown route returns 404, and rain audio serves byte ranges with 206. Browser playtesting remains pending.

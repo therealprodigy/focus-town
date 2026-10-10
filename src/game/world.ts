@@ -68,7 +68,7 @@ export const BUILDINGS = [
     width: 176,
     height: 120,
     name: "LANTERN HOUSE",
-    roof: "#566580",
+    roof: "#a96949",
     doorX: 244,
   },
   {
@@ -77,7 +77,7 @@ export const BUILDINGS = [
     width: 168,
     height: 128,
     name: "LOTTIE’S GOODS",
-    roof: "#89684f",
+    roof: "#69775b",
     doorX: 508,
   },
   {
@@ -86,7 +86,7 @@ export const BUILDINGS = [
     width: 192,
     height: 140,
     name: "MOTHWICK LIBRARY",
-    roof: "#426d72",
+    roof: "#637b7c",
     doorX: 760,
   },
 ];
@@ -277,7 +277,7 @@ export const WORLDS: Record<SceneId, WorldScene> = {
         title: "The keeper flame",
         lines: [
           "This flame remembers the days you give yourself 25 minutes of focus.",
-          "A small steady light is still a light.",
+          "Twenty-five minutes today lights the lantern. Miss a day and it waits for you. It does not repossess your house.",
         ],
       },
     ],
@@ -296,9 +296,32 @@ export const WORLDS: Record<SceneId, WorldScene> = {
       r(600, 218, 88, 132),
       r(240, 156, 112, 32),
       r(660, 156, 60, 36),
+      r(542, 144, 64, 52),
       r(248, 388, 48, 60),
     ],
     interactions: [
+      {
+        id: "blue-door",
+        label: "Read the blue door poster",
+        kind: "sign",
+        bounds: r(366, 144, 40, 8),
+        title: "Room for one more",
+        lines: [
+          "A battered blue box stands on a travel poster. The caption reads: MUCH ROOMIER THAN THE RENT SUGGESTS.",
+          "Rowan ordered one for the village. Delivery date: yesterday, apparently.",
+        ],
+      },
+      {
+        id: "hearth",
+        label: "Warm up by the hearth",
+        kind: "sign",
+        bounds: r(548, 186, 50, 10),
+        title: "The fellowship of the kettle",
+        lines: [
+          "Jun left a meal schedule on the mantel: breakfast, second breakfast, elevenses, lunch. No space left for the quest.",
+          "Beside it: You have my mug. And my biscuit.",
+        ],
+      },
       {
         id: "window",
         label: "Look through the window",

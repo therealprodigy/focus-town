@@ -1,0 +1,1048 @@
+/* Greenvale's paper, brass and timber. Deliberately shared by both views. */
+:root {
+  --paper: #f3e7d1;
+  --paper-edge: #d2bb93;
+  --walnut: #43332a;
+  --brass: #a8783e;
+  --gold: #edcc8b;
+  --muted-text: #c8c4b4;
+}
+.app-scene {
+  color: #fff5df;
+}
+.topbar {
+  padding: 22px 28px;
+}
+.wordmark {
+  font-size: clamp(0.85rem, 1.7vw, 1.35rem);
+  letter-spacing: 0;
+}
+.wordmark span {
+  font-size: 0.75rem;
+  color: #efe0bc;
+}
+.view-switch {
+  background: #40342ae8;
+  padding: 4px;
+  border: 1px solid #b0946e;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 1px #e4c99d55,
+    0 3px #241d18aa;
+}
+.view-switch button {
+  min-width: 74px;
+  padding: 8px 18px;
+  color: #e8d7b8;
+  font-size: 1.1rem;
+  border-radius: 4px;
+}
+.view-switch button[aria-pressed="true"] {
+  background: #ebd9b3;
+  color: #443128;
+  box-shadow: inset 0 1px #fff5dc;
+}
+.local-clock span {
+  color: #e3d3b4;
+}
+.local-clock {
+  min-width: 105px;
+}
+.focus-space {
+  top: clamp(100px, 19vh, 220px);
+  width: min(720px, 94%);
+}
+.focus-space .phase-tabs {
+  margin-bottom: 14px;
+  gap: 22px;
+}
+.phase-tabs button {
+  font-size: 1.15rem;
+  color: #e2d9c8;
+}
+.task-line input {
+  font-size: 1.35rem;
+  color: #fff4d9;
+}
+.task-line input::placeholder {
+  color: #e5d9c1;
+}
+.desk-clock {
+  width: max-content;
+  max-width: 100%;
+  margin: 22px auto 12px;
+  padding: 16px 18px 10px;
+  background: #5a4435;
+  border: 2px solid #a37b52;
+  border-radius: 10px;
+  box-shadow:
+    inset 0 2px #d5ad77,
+    inset 0 -4px #302820,
+    0 5px #211c18a8;
+}
+.clock-digits {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: VT323, monospace;
+  font-size: clamp(3.6rem, 10vw, 8.5rem);
+  line-height: 1.06;
+}
+.clock-digit {
+  display: block;
+  position: relative;
+  width: 0.65em;
+  height: 1.04em;
+  overflow: hidden;
+  color: #f6e8ca;
+  background: #282925;
+  border: 1px solid #161916;
+  border-radius: 4px;
+  box-shadow:
+    inset 0 2px #555448,
+    inset 0 -2px #141611;
+  perspective: 400px;
+}
+.digit-face {
+  display: block;
+}
+.digit-seam {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #161813c9;
+  border-bottom: 1px solid #766b5144;
+}
+.digit-turn {
+  position: absolute;
+  inset: 0 0 50%;
+  overflow: hidden;
+  background: #30312a;
+  transform-origin: bottom;
+  animation: flip-page 0.38s ease-in forwards;
+  backface-visibility: hidden;
+}
+.digit-turn span {
+  display: block;
+  height: 2em;
+}
+.clock-colon {
+  color: #d7bd8e;
+  font-size: 0.68em;
+  padding-bottom: 0.08em;
+}
+.clock-maker {
+  display: block;
+  font:
+    8px Silkscreen,
+    monospace;
+  color: #dbc3a0;
+  letter-spacing: 0.12em;
+  margin-top: 9px;
+}
+.plain-clock {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+.plain-clock .clock-digit {
+  background: none;
+  box-shadow: none;
+  border: 0;
+  width: 0.54em;
+}
+.plain-clock .digit-seam,
+.plain-clock .digit-turn {
+  display: none;
+}
+.round-line {
+  font-size: 1.05rem;
+  color: #e9dfc9;
+}
+.round-line button {
+  color: #f1d08d;
+}
+.timer-buttons {
+  margin-top: 18px;
+}
+.button-primary,
+.start-button {
+  background: #eed7a7;
+  color: #423126;
+  border: 1px solid #b79760;
+  border-bottom: 3px solid #977344;
+  border-radius: 5px;
+  box-shadow: inset 0 1px #fff0d0;
+}
+.button-primary:hover,
+.start-button:hover {
+  background: #f6e4bf;
+  color: #423126;
+}
+.start-button {
+  font-size: 1.15rem;
+  padding: 12px 28px;
+  min-width: 190px;
+}
+.button-outline {
+  border: 1px solid currentColor;
+  border-radius: 4px;
+}
+.button-ghost {
+  border-radius: 4px;
+}
+.desk-customizer {
+  width: max-content;
+  max-width: 100%;
+  margin: 16px auto 0;
+  color: #ebd8b4;
+  font-size: 1.05rem;
+}
+.desk-customizer summary {
+  cursor: pointer;
+  text-underline-offset: 4px;
+}
+.desk-customizer[open] {
+  padding: 10px 14px;
+  background: #302b27ed;
+  border: 1px solid #a58962;
+  border-radius: 6px;
+}
+.desk-customizer label {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin: 10px;
+}
+.desk-customizer select {
+  background: #554433;
+  color: #ffebc6;
+  border: 1px solid #9c835c;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.desk-customizer button {
+  text-decoration: underline;
+  display: block;
+  margin: auto;
+  padding: 6px;
+}
+.town-advice {
+  max-width: 380px;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  margin: 14px auto 0;
+  color: #f3e5c7;
+}
+[data-focus-theme="lamplight"] .scene-backdrop {
+  filter: sepia(0.23) saturate(0.78) brightness(1.13);
+}
+[data-focus-theme="moonlight"] .scene-backdrop {
+  filter: saturate(0.8) brightness(0.85);
+}
+[data-focus-theme="ink"] .scene-backdrop {
+  filter: grayscale(0.85) brightness(0.45);
+}
+[data-focus-theme="ink"] .desk-clock {
+  background: #393b34;
+  border-color: #8a8e7b;
+}
+.bottom-dock {
+  bottom: max(18px, env(safe-area-inset-bottom));
+  gap: 3px;
+  padding: 5px 8px;
+  border: 1px solid #a38a62;
+  border-top: 2px solid #cfb589;
+  border-radius: 8px;
+  background: #3c3028f5;
+  box-shadow: inset 0 -3px #221e1b;
+}
+.bottom-dock button {
+  min-width: 38px;
+  padding: 9px 11px;
+  font-size: 1rem;
+  color: #f1e3c8;
+  border-radius: 3px;
+}
+.bottom-dock button:hover {
+  color: #fff5dc;
+  background: #796043;
+}
+.bottom-dock svg {
+  width: 17px;
+  height: 17px;
+}
+.chapter-teaser,
+.today-teaser,
+.town-view .chapter-teaser,
+.town-view .today-teaser {
+  background: transparent;
+  padding: 0;
+  bottom: 28px;
+}
+.chapter-teaser {
+  left: 28px;
+  max-width: 180px;
+}
+.chapter-teaser strong {
+  font-size: 1.12rem;
+}
+.chapter-teaser > span {
+  font-size: 0.65rem;
+  margin-bottom: 2px;
+  color: #eadcc0;
+}
+.today-teaser {
+  right: 28px;
+}
+.today-teaser strong {
+  font-size: 1.3rem;
+}
+.today-teaser > span {
+  color: #e6d4b4;
+}
+.town-view .chapter-teaser,
+.town-view .today-teaser {
+  display: none;
+}
+.town-view .topbar .wordmark {
+  visibility: hidden;
+}
+.town-label {
+  left: 24px;
+  top: 24px;
+  padding: 7px 10px;
+  background: #f3e7d1ed;
+  color: #49362a;
+  border: 1px solid #c3a67c;
+  border-radius: 5px;
+  max-width: 220px;
+  gap: 1px;
+  box-shadow: inset 0 1px #fff6e2;
+}
+.town-label span {
+  font-size: 1rem;
+}
+.town-label small {
+  font-size: 0.8rem;
+  color: #786044;
+  letter-spacing: 0;
+}
+.character-name {
+  font-size: 0.95rem;
+  margin-top: 2px;
+}
+.town-view .local-clock {
+  visibility: hidden;
+}
+.town-session {
+  top: 100px;
+  right: 24px;
+  left: auto;
+  width: 244px;
+  padding: 12px 14px;
+  background: #f3e7d1f2;
+  color: #46372b;
+  border: 1px solid #bca37b;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px #fff8e9,
+    0 3px #4a382f55;
+}
+.town-session-heading {
+  color: #564131;
+  font-size: 1.05rem;
+}
+.town-session-heading span:last-child {
+  color: #775b38;
+  font-size: 0.95rem;
+}
+.town-session .phase-tabs {
+  gap: 8px;
+  margin-top: 8px;
+}
+.town-session .phase-tabs button {
+  color: #806b51;
+  font-size: 0.9rem;
+}
+.town-session .phase-tabs button[aria-pressed="true"] {
+  color: #493529;
+}
+.town-session .phase-tabs button:after {
+  background: #9e6d39;
+}
+.town-session-clock {
+  font-size: 3.4rem;
+  margin: 2px 0;
+}
+.town-session-options,
+.town-session-options button {
+  font-size: 0.9rem;
+  color: #745634;
+}
+.town-session .timer-buttons {
+  margin-top: 8px;
+}
+.town-session .start-button {
+  padding: 7px 12px;
+  font-size: 1rem;
+  background: #79523a;
+  color: #fff0d2;
+  border-color: #5b3e2c;
+}
+.town-session .completion-line,
+.town-session .small-link {
+  color: #66503b;
+  font-size: 0.85rem;
+}
+.interact-prompt {
+  bottom: 100px;
+  padding: 7px 13px;
+  color: #43332a;
+  background: #f4e7ccee;
+  border: 1px solid #baa077;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  max-width: 90vw;
+  white-space: normal;
+}
+.interact-prompt kbd {
+  background: #796044;
+  color: #fff1d6;
+  font-size: 0.7rem;
+}
+.controls-hint {
+  bottom: 95px;
+  left: 24px;
+  padding: 5px 9px;
+  color: #ebdcc1;
+  background: #44382fdc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  gap: 10px;
+}
+.controls-hint button {
+  padding: 0 4px;
+  font-size: 1.15rem;
+}
+.storage-notice,
+.town-view .storage-notice {
+  bottom: 145px;
+  left: 28px;
+  color: #f6e4bc;
+  padding: 2px 7px;
+  background: #44382fc9;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+.toast {
+  top: auto;
+  bottom: 96px;
+  padding: 10px 16px;
+  color: #4c3527;
+  background: #f5e7c9;
+  border: 1px solid #b69870;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  max-width: min(460px, 90vw);
+}
+dialog {
+  --muted-text: #77634b;
+  --gold: #8a582c;
+  color-scheme: light;
+  background: #f3e7d1;
+  color: #49372b;
+  border: 1px solid #9e805b;
+  border-top: 4px solid #a77c47;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 1px #fffaef,
+    0 8px 0 #261e1744;
+  padding: 22px 26px;
+  width: min(530px, calc(100vw - 28px));
+  max-height: calc(100dvh - 36px);
+  font-size: 1.15rem;
+  scrollbar-color: #aa8a61 #eadbc0;
+}
+dialog.wide {
+  width: min(620px, calc(100vw - 28px));
+}
+dialog::backdrop {
+  background: #191a1bcc;
+  backdrop-filter: blur(3px);
+}
+.dialog-top {
+  gap: 12px;
+  border-bottom: 1px solid #c6ad85;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+.dialog-top h2 {
+  font-size: clamp(0.95rem, 2.7vw, 1.22rem);
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: #4b3525;
+}
+.dialog-top button {
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 7px;
+  color: #745438;
+  border: 1px solid #cbb492;
+  border-radius: 4px;
+}
+.dialog-top button:hover {
+  background: #e1ccaa;
+}
+dialog p,
+dialog .fine-print,
+dialog .muted {
+  font-size: 1.12rem;
+  line-height: 1.35;
+}
+dialog p {
+  margin-bottom: 14px;
+}
+dialog h3 {
+  font-family: VT323, monospace;
+  color: #79512f;
+  margin: 20px 0 8px;
+  font-size: 1.35rem;
+}
+dialog small {
+  font-size: 0.98rem;
+}
+dialog input:not([type="checkbox"]):not([type="range"]),
+dialog select {
+  background: #fff7e7;
+  border: 1px solid #bca785;
+  color: #49372b;
+  border-radius: 4px;
+  padding: 7px 9px;
+  font-size: 1.1rem;
+}
+dialog input::placeholder {
+  color: #8f7a5d;
+}
+dialog button:focus-visible,
+dialog input:focus-visible,
+dialog select:focus-visible {
+  outline: 2px solid #915b2f;
+  outline-offset: 3px;
+}
+dialog .button-primary {
+  background: #78523a;
+  color: #fff3d8;
+  border-color: #573d2b;
+  box-shadow: inset 0 1px #a27f57;
+}
+dialog .button-primary:hover {
+  background: #946a45;
+}
+dialog .button-outline {
+  border-color: #ac8c64;
+  color: #61472e;
+}
+dialog .phase-tabs button {
+  color: #887257;
+}
+dialog .phase-tabs button[aria-pressed="true"] {
+  color: #513724;
+}
+dialog .phase-tabs button:after {
+  background: #a47844;
+}
+.setting-row {
+  font-size: 1.1rem;
+  padding: 7px 0;
+}
+.setting-row select {
+  max-width: 66%;
+}
+.check-row {
+  font-size: 1.05rem;
+  margin: 12px 0;
+}
+.check-row input {
+  accent-color: #875e36;
+}
+.text-field {
+  font-size: 1.05rem;
+}
+.text-field input {
+  margin-top: 5px;
+}
+.wardrobe {
+  margin: 18px 0;
+  padding: 12px 0;
+  border-top: 1px solid #c6ad85;
+}
+.wardrobe legend {
+  color: #845830;
+  padding-right: 10px;
+}
+.wardrobe-preview {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 6px 0;
+}
+.wardrobe-preview svg {
+  width: 56px;
+  height: 72px;
+}
+.wardrobe-preview small {
+  display: block;
+  color: #806b50;
+}
+.ledger-heading {
+  color: #805b32;
+  margin: 8px 0 14px;
+}
+.ledger-list article,
+.ledger-list article:first-child,
+.coffee-counter {
+  border: 0;
+  border-bottom: 1px solid #cdb999;
+  padding: 14px 0;
+}
+.ledger-list article {
+  gap: 16px;
+}
+.ledger-list article h3 {
+  color: #785031;
+  font-size: 1.25rem;
+}
+.ledger-list p {
+  font-size: 1.05rem;
+}
+.coffee-counter {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  justify-content: space-between;
+}
+.coffee-counter h3 {
+  margin-top: 0;
+  color: #80552d;
+}
+.coffee-counter p {
+  margin-bottom: 5px;
+}
+.sound-list {
+  margin: 8px 0 18px;
+}
+.sound-list button {
+  padding: 11px 6px;
+  gap: 12px;
+  border-color: #cdb999;
+  border-radius: 3px;
+}
+.sound-list button[aria-pressed="true"] {
+  color: #704d2f;
+  background: #e7d4b3;
+}
+.sound-list small {
+  color: #80684b;
+  font-size: 1rem;
+}
+.sound-list strong {
+  font-weight: 400;
+  font-size: 1.2rem;
+}
+.sound-list button > span:last-child {
+  font-size: 0.85rem;
+}
+.record-glyph {
+  color: #9c7244;
+  font-size: 0.8rem;
+}
+.volume-control {
+  font-size: 1.05rem;
+}
+.volume-control input {
+  accent-color: #926138;
+}
+.journal-totals {
+  margin: 8px 0 18px;
+}
+.journal-totals strong {
+  font-size: 2.6rem;
+  color: #6b492d;
+}
+.journal-totals span {
+  font-size: 1rem;
+}
+.bar-track {
+  height: 60px;
+}
+.bar-track i {
+  background: #b29b72;
+}
+.week-chart .today {
+  color: #835b30;
+  border-color: #a27743;
+}
+.today .bar-track i {
+  background: #996b37;
+}
+.journal-meta {
+  border-color: #c7b08a;
+  font-size: 1rem;
+  padding-top: 10px;
+}
+.journal-empty {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  border-block: 1px solid #ceb993;
+  padding: 16px 0;
+  margin-bottom: 14px;
+}
+.journal-empty .tour-picture {
+  width: 120px;
+  flex-shrink: 0;
+  margin: 0;
+}
+.journal-empty p {
+  margin: 0;
+}
+.streak-note {
+  border-top: 1px solid #cbb594;
+  padding-top: 12px;
+  color: #7c542f;
+}
+.town-guide {
+  margin: 14px 0;
+  border-bottom: 1px solid #cbb594;
+  padding-bottom: 10px;
+}
+.town-guide summary {
+  cursor: pointer;
+  color: #765031;
+}
+.town-guide p {
+  color: #7c684e;
+  margin-top: 10px;
+}
+.discovery-list h4 {
+  color: #895f32;
+}
+.tour-picture {
+  display: block;
+  width: 100%;
+  max-height: 140px;
+  margin: 16px auto 22px;
+}
+.tour-count {
+  font-size: 0.8rem;
+  color: #947548;
+  letter-spacing: 0.04em;
+}
+.tour-copy {
+  font-size: 1.2rem;
+}
+.tour-hint {
+  border-top: 1px dashed #bfa57c;
+  padding-top: 12px;
+  color: #886239;
+}
+.tour-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+.tour-actions > button:first-child {
+  margin-right: auto;
+  color: #856e52;
+}
+.tour-replay {
+  color: #81572f;
+  padding: 0 0 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.error {
+  color: #a2432b;
+}
+@keyframes flip-page {
+  0% {
+    transform: rotateX(0);
+  }
+  100% {
+    transform: rotateX(-180deg);
+  }
+}
+@media (max-width: 1000px) {
+  .chapter-teaser,
+  .today-teaser {
+    display: none;
+  }
+  .controls-hint {
+    bottom: 145px;
+  }
+  .town-view .storage-notice {
+    bottom: 185px;
+  }
+}
+@media (max-width: 650px) {
+  .topbar {
+    padding: 14px 16px;
+    align-items: flex-start;
+  }
+  .wordmark {
+    font-size: 0.8rem;
+    max-width: 120px;
+  }
+  .wordmark span {
+    font-size: 0.65rem;
+  }
+  .local-clock {
+    display: none;
+  }
+  .view-switch {
+    position: static;
+    transform: none;
+    margin-left: auto;
+  }
+  .view-switch button {
+    min-width: 56px;
+    padding: 5px 9px;
+    font-size: 1rem;
+  }
+  .focus-space {
+    top: 118px;
+  }
+  .clock-digits {
+    font-size: clamp(3.3rem, 12vw, 5rem);
+    gap: 3px;
+  }
+  .desk-clock {
+    padding: 10px 9px 8px;
+    border-radius: 7px;
+    margin: 16px auto 10px;
+  }
+  .clock-maker {
+    font-size: 6px;
+  }
+  .phase-tabs button {
+    font-size: 1rem;
+  }
+  .task-line input {
+    font-size: 1.12rem;
+  }
+  .desk-customizer {
+    margin-top: 10px;
+  }
+  .town-label {
+    top: 14px;
+    left: 12px;
+    max-width: 165px;
+    padding: 6px 8px;
+  }
+  .town-label span {
+    font-size: 0.8rem;
+  }
+  .town-label small {
+    font-size: 0.7rem;
+  }
+  .town-label .character-name {
+    font-size: 0.8rem;
+  }
+  .town-session {
+    top: 98px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    padding: 8px 12px;
+  }
+  .town-session-clock {
+    font-size: 2.4rem;
+  }
+  .town-session .phase-tabs {
+    margin: 5px 0 0;
+    gap: 16px;
+  }
+  .town-session-options {
+    font-size: 0.8rem;
+  }
+  .bottom-dock {
+    padding: 5px;
+    gap: 1px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .bottom-dock button {
+    width: 36px;
+    min-width: 36px;
+    padding: 8px;
+  }
+  .bottom-dock button span {
+    display: none;
+  }
+  .bottom-dock svg {
+    width: 16px;
+    height: 16px;
+  }
+  .controls-hint {
+    display: none;
+  }
+  .storage-notice,
+  .town-view .storage-notice {
+    bottom: 70px;
+    left: 12px;
+    font-size: 0.8rem;
+  }
+  .interact-prompt {
+    bottom: 122px;
+    font-size: 1rem;
+    width: max-content;
+    max-width: 88%;
+  }
+  .touch-pad {
+    bottom: 166px;
+  }
+  .town-advice {
+    font-size: 1rem;
+    max-width: 270px;
+  }
+  dialog {
+    padding: 18px;
+  }
+  .dialog-top h2 {
+    font-size: 0.9rem;
+  }
+  .coffee-counter {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .journal-empty {
+    gap: 8px;
+  }
+  .journal-empty .tour-picture {
+    width: 80px;
+  }
+  .toast {
+    bottom: 74px;
+    font-size: 1rem;
+  }
+}
+@media (max-height: 700px) {
+  .focus-space {
+    top: 92px;
+  }
+  .clock-digits {
+    font-size: clamp(3.5rem, 9vh, 6rem);
+  }
+  .desk-clock {
+    margin: 10px auto;
+  }
+  .town-advice {
+    margin-top: 8px;
+  }
+  .focus-space .phase-tabs {
+    margin-bottom: 6px;
+  }
+  .desk-customizer {
+    margin-top: 8px;
+  }
+}
+@media (max-height: 530px) {
+  .focus-space {
+    top: 68px;
+  }
+  .focus-space .phase-tabs {
+    margin: 0;
+  }
+  .task-line input {
+    padding: 0;
+  }
+  .clock-digits {
+    font-size: 3rem;
+  }
+  .desk-clock {
+    padding: 6px 9px;
+    margin: 6px auto;
+  }
+  .clock-maker,
+  .town-advice {
+    display: none;
+  }
+  .timer-buttons {
+    margin-top: 8px;
+  }
+  .desk-customizer {
+    position: absolute;
+    right: 0;
+    top: 32px;
+    width: 145px;
+    font-size: 0.85rem;
+  }
+  .town-session {
+    top: 80px;
+    max-height: calc(100dvh - 166px);
+    overflow: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .digit-turn {
+    display: none;
+  }
+  dialog,
+  .focus-space {
+    animation: none;
+  }
+}
+.reduced-motion .digit-turn {
+  display: none;
+}
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Header labels remain clickable through the sparse town chrome. */
+.town-view .topbar {
+  pointer-events: none;
+}
+.town-view .topbar .view-switch {
+  pointer-events: auto;
+}
+.town-label {
+  z-index: 5;
+}
+dialog .eyebrow,
+dialog .session-list b {
+  color: #805730;
+}
+dialog .session-list li {
+  border-color: #cbb697;
+}
+
+dialog .connection-state,
+dialog .rival-tag {
+  color: #825830;
+}
+@media (max-width: 650px) and (max-height: 700px) {
+  .focus-space {
+    top: 90px;
+    max-height: calc(100dvh - 165px);
+    overflow-y: auto;
+    padding: 0 6px 10px;
+    scrollbar-width: thin;
+  }
+  .desk-customizer {
+    position: static;
+    width: max-content;
+    max-width: 100%;
+  }
+}

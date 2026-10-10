@@ -1,3 +1,4 @@
+import { DeskClock, TOUR_STEPS, TourPicture } from "./DeskClock";
 import { TownPersonalization } from "./TownPersonalization";
 import { motivationLine } from "./game/personalization";
 import { coffeeActive } from "./game/state";
@@ -52,6 +53,7 @@ import { Button } from "./components/ui/button";
 import { LegalPage } from "./LegalPage";
 
 type Panel =
+  | "tutorial"
   | "shop"
   | "missions"
   | "audio"
@@ -91,6 +93,9 @@ function loadPrefs() {
     controls: true,
     quiet: matchMedia("(prefers-reduced-motion: reduce)").matches,
     hour24: false,
+    deskTheme: "lamplight",
+    clockStyle: "flip",
+    tutorialDone: false,
   };
   try {
     const p = JSON.parse(
@@ -112,6 +117,11 @@ function loadPrefs() {
       controls: p.controls !== false,
       quiet: p.quiet === true,
       hour24: p.hour24 === true,
+      deskTheme: ["lamplight", "moonlight", "ink"].includes(p.deskTheme)
+        ? p.deskTheme
+        : "lamplight",
+      clockStyle: p.clockStyle === "plain" ? "plain" : "flip",
+      tutorialDone: p.tutorialDone === true,
     };
   } catch {
     return defaults;
@@ -335,6 +345,31 @@ function Game() {
     [backup, setBackup] = useState<SaveData | null>(null);
   const [characterDraft, setCharacterDraft] = useState("");
   const [settingsError, setSettingsError] = useState("");
+  const [tourStep, setTourStep] = useState(0);
+  const offeredTour = useRef(false);
+  useEffect(() => {
+    if (
+      ready &&
+      canSave &&
+      !offeredTour.current &&
+      !prefs.tutorialDone &&
+      !save.timer &&
+      !panel &&
+      !room.credentials &&
+      !invite
+    ) {
+      offeredTour.current = true;
+      setPanel("tutorial");
+    }
+  }, [
+    ready,
+    canSave,
+    prefs.tutorialDone,
+    save.timer,
+    invite,
+    panel,
+    room.credentials,
+  ]);
   useEffect(() => {
     if (ready) {
       setCharacterDraft(save.characterName ?? "");
@@ -359,7 +394,7 @@ function Game() {
     timer = save.timer,
     cycle = save.cycle,
     rt = room.snapshot?.timer;
-  const sound = useSoundLibrary(save.sessions.at(-1)?.id);
+  const sound = useSoundLibrary(save.sessions.at(-1)?.id, ready);
   room.canReport.current = ready && canSave;
   room.stats.current = {
     totalMinutes: progress.totalMinutes,
@@ -894,13 +929,16 @@ function Game() {
           <button
             aria-label="Dismiss session result"
             onClick={() => update(dismissCompletion)}
-          ></button>
+          >
+            ×
+          </button>
         </p>
       )}
     </>
   );
   return (
     <main
+      data-focus-theme={prefs.deskTheme}
       className={
         "app-scene " +
         (view === "town" ? "town-view " : "") +
@@ -971,13 +1009,11 @@ function Game() {
               onChange={(e) => setting("task", e.target.value)}
             />
           </label>
-          <div
-            className="hero-clock"
-            role="timer"
-            aria-label={phaseLabel(currentPhase) + " " + clock(left)}
-          >
-            {clock(left)}
-          </div>
+          <DeskClock
+            value={clock(left)}
+            label={phaseLabel(currentPhase)}
+            plain={prefs.clockStyle === "plain"}
+          />
           <div className="round-line">
             {inRoom ? (
               <span>
@@ -1013,6 +1049,31 @@ function Game() {
             )}
           </div>
           {sessionActions}
+          <details className="desk-customizer">
+            <summary>Arrange your desk</summary>
+            <label>
+              Light{" "}
+              <select
+                value={prefs.deskTheme}
+                onChange={(e) => setting("deskTheme", e.target.value)}
+              >
+                <option value="lamplight">Lamplight</option>
+                <option value="moonlight">Moonlight</option>
+                <option value="ink">Quiet ink</option>
+              </select>
+            </label>
+            <label>
+              Clock{" "}
+              <select
+                value={prefs.clockStyle}
+                onChange={(e) => setting("clockStyle", e.target.value)}
+              >
+                <option value="flip">Split-flap</option>
+                <option value="plain">Plain digits</option>
+              </select>
+            </label>
+            <button onClick={() => setPanel("audio")}>Choose a sound</button>
+          </details>
           {!active && (save.motivation ?? "gentle") !== "off" && (
             <p className="town-advice">
               {motivationLine(
@@ -1112,7 +1173,9 @@ function Game() {
               <button
                 aria-label="Hide controls"
                 onClick={() => setting("controls", false)}
-              ></button>
+              >
+                ×
+              </button>
             </div>
           )}
           {prefs.controls && (
@@ -1208,20 +1271,18 @@ function Game() {
       {storageNotice && !panel && (
         <aside className="storage-notice">
           <button onClick={() => setPanel("settings")}>Save & backup</button>
-          <button
-            aria-label="Dismiss storage notice"
-            onClick={acknowledge}
-          ></button>
+          <button aria-label="Dismiss storage notice" onClick={acknowledge}>
+            ×
+          </button>
         </aside>
       )}
       {(notice || room.error || message) && (
         <div className="toast" role="status">
           <span>{notice || room.error || message}</span>
           {!notice && !room.error && (
-            <button
-              aria-label="Dismiss message"
-              onClick={() => setMessage("")}
-            ></button>
+            <button aria-label="Dismiss message" onClick={() => setMessage("")}>
+              ×
+            </button>
           )}
         </div>
       )}
@@ -1232,8 +1293,52 @@ function Game() {
         hidden
         onChange={(e) => void upload(e.target.files?.[0])}
       />
+      {panel === "tutorial" && (
+        <Modal
+          title={TOUR_STEPS[tourStep].title}
+          onClose={() => {
+            setting("tutorialDone", true);
+            close();
+          }}
+        >
+          <p className="tour-count">
+            THE GREENVALE FIELD GUIDE · {tourStep + 1} / {TOUR_STEPS.length}
+          </p>
+          <TourPicture kind={TOUR_STEPS[tourStep].art} />
+          <p className="tour-copy">{TOUR_STEPS[tourStep].body}</p>
+          <p className="tour-hint">{TOUR_STEPS[tourStep].hint}</p>
+          <div className="tour-actions">
+            <button
+              onClick={() => {
+                setting("tutorialDone", true);
+                close();
+              }}
+            >
+              Skip tour
+            </button>
+            {tourStep > 0 && (
+              <Button onClick={() => setTourStep((n) => n - 1)}>Back</Button>
+            )}
+            <Button
+              variant="default"
+              onClick={() => {
+                if (tourStep < TOUR_STEPS.length - 1) setTourStep((n) => n + 1);
+                else {
+                  setting("tutorialDone", true);
+                  setPanel(null);
+                  switchView("town");
+                }
+              }}
+            >
+              {tourStep < TOUR_STEPS.length - 1
+                ? "Next page"
+                : "Step into town"}
+            </Button>
+          </div>
+        </Modal>
+      )}
       {panel === "audio" && (
-        <Modal title="A little company" onClose={close}>
+        <Modal title="The listening shelf" onClose={close}>
           <SoundLibrary sound={sound} />
         </Modal>
       )}
@@ -1357,7 +1462,7 @@ function Game() {
         </Modal>
       )}
       {panel === "journal" && (
-        <Modal title="Your time, kept." onClose={close} wide>
+        <Modal title="Your field journal" onClose={close} wide>
           <div className="journal-totals">
             <div>
               <strong>{progress.totalMinutes}</strong>
@@ -1372,41 +1477,53 @@ function Game() {
               <span>best streak</span>
             </div>
           </div>
-          <div className="week-chart">
-            {progress.weekActivity.map((d) => (
-              <div
-                key={d.date}
-                className={d.isToday ? "today" : ""}
-                aria-label={d.date + ": " + d.minutes + " minutes"}
-              >
-                <span>{d.minutes}</span>
-                <div className="bar-track">
-                  <i
-                    style={{
-                      height:
-                        Math.max(
-                          3,
-                          Math.min(
-                            100,
-                            (d.minutes /
-                              Math.max(
-                                25,
-                                ...progress.weekActivity.map((a) => a.minutes),
-                              )) *
+          {progress.weekActivity.some((day) => day.minutes > 0) ? (
+            <div className="week-chart">
+              {progress.weekActivity.map((d) => (
+                <div
+                  key={d.date}
+                  className={d.isToday ? "today" : ""}
+                  aria-label={d.date + ": " + d.minutes + " minutes"}
+                >
+                  <span>{d.minutes}</span>
+                  <div className="bar-track">
+                    <i
+                      style={{
+                        height:
+                          Math.max(
+                            3,
+                            Math.min(
                               100,
-                          ),
-                        ) + "%",
-                    }}
-                  />
+                              (d.minutes /
+                                Math.max(
+                                  25,
+                                  ...progress.weekActivity.map(
+                                    (a) => a.minutes,
+                                  ),
+                                )) *
+                                100,
+                            ),
+                          ) + "%",
+                      }}
+                    />
+                  </div>
+                  <small>
+                    {new Date(d.date + "T12:00:00").toLocaleDateString([], {
+                      weekday: "short",
+                    })}
+                  </small>
                 </div>
-                <small>
-                  {new Date(d.date + "T12:00:00").toLocaleDateString([], {
-                    weekday: "short",
-                  })}
-                </small>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="journal-empty">
+              <TourPicture kind="letter" />
+              <p>
+                A fresh page. Finish a focus session and this week’s record
+                begins here.
+              </p>
+            </div>
+          )}
           <p className="fine-print">
             25 completed minutes makes a streak day. Your streak stays open
             until midnight.
@@ -1444,6 +1561,21 @@ function Game() {
               Every session earns energy as well as coins. Repairs need both.
               Your friend’s town uses their repairs; leaving returns you to your
               own town safely.
+            </p>
+          </details>
+          <details className="town-guide">
+            <summary>
+              Rumours around Greenvale · {save.discoveries?.length ?? 0} found
+            </summary>
+            <p>
+              Jun’s tea stall has a very familiar travel recommendation. Look at
+              the blue door poster in Lantern House. Try the bookshelf, then the
+              atlas beside the brook.
+            </p>
+            <p>
+              Across the repaired bridge: a workbench that definitely cannot
+              craft swords, a telescope with unusual astronomy, and a cat with
+              management experience.
             </p>
           </details>
           {!!save.discoveries?.length && (
@@ -1516,7 +1648,16 @@ function Game() {
         </Modal>
       )}
       {panel === "settings" && (
-        <Modal title="Settle in." onClose={close}>
+        <Modal title="Your corner of town" onClose={close}>
+          <button
+            className="tour-replay"
+            onClick={() => {
+              setTourStep(0);
+              setPanel("tutorial");
+            }}
+          >
+            New here? Take the town tour
+          </button>
           <form
             onSubmit={(e) => {
               e.preventDefault();

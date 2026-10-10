@@ -106,3 +106,13 @@ Review caught a house beam and a shop crate covering their doors, a reduced-moti
 The README explains downloads, local saves, backup transfer and shared rooms. SECRETS.md lists the small discoveries. Code and documentation changes were made through VS Code. This update used AI-assisted implementation and review; it claims no additional human coding hours. Pixl posting is a separate step from this repository journal.
 
 The source update was pushed to GitHub as 6531174. Vercel rejected the production deployment because the active account cannot access the existing project, so the public game has not received this update yet. Pixl journal posting could not be confirmed through the Brave connection. The reviewer note and previously recorded hours were not changed.
+
+## 10 October 2026: a warmer desk, a lighter town
+
+The screenshots made the problem clear: the same dark teal rectangle covered nearly every interaction. The room was mostly empty purple floor. This pass replaces that treatment with parchment sheets, walnut controls and brass details. The town timer takes less space, and the duplicate town title is gone.
+
+Greenvale now uses plaster walls, timber framing, clay and slate roofs, warmer paths and greener trees. Lantern House has an oak floor, a rust-coloured rug and quilt, a fireplace, a broom rail and a travel poster. The garden and main village share the same ground colour so the time of day no longer changes the terrain in a sudden step.
+
+The focus page has a split-flap clock, three lighting choices and a plain-digit option. A short welcome guide explains movement, sessions, repairs and backups, and can be replayed. The listening shelf adds fan, pine-wind and shore loops made with Web Audio. Preferences persist, playback does not.
+
+Review caught two audio-switching races, an old completion that could chime after reloading, and a welcome guide that could interrupt a menu. Those were fixed. All 154 automated tests and both production builds pass. Six new tests check the clock, reachable house discoveries, saved discoveries and audio cleanup. Browser appearance and listening checks remain open because the preview permission is blocked. These are implementation notes, not a claim of manual playtesting or additional human coding hours.

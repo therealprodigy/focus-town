@@ -19,11 +19,11 @@ export function paintSurroundings(
   width = 960,
 ) {
   const r = townBrush(ctx);
-  r(-1600, -1200, 4160, 3000, "#1c2d47");
+  r(-1600, -1200, 4160, 3000, "#4d624b");
   // A continuous forest surrounds the map, including on wide monitors.
   for (let x = -1500; x < 2500; x += 56)
     for (const y of [-68, 652]) {
-      r(x + 18, y - 20, 12, 96, "#2a334c");
+      r(x + 18, y - 20, 12, 96, "#574b38");
       for (let tier = 0; tier < 4; tier++) {
         const w = 36 + tier * 20;
         r(
@@ -31,18 +31,18 @@ export function paintSurroundings(
           y - 108 + tier * 22,
           w,
           32,
-          tier % 2 ? "#263f59" : "#2c4b63",
+          tier % 2 ? "#425a3c" : "#536c45",
         );
-        r(x + 28 - w / 2, y - 108 + tier * 22, w - 14, 3, "#42627a");
+        r(x + 28 - w / 2, y - 108 + tier * 22, w - 14, 3, "#799057");
       }
     }
   for (let y = -80; y < 850; y += 72)
     for (const x of [-84, width + 48]) {
-      r(x - 6, y, 12, 48, "#3b3b50");
-      r(x - 52, y - 58, 104, 44, "#203b53");
-      r(x - 40, y - 76, 80, 64, "#294d64");
-      r(x - 24, y - 88, 48, 36, "#355c72");
-      r(x - 40, y - 58, 56, 4, "#517990");
+      r(x - 6, y, 12, 48, "#624b36");
+      r(x - 52, y - 58, 104, 44, "#38563a");
+      r(x - 40, y - 76, 80, 64, "#4d6b45");
+      r(x - 24, y - 88, 48, 36, "#68804e");
+      r(x - 40, y - 58, 56, 4, "#91a363");
     }
   // Distant lights share the observatory's cool blue and warm brass palette.
   for (let i = 0; i < 36; i++) {

@@ -9,7 +9,7 @@ A small town for the thing you keep putting off. Pick a task, light the desk lam
       _|__|_   one page at a time
         ||
 
-> Release status: the Old Crossing update is available in this source checkout. The public Play link still runs the preceding release; publishing the update is waiting for access to the existing Vercel project. Browser layout and a real two-device playtest are also pending.
+> Release status: the public Play link now includes the Old Crossing expansion and the warmer Clockworks redesign. Automated checks pass. Browser layout, sound levels and a real two-device playtest still need a manual pass; see TEST_PLAN.md.
 
 ## Play now
 
@@ -61,6 +61,8 @@ Lottie's catalogue also sells porch lanterns, moonflowers, a fountain repair and
 Jun's coffee costs 6 coins. For 30 real minutes it increases walking speed by 35% and adds up to 25% to solo focus coins, rounded down and only for the part of the interval covered by coffee. Pauses use up the coffee's time without earning a bonus. Buy before starting a session. Coffee cannot stack and does not multiply shared-room rewards.
 
 **Settings** includes six coats, four skin tones and three headwear choices. Town lighting can follow the twelve-minute day, your local time, permanent daylight or evening. The town clock and night discoveries use the same setting. Reduced motion stops decorative movement while the clock keeps working. Choose gentle, direct or playful encouragement, or turn it off.
+
+**First visit** offers a five-step town guide. Replay it from Settings. On Focus, open **Arrange your desk** to choose Lamplight, Moonlight or Ink, plus the split-flap clock or plain digits. The listening shelf now has seven choices: four recordings and three original ambient loops. Sound starts only when you press Play.
 
 Looking for the hidden details? [The spoiler guide](SECRETS.md) lists where to find them.
 
