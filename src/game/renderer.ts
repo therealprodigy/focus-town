@@ -1,4 +1,12 @@
 import {
+  DEFAULT_APPEARANCE,
+  OUTFITS,
+  SKINS,
+  type Appearance,
+  type LightMode,
+} from "./personalization";
+import { paintGarden, paintBuildingIdentity } from "./gardenArt";
+import {
   paintReadingCorner,
   paintMailbox,
   paintTeaStall,
@@ -12,6 +20,9 @@ import {
 } from "./townLife";
 import {
   BUILDINGS,
+  GARDEN_TREES,
+  getWorldScene,
+  residentPositions,
   TOWN_LAMPS,
   VILLAGE_TREES,
   WORLDS,
@@ -28,6 +39,7 @@ import {
   paintBell,
 } from "./townDetails";
 export type Peer = {
+  appearance?: Appearance;
   id: string;
   name: string;
   scene: SceneId;
@@ -42,16 +54,27 @@ type Options = TownLife & {
   peers?: Peer[];
   sharedMinutes?: number;
   characterName?: string;
+  appearance?: Appearance;
+  lighting?: LightMode;
+  residentTime?: number;
   time: number;
   activity: "idle" | "walking" | "focusing" | "sleeping";
   streak: number;
   interactionId?: string;
 };
 export const WORLD_DAY_MS = 12 * 60 * 1000;
-export function getWorldClock(now = Date.now()) {
+export function getWorldClock(now = Date.now(), mode: LightMode = "cycle") {
   const safe = Number.isFinite(now) ? now : 0;
+  const date = new Date(safe);
   const hourFloat =
-    (((((safe % WORLD_DAY_MS) / WORLD_DAY_MS) * 24 + 8) % 24) + 24) % 24;
+    mode === "day"
+      ? 12
+      : mode === "night"
+        ? 22
+        : mode === "local"
+          ? date.getHours() + date.getMinutes() / 60
+          : (((((safe % WORLD_DAY_MS) / WORLD_DAY_MS) * 24 + 8) % 24) + 24) %
+            24;
   const hour = Math.floor(hourFloat),
     minute = Math.floor((hourFloat % 1) * 60);
   const label =
@@ -172,8 +195,9 @@ export function renderWorld(
   o: Options,
 ) {
   const t = o.time / 1000,
-    clock = getWorldClock(),
+    clock = getWorldClock(Date.now(), o.lighting),
     darkness = 1 - clock.daylight;
+  const residents = residentPositions(o.residentTime ?? 0);
   const layers: { y: number; paint: () => void }[] = [];
   const rect = (x: number, y: number, w: number, h: number, color: string) => {
     ctx.fillStyle = color;
@@ -296,7 +320,17 @@ export function renderWorld(
     const { x, y, width: w, height: h, doorX } = b;
     shadow(x + w / 2, y + h, w + 24);
     rect(x - 4, y - 4, w + 8, h + 4, C.ink);
-    rect(x, y, w, h, "#8b8d9b");
+    rect(
+      x,
+      y,
+      w,
+      h,
+      b.name.includes("HOUSE")
+        ? "#a5a08b"
+        : b.name.includes("GOODS")
+          ? "#95866a"
+          : "#939eaa",
+    );
     for (let row = 0; row < h; row += 12) {
       rect(x, y + row, w, 2, "#73798b");
       for (let col = 12; col < w - 12; col += 32) {
@@ -341,9 +375,14 @@ export function renderWorld(
     rect(doorX + 8, y + h - 28, 4, 4, C.amber);
     rect(doorX - 24, y + h, 48, 8, "#7c8673");
     rect(doorX - 20, y + h, 40, 2, "#b8b497");
-    for (let row = 0; row < 8; row++) {
-      const inset = (7 - row) * 7,
-        ry = y - 76 + row * 12;
+    const roofRows = b.name.includes("GOODS")
+      ? 5
+      : b.name.includes("LIBRARY")
+        ? 9
+        : 8;
+    for (let row = 0; row < roofRows; row++) {
+      const inset = (roofRows - 1 - row) * 7,
+        ry = y - (roofRows * 12 - 20) + row * 12;
       rect(x - 16 + inset, ry, w + 32 - inset * 2, 16, "#1f304a");
       rect(x - 12 + inset, ry, w + 24 - inset * 2, 12, b.roof);
       for (let tx = x - 8 + inset; tx < x + w + 8 - inset; tx += 24) {
@@ -434,14 +473,36 @@ export function renderWorld(
             ],
             t: "#b8b9ab",
           }
-        : palette;
+        : { ...palette };
+    const look =
+      peer?.appearance ??
+      (!npc ? o.appearance : undefined) ??
+      DEFAULT_APPEARANCE;
+    if (!npc) {
+      const outfit = OUTFITS[look.outfit],
+        skin = SKINS[look.skin];
+      Object.assign(colors, {
+        T: outfit.coat,
+        t: outfit.light,
+        A: outfit.trim,
+        S: skin.light,
+        s: skin.shade,
+      });
+    }
     matrix(
       ctx,
-      facing === "up"
+      (facing === "up"
         ? back
         : facing === "left" || facing === "right"
           ? side
-          : front,
+          : front
+      ).map((row, i) => {
+        if (npc || look.hat === "witch" || i > 4) return row;
+        if (i < 3) return "................";
+        if (look.hat === "cap")
+          return i === 3 ? ".....hhhhhh....." : "....HHHHHHHH....";
+        return i === 3 ? "......BBBB......" : ".....BBBBBB.....";
+      }),
       -32,
       -64,
       4,
@@ -462,9 +523,9 @@ export function renderWorld(
   ctx.imageSmoothingEnabled = false;
   const frame = o.camera ?? { x: 0, y: 0, width: 960, height: 600 };
   ctx.clearRect(frame.x, frame.y, frame.width, frame.height);
-  paintSurroundings(ctx, o.time, clock.daylight);
+  paintSurroundings(ctx, o.time, clock.daylight, WORLDS[sceneId].width);
   if (sceneId === "village") {
-    rect(0, 0, 960, 600, C.grass);
+    rect(0, 0, 1440, 600, clock.daylight > 0.6 ? "#3c5757" : C.grass);
     for (let i = 0; i < 170; i++) {
       const x = Math.floor(hash(i + 6000) * 240) * 4,
         y = Math.floor(hash(i + 9000) * 150) * 4;
@@ -486,6 +547,7 @@ export function renderWorld(
         rect(x + 6, y - 2, 2, 4, "#6b8d99");
       }
     }
+    paintGarden(ctx, layers, o.time, o.upgrades ?? [], clock.daylight);
     const path = (x: number, y: number, w: number, h: number) => {
       rect(x - 6, y - 4, w + 12, h + 8, "#41576c");
       rect(x - 2, y - 2, w + 4, h + 4, "#5a6c7d");
@@ -535,6 +597,21 @@ export function renderWorld(
       rect(x + 4, 392, 4, 16, C.wood);
       rect(x + 4, 448, 4, 16, C.wood);
     });
+    if (o.upgrades?.includes("crossing-boards")) {
+      for (let y = 404; y < 456; y += 12) {
+        rect(724, y, 88, 9, "#b18b5c");
+        rect(726, y, 84, 2, "#d6b57e");
+      }
+      rect(724, 396, 88, 4, "#d6b57e");
+      rect(724, 456, 88, 4, "#785b3d");
+    }
+    if (
+      o.upgrades?.includes("crossing-cleared") &&
+      !o.upgrades.includes("crossing-boards")
+    ) {
+      rect(710, 454, 30, 6, "#a58356");
+      rect(714, 462, 30, 6, "#ba9965");
+    }
     rect(748, 416, 8, 8, "#aa8055");
     rect(780, 428, 8, 8, "#aa8055");
     rect(580, 432, 100, 48, "#4c697c");
@@ -596,7 +673,14 @@ export function renderWorld(
         });
     layers.push({
       y: 284,
-      paint: () => paintCat(ctx, 554, 284, o.time, o.effect === "cat"),
+      paint: () =>
+        paintCat(
+          ctx,
+          residents.cat.x,
+          residents.cat.y,
+          o.time,
+          o.effect === "cat",
+        ),
     });
     paintLampPools(ctx, darkness);
     for (const lamp of TOWN_LAMPS)
@@ -606,9 +690,15 @@ export function renderWorld(
       });
     BUILDINGS.forEach((b) => {
       lightPatch(b.doorX, b.y + b.height + 4, 76, 44, 0.8);
-      layers.push({ y: b.y + b.height, paint: () => building(b) });
+      layers.push({
+        y: b.y + b.height,
+        paint: () => {
+          building(b);
+          paintBuildingIdentity(ctx, b);
+        },
+      });
     });
-    VILLAGE_TREES.forEach((p, i) =>
+    [...VILLAGE_TREES, ...GARDEN_TREES].forEach((p, i) =>
       layers.push({ y: p.y, paint: () => tree(p.x, p.y, i * 23) }),
     );
     lightPatch(216, 340, 72, 40);
@@ -638,8 +728,16 @@ export function renderWorld(
       { y: 524, paint: () => paintBell(ctx) },
     );
     layers.push(
-      { y: 352, paint: () => character(352, 352, "down", true) },
-      { y: 314, paint: () => character(600, 314, "left", true) },
+      {
+        y: residents.rowan.y,
+        paint: () =>
+          character(residents.rowan.x, residents.rowan.y, "down", true),
+      },
+      {
+        y: residents.mira.y,
+        paint: () =>
+          character(residents.mira.x, residents.mira.y, "left", true),
+      },
     );
     layers.push({
       y: 344,
@@ -657,9 +755,17 @@ export function renderWorld(
       },
     });
     layers.push(
-      { y: 440, paint: () => sign(710, 420, "CLOSED") },
+      {
+        y: 440,
+        paint: () =>
+          sign(
+            710,
+            420,
+            o.upgrades?.includes("crossing-lanterns") ? "OPEN" : "REPAIR",
+          ),
+      },
       { y: 488, paint: () => sign(672, 468, "CHOIR") },
-      { y: 388, paint: () => sign(710, 366, "SEALED") },
+      { y: 388, paint: () => sign(710, 366, "GARDENS") },
     );
   } else {
     rect(frame.x, frame.y, frame.width, frame.height, "#19263c");
@@ -944,9 +1050,11 @@ export function renderWorld(
     }
   }
   if (o.interactionId) {
-    const interaction = WORLDS[sceneId].interactions.find(
-      (value) => value.id === o.interactionId,
-    );
+    const interaction = getWorldScene(
+      sceneId,
+      o.upgrades ?? [],
+      o.residentTime ?? 0,
+    ).interactions.find((value) => value.id === o.interactionId);
     if (interaction) {
       const x = interaction.bounds.x + interaction.bounds.width / 2,
         y = interaction.bounds.y - 16 + (Math.floor(t * 2) % 2) * 2;

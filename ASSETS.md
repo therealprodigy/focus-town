@@ -4,12 +4,12 @@
 
 All fonts are bundled locally under SIL Open Font License 1.1. Full copyright and license notices are included beside the font files.
 
-| Font             | Use                     | Source                                                                        | License file                         |
-| ---------------- | ----------------------- | ----------------------------------------------------------------------------- | ------------------------------------ |
-| Instrument Serif | Retained display font   | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/instrumentserif) | public/fonts/InstrumentSerif-OFL.txt |
-| Inter            | Retained interface font | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/inter)           | public/fonts/Inter-OFL.txt           |
-| Silkscreen       | Wordmark and headings   | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/silkscreen)      | public/fonts/Silkscreen-OFL.txt      |
-| VT323            | Clock and interface     | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/vt323)           | public/fonts/VT323-OFL.txt           |
+| Font             | Use                   | Source                                                                        | License file                         |
+| ---------------- | --------------------- | ----------------------------------------------------------------------------- | ------------------------------------ |
+| Instrument Serif | Bundled, not used     | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/instrumentserif) | public/fonts/InstrumentSerif-OFL.txt |
+| Inter            | Bundled, not used     | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/inter)           | public/fonts/Inter-OFL.txt           |
+| Silkscreen       | Wordmark and headings | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/silkscreen)      | public/fonts/Silkscreen-OFL.txt      |
+| VT323            | Clock and interface   | [Google Fonts](https://github.com/google/fonts/tree/main/ofl/vt323)           | public/fonts/VT323-OFL.txt           |
 
 ## Observatory illustration
 
@@ -40,3 +40,9 @@ Five CC0 recordings are bundled locally as mono 44.1 kHz, 48 kbps MP3 files. No 
 License: https://creativecommons.org/publicdomain/zero/1.0/
 
 Direct OpenGameArt downloads returned HTTP 403 in this environment. The files above were imported from the credited public mirrors through GitHub's Contents API. The initially researched piano and rain tracks from OpenGameArt are not bundled.
+
+## 10 October town expansion
+
+The timber house details, shop crates, library cupola, glasshouse, orchard, garden paths, bench, telescope, workbench, outfit palettes and pixel interface symbols are original code-drawn assets in this repository, made with AI assistance. No new external artwork or sound files were added. The twenty-four encouragement lines and garden notes were written for Focus Town; they are not attributed quotations.
+
+MotionSites.ai was reviewed for interface motion references. Its glass, glow and template treatments were not adopted. Motion's reduced-motion guidance informed the decision to keep essential clocks running while ambient motion is disabled. No animation dependency was added.

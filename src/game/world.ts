@@ -1,3 +1,4 @@
+import type { UpgradeId } from "./townCatalog";
 export type SceneId = "village" | "house";
 export type Facing = "up" | "down" | "left" | "right";
 export interface Point {
@@ -76,7 +77,7 @@ export const BUILDINGS = [
     width: 168,
     height: 128,
     name: "LOTTIE’S GOODS",
-    roof: "#45677c",
+    roof: "#89684f",
     doorX: 508,
   },
   {
@@ -85,7 +86,7 @@ export const BUILDINGS = [
     width: 192,
     height: 140,
     name: "MOTHWICK LIBRARY",
-    roof: "#615f89",
+    roof: "#426d72",
     doorX: 760,
   },
 ];
@@ -98,7 +99,7 @@ const r = (x: number, y: number, width: number, height: number): Rect => ({
 export const WORLDS: Record<SceneId, WorldScene> = {
   village: {
     id: "village",
-    width: 960,
+    width: 1440,
     height: 600,
     spawn: { x: 448, y: 416 },
     solids: [
@@ -112,6 +113,7 @@ export const WORLDS: Record<SceneId, WorldScene> = {
       ...BUILDINGS.map(({ x, y, width, height }) => r(x, y, width, height)),
       ...VILLAGE_TREES.map(({ x, y }) => r(x - 12, y - 18, 24, 20)),
       r(856, 0, 104, 320),
+      r(796, 0, 644, 600),
       r(748, 292, 108, 28),
       r(748, 320, 48, 280),
       r(424, 336, 64, 44),
@@ -367,4 +369,177 @@ export function getNearbyInteraction(
     })
     .filter((v) => v.distance <= 30)
     .sort((a, b) => a.distance - b.distance)[0]?.interaction;
+}
+
+export const GARDEN_TREES = [
+  { x: 1012, y: 120 },
+  { x: 1124, y: 82 },
+  { x: 1252, y: 76 },
+  { x: 1376, y: 92 },
+  { x: 1380, y: 244 },
+  { x: 1400, y: 416 },
+  { x: 1376, y: 568 },
+  { x: 1240, y: 556 },
+  { x: 1040, y: 564 },
+  { x: 952, y: 556 },
+  { x: 954, y: 216 },
+];
+export const GARDEN_INTERACTIONS: Interaction[] = [
+  {
+    id: "field-notes",
+    kind: "sign",
+    label: "Read the gardener’s field notes",
+    bounds: r(1144, 274, 30, 18),
+    title: "The glasshouse journal",
+    lines: [
+      "Leave a lamp beside the last row. Someone may still be finding their way home.",
+      "Rowan recognised the handwriting. The garden had been keeping a place for the same traveller as the clocks.",
+    ],
+  },
+  {
+    id: "garden-bench",
+    kind: "sign",
+    label: "Rest at the two-mug bench",
+    bounds: r(1274, 396, 64, 16),
+    title: "Start / Again",
+    lines: [
+      "Two mugs wait on the bench. One says Start. The other says Again.",
+      "The gardener did not leave instructions about which one to use first.",
+    ],
+  },
+  {
+    id: "copper-scope",
+    kind: "sign",
+    label: "Look through the copper telescope",
+    bounds: r(1304, 292, 24, 18),
+    title: "Kettle major",
+    lines: [
+      "Five stars make a surprisingly convincing kettle.",
+      "Jun insists this is established astronomy. Mira has asked to see the sources.",
+    ],
+  },
+  {
+    id: "crafting-note",
+    kind: "sign",
+    label: "Inspect the old workbench",
+    bounds: r(978, 466, 54, 20),
+    title: "Nine squares",
+    lines: [
+      "[ ][#][ ]  [ ][#][ ]  [#][#][#]",
+      "Two sticks, three planks. A chair. Someone has crossed out diamond sword three times.",
+    ],
+  },
+  {
+    id: "orchard-cat",
+    kind: "npc",
+    label: "Meet the orchard supervisor",
+    bounds: r(1234, 176, 32, 18),
+    title: "Miso’s very official report",
+    lines: [
+      "One muddy paw print. No structural concerns. More fish requested.",
+      "There is a smaller paw print underneath. Miso has hired an intern.",
+    ],
+  },
+  {
+    id: "garden-coffee",
+    kind: "shop",
+    label: "Read Jun’s delivery menu",
+    bounds: r(1084, 380, 32, 20),
+    title: "Coffee, delivered",
+  },
+];
+export function crossingOpen(upgrades: readonly UpgradeId[]) {
+  return upgrades.includes("crossing-lanterns");
+}
+export function residentPositions(now: number) {
+  const walk = (offset: number) => {
+    const phase = ((now / 1000 + offset) % 120) / 60;
+    return phase <= 1 ? phase : 2 - phase;
+  };
+  return {
+    rowan: { x: 346 + walk(0) * 44, y: 352 },
+    mira: { x: 590 + walk(30) * 42, y: 314 },
+    cat: { x: 546 + walk(65) * 24, y: 284 },
+  };
+}
+export function getWorldScene(
+  id: SceneId,
+  upgrades: readonly UpgradeId[],
+  now = 0,
+): WorldScene {
+  const base = WORLDS[id];
+  if (id !== "village") return base;
+  const open = crossingOpen(upgrades),
+    residents = residentPositions(now);
+  let solids = base.solids.filter(
+    (s) =>
+      !(
+        (s.x === 342 && s.y === 334) ||
+        (s.x === 590 && s.y === 296) ||
+        (s.x === 538 && s.y === 272)
+      ),
+  );
+  // Residents yield to the player; moving collision bodies can trap an idle apprentice.
+  if (open) {
+    solids = solids.filter(
+      (s) => !(s.x === 796 && s.width === 644) && !(s.x === 748 && s.y === 320),
+    );
+    solids.push(
+      r(748, 320, 48, 80),
+      r(748, 456, 48, 144),
+      r(724, 396, 88, 4),
+      r(724, 456, 88, 4),
+    );
+  }
+  solids.push(
+    ...GARDEN_TREES.map((p) => r(p.x - 12, p.y - 18, 24, 20)),
+    r(1092, 174, 132, 104),
+    r(1274, 396, 64, 16),
+    r(978, 466, 54, 20),
+    r(1304, 292, 24, 18),
+  );
+  const interactions = base.interactions.map((i): Interaction => {
+    if (i.id === "rowan" || i.id === "mira" || i.id === "cat") {
+      const p = residents[i.id];
+      return { ...i, bounds: r(p.x - 14, p.y - 16, 28, 18) };
+    }
+    if (i.id === "bridge")
+      return {
+        ...i,
+        kind: "shop",
+        label: open ? "Read the crossing plaque" : "Repair the Old Crossing",
+        title: "The Old Crossing",
+        lines: open
+          ? [
+              "Rebuilt one interval at a time.",
+              "The glasshouse journal is waiting across the river.",
+            ]
+          : [
+              "Three repairs will open the eastern gardens.",
+              "Lottie keeps the materials. Rowan handles the splinters.",
+            ],
+      };
+    if (i.id === "forest")
+      return {
+        ...i,
+        title: open ? "Whispering Garden" : "The Old Crossing",
+        lines: open
+          ? [
+              "The crossing is open. Follow the oak boards east to the glasshouse.",
+              "Someone left a field journal beside the door.",
+            ]
+          : [
+              "Rowan needs timber, energy and three good repair jobs.",
+              "The crossing repairs are in Lottie’s catalogue. Each finished stage stays built.",
+            ],
+      };
+    return i;
+  });
+  return {
+    ...base,
+    solids,
+    interactions: open
+      ? [...interactions, ...GARDEN_INTERACTIONS]
+      : interactions,
+  };
 }

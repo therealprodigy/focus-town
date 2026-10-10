@@ -14,12 +14,7 @@
   src: url("/fonts/InstrumentSerif-Regular.ttf") format("truetype");
   font-display: swap;
 }
-@font-face {
-  font-family: Inter;
-  src: url("/fonts/Inter.ttf") format("truetype");
-  font-weight: 100 900;
-  font-display: swap;
-}
+
 :root {
   font-family: VT323, monospace;
   font-size: 16px;
@@ -156,7 +151,7 @@ small {
   letter-spacing: -0.04em;
   text-align: left;
   line-height: 1.1;
-  text-shadow: 0 2px 12px #00132c;
+  text-shadow: none;
 }
 .wordmark span {
   display: block;
@@ -169,13 +164,13 @@ small {
 .view-switch {
   display: flex;
   gap: 4px;
-  background: #10203666;
-  backdrop-filter: blur(12px);
+  background: #162b39;
+  backdrop-filter: none;
   padding: 3px;
-  border-radius: 999px;
+  border-radius: 0;
 }
 .view-switch button {
-  border-radius: 999px;
+  border-radius: 0;
   min-width: 85px;
   color: #bbc8d8;
   font-weight: 400;
@@ -188,7 +183,7 @@ small {
   text-align: right;
   min-width: 120px;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 2px 12px #00132c;
+  text-shadow: none;
 }
 .local-clock time {
   font-size: 1.125rem;
@@ -251,7 +246,7 @@ small {
 }
 .hero-clock {
   font-family:
-    Inter,
+    VT323,
     -apple-system,
     sans-serif;
   font-variant-numeric: tabular-nums;
@@ -261,7 +256,7 @@ small {
   letter-spacing: -0.065em;
   padding-right: 0.065em;
   margin: 4px 0 5px;
-  text-shadow: 0 4px 28px #0a203b66;
+  text-shadow: none;
 }
 .round-line {
   display: flex;
@@ -287,18 +282,18 @@ small {
 .button-primary {
   background: #f0e8d9;
   color: #132438;
-  border-radius: 999px;
+  border-radius: 0;
   transition:
     background 0.2s,
     transform 0.2s;
 }
 .button-primary:hover {
   background: #fff9ed;
-  transform: translateY(-1px);
+  transform: none;
 }
 .button-ghost {
   color: inherit;
-  border-radius: 8px;
+  border-radius: 0;
 }
 .button-ghost:hover {
   background: #ffffff0c;
@@ -307,7 +302,7 @@ small {
   background: #ffffff08;
   color: #eee9df;
   border: 1px solid #ffffff24;
-  border-radius: 8px;
+  border-radius: 0;
 }
 .button-outline:hover {
   background: #ffffff12;
@@ -343,13 +338,11 @@ small {
   align-items: center;
   padding: 5px;
   gap: 3px;
-  background: #102030c9;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 18px;
-  box-shadow:
-    inset 0 1px 0 #ffffff12,
-    0 8px 25px #06112026;
+  background: #182e3b;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 .bottom-dock button {
   font-size: 0.8125rem;
@@ -374,7 +367,7 @@ small {
   bottom: 42px;
   text-align: left;
   max-width: 24%;
-  text-shadow: 0 2px 10px #061528;
+  text-shadow: none;
 }
 .chapter-teaser {
   left: 40px;
@@ -417,7 +410,7 @@ small {
   gap: 14px;
   font-size: 0.75rem;
   color: #c4d0dc;
-  text-shadow: 0 2px 5px #071b30;
+  text-shadow: none;
 }
 .storage-notice button {
   padding: 6px 0;
@@ -438,8 +431,8 @@ small {
   display: flex;
   gap: 18px;
   font-size: 0.875rem;
-  border-radius: 8px;
-  box-shadow: 0 10px 40px #0004;
+  border-radius: 0;
+  box-shadow: none;
 }
 .toast button {
   font-size: 1.2rem;
@@ -465,12 +458,12 @@ small {
 .town-view .topbar {
   background: transparent;
   backdrop-filter: none;
-  text-shadow: 0 2px 10px #10213c;
+  text-shadow: none;
 }
 .town-view .chapter-teaser,
 .town-view .today-teaser {
   background: #14253bdd;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 10px 14px;
   bottom: 30px;
 }
@@ -480,7 +473,7 @@ small {
   left: 40px;
   background: #14253be8;
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -498,7 +491,7 @@ small {
   right: 40px;
   padding: 14px 18px;
   background: #15281ee6;
-  border-radius: 10px;
+  border-radius: 0;
   font-size: 0.8125rem;
 }
 .town-timer b {
@@ -517,7 +510,7 @@ small {
   align-items: center;
   background: #15283deb;
   padding: 12px 20px;
-  border-radius: 8px;
+  border-radius: 0;
   font-size: 0.875rem;
   white-space: nowrap;
 }
@@ -534,7 +527,7 @@ kbd {
   bottom: 126px;
   background: #14253be8;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 0;
   display: flex;
   gap: 18px;
   color: #c5d1df;
@@ -555,12 +548,12 @@ dialog {
   background: #132032;
   color: #e9edf2;
   border: 1px solid #ffffff14;
-  border-radius: 16px;
+  border-radius: 0;
   padding: 30px;
   width: min(500px, calc(100vw - 32px));
   max-height: calc(100dvh - 48px);
   overflow: auto;
-  box-shadow: 0 30px 120px #0008;
+  box-shadow: none;
   animation: dialog-enter 0.2s ease-out;
 }
 dialog.wide {
@@ -568,7 +561,7 @@ dialog.wide {
 }
 dialog::backdrop {
   background: #0812229e;
-  backdrop-filter: blur(6px);
+  backdrop-filter: none;
 }
 .dialog-top {
   display: flex;
@@ -643,7 +636,7 @@ dialog .fine-print {
   border: 1px solid #ffffff1a;
   padding: 8px;
   text-align: center;
-  border-radius: 6px;
+  border-radius: 0;
   font-size: 1rem;
 }
 .setting-row small {
@@ -723,7 +716,7 @@ dialog .fine-print {
 .bar-track i {
   width: 100%;
   background: #9cb9ba;
-  border-radius: 3px 3px 0 0;
+  border-radius: 0;
 }
 .today .bar-track i {
   background: #efd7aa;
@@ -790,7 +783,7 @@ dialog .fine-print {
   width: 100%;
   background: #0b192a;
   border: 1px solid #ffffff20;
-  border-radius: 6px;
+  border-radius: 0;
   padding: 12px;
   font-size: 0.9375rem;
 }
@@ -849,7 +842,7 @@ dialog .fine-print {
   margin: auto;
   background: #0f2031f5;
   padding: 40px;
-  border-radius: 16px;
+  border-radius: 0;
 }
 .document-page .wordmark {
   display: block;
@@ -1144,7 +1137,7 @@ dialog .fine-print {
     padding: 10px;
     background: #15283deb;
     border: 1px solid #bfc7d333;
-    border-radius: 6px;
+    border-radius: 0;
     font-size: 0.75rem;
     min-width: 44px;
     min-height: 44px;
@@ -1244,7 +1237,7 @@ dialog .fine-print {
   background: none;
   padding: 0;
   border-radius: 0;
-  text-shadow: 0 2px 12px #101f36;
+  text-shadow: none;
 }
 .town-label small {
   font-size: 0.7rem;
@@ -1252,8 +1245,8 @@ dialog .fine-print {
 }
 .town-view .chapter-teaser,
 .town-view .today-teaser {
-  background: #10243bcc;
-  border-radius: 3px;
+  background: #182e3b;
+  border-radius: 0;
 }
 .town-session {
   position: absolute;
@@ -1263,8 +1256,8 @@ dialog .fine-print {
   padding: 14px 17px;
   color: #f3eee4;
   background: #132239e8;
-  border-radius: 3px;
-  box-shadow: 0 12px 36px #08142622;
+  border-radius: 0;
+  box-shadow: none;
 }
 .town-session-heading {
   display: flex;
@@ -1396,9 +1389,7 @@ dialog .fine-print {
 .town-session {
   background: none;
   box-shadow: none;
-  text-shadow:
-    0 2px 5px #071a35,
-    0 0 18px #102540;
+  text-shadow: none;
 }
 .town-session .button-primary {
   text-shadow: none;
@@ -1661,4 +1652,161 @@ dialog small {
 .character-name:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 4px;
+}
+
+/* Greenvale uses flat signboards, generous rows and original pixel symbols. */
+.view-switch {
+  background: #162b39;
+  padding: 3px;
+  border-bottom: 1px solid #718d8d;
+}
+.view-switch button[aria-pressed="true"] {
+  background: #345054;
+  color: #f1dfb9;
+}
+.bottom-dock {
+  background: #182e3b;
+  border: 0;
+  border-top: 2px solid #82958b;
+  padding: 8px 12px;
+  gap: 4px;
+}
+.bottom-dock button {
+  min-width: 44px;
+}
+.button-primary {
+  background: #e6d8b5;
+  color: #233c42;
+  border-bottom: 3px solid #ae9669;
+}
+.button-ghost {
+  background: transparent;
+}
+.button-outline {
+  border: 1px solid #748c88;
+  background: transparent;
+}
+dialog {
+  background: #1d333e;
+  border: 1px solid #9aaa98;
+  padding: 28px;
+}
+dialog::backdrop {
+  background: #0b1c2bc9;
+}
+.dialog-top {
+  border-bottom: 1px solid #667d7b;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+.ledger-list article,
+.coffee-counter {
+  background: none;
+  border: 0;
+  border-bottom: 1px solid #4b6468;
+  padding: 20px 0;
+}
+.coffee-counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.coffee-counter h3 {
+  color: #e4c58a;
+}
+.ledger-list article h3 {
+  color: #e1d6b8;
+}
+.town-advice {
+  max-width: 420px;
+  margin: 22px auto 0;
+  color: #e3d8bd;
+  font-size: 1.15rem;
+  line-height: 1.3;
+}
+.wardrobe {
+  border: 0;
+  padding: 16px 0;
+  margin-top: 22px;
+  border-top: 1px solid #4b6468;
+}
+.wardrobe legend {
+  padding: 0 12px 0 0;
+  color: #e4c58a;
+}
+.wardrobe-preview {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+.wardrobe-preview small {
+  display: block;
+  color: #a5b8b8;
+}
+.setting-row select {
+  max-width: 65%;
+  background: #203c47;
+  color: #e5dcc5;
+  border: 1px solid #688482;
+  padding: 8px 10px;
+}
+.coffee-status {
+  color: #e2bc7b !important;
+}
+.streak-note {
+  border-top: 1px solid #4b6468;
+  padding-top: 16px;
+  color: #e4c58a;
+}
+.town-guide {
+  margin: 20px 0;
+  border-bottom: 1px solid #4b6468;
+  padding-bottom: 14px;
+}
+.town-guide summary {
+  cursor: pointer;
+  color: #d4c9a9;
+}
+.town-guide p {
+  color: #b9c8c6;
+}
+.toast,
+.interact-prompt,
+.controls-hint {
+  background: #182e3b;
+  border: 0;
+}
+.town-label {
+  background: #182e3b;
+  padding: 10px 14px;
+}
+.town-session {
+  background: #182e3b;
+  padding: 14px 18px;
+}
+.town-session-heading {
+  color: #d6d9c9;
+}
+.document-page article {
+  background: #1d333e;
+}
+@media (max-width: 650px) {
+  dialog {
+    padding: 20px;
+  }
+  .coffee-counter {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .town-advice {
+    font-size: 1rem;
+    max-width: 290px;
+    margin-top: 12px;
+  }
+  .town-label {
+    padding: 8px 10px;
+  }
 }

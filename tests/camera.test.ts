@@ -35,6 +35,6 @@ describe("town framing", () => {
     getCamera(WORLDS.village, player, 390, 844);
     getCamera(WORLDS.village, player, 2560, 1080);
     expect(player).toEqual(before);
-    expect(WORLDS.village.width).toBe(960);
+    expect(WORLDS.village.width).toBe(1440);
   });
 });

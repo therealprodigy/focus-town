@@ -1,7 +1,27 @@
-import type { SaveData } from "./state";
-import type { Interaction } from "./world";
+import type { SaveData } from "./state.js";
+import type { Interaction } from "./world.js";
 
 export const DISCOVERIES = {
+  "field-notes": {
+    title: "The missing hour",
+    text: "The gardener kept a lamp beside the last row of moonflowers. The missing hour and the garden were waiting for the same traveller.",
+  },
+  "garden-bench": {
+    title: "A place for the late ones",
+    text: "Two mugs wait on a bench. One says Start. The other says Again.",
+  },
+  "copper-scope": {
+    title: "An ordinary constellation",
+    text: "The telescope points at five stars shaped like a kettle. Jun insists this is established astronomy.",
+  },
+  "crafting-note": {
+    title: "Nine squares",
+    text: "A workbench diagram reads: two sticks, three planks. Underneath: This is a chair. Please stop trying to craft a diamond sword.",
+  },
+  "orchard-cat": {
+    title: "A very small supervisor",
+    text: "Miso has signed the orchard inspection with one muddy paw. No structural concerns. More fish requested.",
+  },
   "borrowed-time": {
     title: "Borrowed time",
     text: "A library book lives under the bench. Due back three years ago. Mira has stopped charging interest.",
@@ -72,6 +92,11 @@ export function recordDiscovery(
 export function discoveryAt(id: string): DiscoveryId | undefined {
   return (
     {
+      "field-notes": "field-notes",
+      "garden-bench": "garden-bench",
+      "copper-scope": "copper-scope",
+      "crafting-note": "crafting-note",
+      "orchard-cat": "orchard-cat",
       bench: "borrowed-time",
       mail: "wrong-address",
       tea: "tea-secret",

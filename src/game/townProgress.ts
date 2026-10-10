@@ -19,18 +19,33 @@ export function purchaseUpgrade(
     !item ||
     save.upgrades?.includes(item.id) ||
     save.coins < item.price ||
+    save.energy < ("energy" in item ? item.energy : 0) ||
+    ("requires" in item && !(save.upgrades ?? []).includes(item.requires)) ||
     getProgress(save, now).bestStreak < item.streak
   )
     return save;
   return {
     ...save,
     coins: save.coins - item.price,
+    energy: save.energy - ("energy" in item ? item.energy : 0),
     upgrades: [...(save.upgrades ?? []), item.id],
   };
 }
 export function missionProgress(save: SaveData, id: string, now: number) {
   const total = getProgress(save, now).totalMinutes;
   switch (id) {
+    case "old-crossing":
+      return save.upgrades?.includes("crossing-lanterns") ? 1 : 0;
+    case "garden-pages":
+      return ["field-notes", "garden-bench", "copper-scope"].filter((id) =>
+        save.discoveries?.some((d) => d === id),
+      ).length;
+    case "steady-week":
+      return Math.min(getProgress(save, now).bestStreak, 7);
+    case "five-visits":
+      return Math.min(save.sessions.length, 5);
+    case "two-hours":
+      return Math.min(total, 120);
     case "first-page":
       return Math.min(total, 15);
     case "quiet-hour":
@@ -128,6 +143,10 @@ export function applySharedGrant(save: SaveData, grant: SharedGrant): SaveData {
 }
 export function rowanAdvice(save: SaveData, now: number): string {
   const p = getProgress(save, now);
+  if (save.upgrades?.includes("crossing-lanterns"))
+    return "The crossing is open. I left the field notes at the glasshouse. Mind the cat. It thinks the whole garden is a bed.";
+  if (p.bestStreak >= 30)
+    return "Thirty days. No speech from me. There is a fresh chair by the fire, and your name is on it.";
   if (p.bestStreak >= 7)
     return "Seven steady days. The town is starting to look like someone lives here.";
   if (p.bestStreak > p.currentStreak && !p.todayMinutes)

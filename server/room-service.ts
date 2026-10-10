@@ -1,3 +1,4 @@
+import { validAppearance } from "../src/game/personalization.js";
 import {
   authenticateProfile,
   handleProfile,
@@ -400,7 +401,8 @@ export async function handleApi(
           typeof p.x !== "number" ||
           !Number.isFinite(p.x) ||
           p.x < 7 ||
-          p.x > 953 ||
+          p.x > (p.scene === "village" ? 1433 : 953) ||
+          (p.appearance !== undefined && !validAppearance(p.appearance)) ||
           typeof p.y !== "number" ||
           !Number.isFinite(p.y) ||
           p.y < 10 ||
@@ -414,6 +416,7 @@ export async function handleApi(
           x: p.x,
           y: p.y,
           facing: p.facing,
+          appearance: p.appearance,
           updatedAt: now,
         });
         await db

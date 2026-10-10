@@ -2,15 +2,15 @@
 
 ## Scene and interface
 
-React owns session controls, dialogs, missions, purchases and the room roster. Canvas draws the 960 by 600 top-down world. A responsive camera follows the apprentice on narrow screens without changing world or collision coordinates. Focus and Town share timer controls, permissions and a blue-hour palette. VT323 and Silkscreen provide locally served pixel typography.
+React owns session controls, dialogs, missions, purchases and the room roster. Canvas draws the 1440 by 600 village and 960 by 600 house. A responsive camera follows the apprentice on narrow screens without changing world or collision coordinates. Focus and Town share timer controls, permissions and a blue-hour palette. VT323 and Silkscreen provide locally served pixel typography.
 
-The engine runs movement outside React renders, normalizes diagonal movement and subdivides collision steps. Blur releases held keys. Objects are sorted by their ground position, including individual purchased flowers. Reduced motion stops ambient animation and companion interpolation. Cosmetic upgrades do not change collision. The northern fence, river and sealed eastern woods form a continuous barrier while the bridge is closed.
+The engine runs movement outside React renders, normalizes diagonal movement and subdivides collision steps. Blur releases held keys. Objects are sorted by their ground position, including individual purchased flowers. Reduced motion stops ambient animation and companion interpolation. Cosmetic upgrades do not change collision. The three crossing repairs unlock an explicit bridge corridor and eastern interactions only after the last stage; moving residents yield to the player. The northern fence, river and sealed eastern woods form a continuous barrier while the bridge is closed.
 
 ## Local progression
 
 Pure transitions in src/game/state.ts and src/game/townProgress.ts own timers, purchases, missions, streaks and receipt application. Running timers retain an absolute device-clock deadline; paused timers retain their remaining duration. A Pomodoro plan captures its intervals and rounds when it begins. Automatic breaks start when completion is observed; focus always requires a click.
 
-Discoveries, upgrades and claimed rewards are optional validated arrays in the existing version-one save. Older saves remain valid. The legacy localStorage key is retained. Purchases check coins and best streak, then deduct coins and record the upgrade together. Mission IDs and streak milestones prevent duplicate claims. Missing days do not remove purchases. Discovery interactions do not complete timers or mint coins.
+Discoveries, upgrades and claimed rewards are optional validated arrays in the existing version-one save. Older saves remain valid. The legacy localStorage key is retained. Purchases check coins, energy, prerequisites and best streak, then debit resources and record the upgrade together. Imported repair stages must include their prerequisites. Mission IDs and streak milestones prevent duplicate claims. Missing days do not remove purchases. Discovery interactions do not complete timers or mint coins.
 
 useSave.ts requires an exclusive Web Lock and a valid save before ordinary writes. UI success follows successful persistence. A damaged save blocks ordinary updates but can be replaced with a valid backup after confirmation.
 
@@ -32,4 +32,12 @@ One user-started audio element loops the chosen ambience. Track changes stop its
 
 Drizzle migrations target local Node SQLite and hosted D1. Development data stays in the ignored .sites-runtime directory. Production handlers do not create schema. The build embeds static assets in a browser-compatible Worker, excluding Node SQLite. Known document routes return the app; unknown paths return a custom 404 with HTTP 404 status.
 
-Automated tests cover transition rules, reachable interactions, the sealed forest, real SQLite room permissions, session concurrency, grant recovery and read-only profile behavior. Built Worker checks cover routing and audio responses. Browser layout, playback and two-device behavior remain owner playtests. The configured Site has not yet completed publication; a local invitation is not a public server.
+Automated tests cover transition rules, reachable interactions, the sealed forest, real SQLite room permissions, session concurrency, grant recovery and read-only profile behavior. Built Worker checks cover routing and audio responses. Browser layout, playback and two-device behavior remain owner playtests. The public deployment uses Vercel and Turso/libSQL. A local invitation is still not a public server. See DEPLOYMENT.md for the separate publication step.
+
+## Personalization and coffee
+
+Version-one saves accept optional validated appearance, lighting, motivation and coffee fields. Appearance is a bounded preset selection, also carried in sequenced room presence. Old clients can omit it. Host upgrades determine shared-world collision; personal appearance remains the player's own.
+
+Coffee is a 30-minute wall-clock window purchased while no timer is active. Pause transitions accumulate only overlapping running focus time. Settlement adds the final overlap, caps it to the interval duration, and computes a rounded-down proportional coin bonus. The base energy and XP stay unchanged; authoritative shared receipts use their server-issued rewards. Repeated settlement is inert. This local game trusts the device clock and does not claim tamper-proof rewards.
+
+The selected town clock drives both lighting and discovery conditions. Reduced motion freezes residents and decorative animation, not the clock, study deadline or streak date. Streaks use real local dates regardless of the displayed sky.

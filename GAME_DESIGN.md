@@ -12,10 +12,10 @@ Solo completion earns resources once and advances the five-part story. A day wit
 
 ## Company
 
-An invitation brings up to eight people into one room. The host controls a shared timer. In Town, companions appear in their actual shared scene with approximate movement updates. Overlapping companions are grouped rather than drawn on top of one another. Completed shared minutes light a separate river beacon. They do not change anyone's personal journal.
+An invitation brings up to eight people into one room. The host controls a shared timer. In Town, companions appear in their actual shared scene with approximate movement updates. Overlapping companions are grouped rather than drawn on top of one another. Completed shared minutes light a separate river beacon. Eligible focus completions also enter each participant's personal journal once.
 
 ## Art and interface
 
-Focus uses an original blue-hour observatory illustration, spacious typography and a readable large clock. The town keeps crisp pixel silhouettes and a twelve-minute day/night cycle. Long text belongs in dialogs. Controls can be hidden and motion reduced. There is no music yet.
+Focus uses an original blue-hour observatory illustration, spacious typography and a readable large clock. The town keeps crisp pixel silhouettes and a twelve-minute day/night cycle. Long text belongs in dialogs. Controls can be hidden and motion reduced. A user-started library provides rain, forest, fire and a lo-fi loop, with an optional completion chime.
 
-Only Greenvale and Lantern House are walkable. The shop, library interior, bridge repair, forest, equipment and combat remain future chapters. They need deliberate progression rules and playtesting before they are added.
+Greenvale, Lantern House and the eastern Whispering Garden are walkable. The Old Crossing requires three repairs funded with earned coins and energy. Lottie sells upgrades; Jun sells timed coffee. The library interior, equipment and combat remain outside this release.

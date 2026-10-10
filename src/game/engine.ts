@@ -1,5 +1,6 @@
 import {
   canStand,
+  getWorldScene,
   getNearbyInteraction,
   HOUSE_DESK_SEAT,
   HOUSE_BED_POSITION,
@@ -14,6 +15,7 @@ import { renderWorld, type Peer } from "./renderer";
 import { getCamera } from "./camera";
 import type { DiscoveryId, DiscoveryEffect } from "./discoveries";
 import type { UpgradeId } from "./townCatalog";
+import type { Appearance, LightMode } from "./personalization";
 export const PLAYER_SPEED = 150;
 export function movePlayer(
   scene: WorldScene,
@@ -21,11 +23,15 @@ export function movePlayer(
   dx: number,
   dy: number,
   seconds: number,
+  speed = 1,
 ): Player {
   if (![p.x, p.y, dx, dy, seconds].every(Number.isFinite)) return p;
   const length = Math.hypot(dx, dy);
   if (!length || seconds <= 0) return p;
-  const distance = PLAYER_SPEED * Math.min(seconds, 0.1),
+  const distance =
+      PLAYER_SPEED *
+      Math.min(seconds, 0.1) *
+      Math.max(1, Math.min(Number.isFinite(speed) ? speed : 1, 1.35)),
     steps = Math.ceil(distance / 3);
   const next = {
     ...p,
@@ -56,6 +62,9 @@ export class GameEngine {
   player: Player = { ...WORLDS.village.spawn, facing: "down", walkFrame: 0 };
   sharedMinutes = 0;
   characterName = "";
+  appearance?: Appearance;
+  lighting: LightMode = "cycle";
+  coffee?: { startedAt: number; endsAt: number };
   discoveries: DiscoveryId[] = [];
   upgrades: UpgradeId[] = [];
   private idleSeconds = 0;
@@ -143,7 +152,14 @@ export class GameEngine {
   }
   interact() {
     if (this.blocked || this.session) return;
-    const i = getNearbyInteraction(WORLDS[this.scene], this.player);
+    const i = getNearbyInteraction(
+      getWorldScene(
+        this.scene,
+        this.upgrades,
+        this.reducedMotion ? 0 : Date.now(),
+      ),
+      this.player,
+    );
     if (!i) return;
     if (i.targetScene && i.targetSpawn) {
       this.setScene(i.targetScene, i.targetSpawn);
@@ -189,6 +205,16 @@ export class GameEngine {
     if (!kind && old === "break") this.setScene("house", { x: 644, y: 372 });
   }
   private tick = (now: number) => {
+    const wallNow = Date.now();
+    const world = getWorldScene(
+      this.scene,
+      this.upgrades,
+      this.reducedMotion ? 0 : wallNow,
+    );
+    if (!this.session && !canStand(world, this.player.x, this.player.y)) {
+      if (this.scene === "village" && this.player.x >= 748)
+        this.setScene("village", { x: 688, y: 424 });
+    }
     const dt = this.last ? Math.min((now - this.last) / 1000, 0.05) : 0;
     this.last = now;
     this.elapsed += dt * 1000;
@@ -205,6 +231,7 @@ export class GameEngine {
       p.y += (target.y - p.y) * mix;
       p.facing = target.facing;
       p.name = target.name;
+      p.appearance = target.appearance;
       p.walking = distance > 2;
       p.walkFrame = (p.walkFrame ?? 0) + dt * 8;
     }
@@ -239,7 +266,18 @@ export class GameEngine {
       const dy =
         Number(this.keys.has("s") || this.keys.has("arrowdown")) -
         Number(this.keys.has("w") || this.keys.has("arrowup"));
-      const next = movePlayer(WORLDS[this.scene], this.player, dx, dy, dt);
+      const boosted =
+        this.coffee &&
+        wallNow >= this.coffee.startedAt &&
+        wallNow < this.coffee.endsAt;
+      const next = movePlayer(
+        world,
+        this.player,
+        dx,
+        dy,
+        dt,
+        boosted ? 1.35 : 1,
+      );
       if (next.x !== this.player.x || next.y !== this.player.y)
         activity = "walking";
       this.player = next;
@@ -247,7 +285,14 @@ export class GameEngine {
     const nearby =
       this.blocked || this.session
         ? undefined
-        : getNearbyInteraction(WORLDS[this.scene], this.player);
+        : getNearbyInteraction(
+            getWorldScene(
+              this.scene,
+              this.upgrades,
+              this.reducedMotion ? 0 : Date.now(),
+            ),
+            this.player,
+          );
     if ((nearby?.id ?? "") !== this.nearId) {
       this.nearId = nearby?.id ?? "";
       this.callbacks.onNearby(nearby);
@@ -279,6 +324,9 @@ export class GameEngine {
         peers: this.peers,
         sharedMinutes: this.sharedMinutes,
         characterName: this.characterName,
+        appearance: this.appearance,
+        lighting: this.lighting,
+        residentTime: this.reducedMotion ? 0 : wallNow,
         time: this.reducedMotion ? 0 : this.elapsed,
         activity,
         streak: this.streak,

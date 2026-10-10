@@ -1,3 +1,6 @@
+import { TownPersonalization } from "./TownPersonalization";
+import { motivationLine } from "./game/personalization";
+import { coffeeActive } from "./game/state";
 import { SoundLibrary, useSoundLibrary } from "./SoundLibrary";
 import { TownLedger } from "./TownLedger";
 import {
@@ -115,65 +118,138 @@ function loadPrefs() {
   }
 }
 function Icon({ name }: { name: string }) {
-  const paths: Record<string, ReactNode> = {
-    missions: <path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h4" />,
-    audio: (
-      <>
-        <path d="M9 18V5l11-2v13M9 8l11-2" />
-        <circle cx="6" cy="18" r="3" />
-        <circle cx="17" cy="16" r="3" />
-      </>
-    ),
-    focus: (
-      <>
-        <circle cx="12" cy="12" r="8" />
-        <path d="M12 7v5l3 2" />
-      </>
-    ),
-    town: (
-      <>
-        <path d="m3 11 9-8 9 8M5 10v11h14V10M10 21v-7h4v7" />
-      </>
-    ),
-    journal: (
-      <>
-        <path d="M4 4h6l2 2 2-2h6v16h-6l-2 1-2-1H4zM12 6v15" />
-      </>
-    ),
-    settings: (
-      <>
-        <path d="M4 6h16M4 12h16M4 18h16M8 3v6M16 9v6M9 15v6" />
-      </>
-    ),
-    people: (
-      <>
-        <circle cx="9" cy="8" r="3" />
-        <path d="M3 21v-4a6 6 0 0 1 12 0v4M16 5a3 3 0 0 1 0 6M18 15a4 4 0 0 1 3 4v2" />
-      </>
-    ),
-    expand: <path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" />,
-    close: <path d="m6 6 12 12M18 6 6 18" />,
-    play: <path d="m8 5 11 7-11 7z" />,
-    pause: <path d="M8 5v14M16 5v14" />,
-    leaf: (
-      <>
-        <path d="M4 20 18 6M5 17C-1 8 12 3 21 3c0 10-4 19-13 15" />
-      </>
-    ),
+  const glyphs: Record<string, string[]> = {
+    missions: [
+      "11111110",
+      "10000010",
+      "10111010",
+      "10000010",
+      "10111010",
+      "10000010",
+      "11111110",
+    ],
+    audio: [
+      "00111100",
+      "00100100",
+      "00100100",
+      "00100100",
+      "11111100",
+      "11111100",
+      "00000000",
+    ],
+    focus: [
+      "01111100",
+      "11000110",
+      "10010010",
+      "10011010",
+      "10000010",
+      "11000110",
+      "01111100",
+    ],
+    town: [
+      "00010000",
+      "00111000",
+      "01111100",
+      "11111110",
+      "01111100",
+      "01101100",
+      "01101100",
+    ],
+    journal: [
+      "11101110",
+      "10101010",
+      "10101010",
+      "10101010",
+      "10101010",
+      "11111110",
+      "00010000",
+    ],
+    settings: [
+      "00100010",
+      "11111110",
+      "00100010",
+      "00001000",
+      "11111110",
+      "00001000",
+      "00000000",
+    ],
+    people: [
+      "01100110",
+      "01100110",
+      "00000000",
+      "11101110",
+      "10101010",
+      "10101010",
+      "00000000",
+    ],
+    expand: [
+      "11100111",
+      "10000001",
+      "10000001",
+      "00000000",
+      "10000001",
+      "10000001",
+      "11100111",
+    ],
+    close: [
+      "10000010",
+      "01000100",
+      "00101000",
+      "00010000",
+      "00101000",
+      "01000100",
+      "10000010",
+    ],
+    play: [
+      "00100000",
+      "00110000",
+      "00111000",
+      "00111100",
+      "00111000",
+      "00110000",
+      "00100000",
+    ],
+    pause: [
+      "01101100",
+      "01101100",
+      "01101100",
+      "01101100",
+      "01101100",
+      "01101100",
+      "01101100",
+    ],
+    leaf: [
+      "00011110",
+      "00111110",
+      "01111000",
+      "01110000",
+      "11100000",
+      "10000000",
+      "00000000",
+    ],
   };
   return (
     <svg
       width="20"
       height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      viewBox="0 0 8 8"
+      shapeRendering="crispEdges"
       aria-hidden="true"
     >
-      {paths[name] ?? paths.focus}
+      {(glyphs[name] ?? glyphs.focus).flatMap((row, y) =>
+        [...row].map((cell, x) =>
+          cell === "1" ? (
+            <rect
+              key={x + "," + y}
+              x={x}
+              y={y}
+              width="1"
+              height="1"
+              fill="currentColor"
+            />
+          ) : null,
+        ),
+      )}
     </svg>
   );
 }
@@ -400,7 +476,7 @@ function Game() {
       setPanel("shop");
       return;
     }
-    const hour = getWorldClock().hour,
+    const hour = getWorldClock(Date.now(), save.lighting).hour,
       id = discoveryAt(i.id);
     if (id) {
       let added = false;
@@ -442,7 +518,7 @@ function Game() {
         const next = recordDiscovery(
           current,
           "quiet-bell",
-          getWorldClock().hour,
+          getWorldClock(Date.now(), save.lighting).hour,
           taps,
         );
         added = next !== current;
@@ -489,6 +565,9 @@ function Game() {
       engine.current.blocked = view !== "town" || !!panel;
       engine.current.streak = progress.currentStreak;
       engine.current.characterName = save.characterName ?? "";
+      engine.current.appearance = save.appearance;
+      engine.current.lighting = save.lighting ?? "cycle";
+      engine.current.coffee = save.coffee;
       engine.current.discoveries = save.discoveries ?? [];
       engine.current.upgrades = inRoom
         ? (room.snapshot?.social?.world.upgrades ?? [])
@@ -503,6 +582,9 @@ function Game() {
     prefs.quiet,
     isPaused,
     save.characterName,
+    save.appearance,
+    save.lighting,
+    save.coffee,
     save.discoveries,
     save.upgrades,
     inRoom,
@@ -516,6 +598,7 @@ function Game() {
             x: engine.current.player.x,
             y: engine.current.player.y,
             facing: engine.current.player.facing,
+            appearance: engine.current.appearance,
           }
         : undefined;
     room.townVisible.current = view === "town";
@@ -930,6 +1013,15 @@ function Game() {
             )}
           </div>
           {sessionActions}
+          {!active && (save.motivation ?? "gentle") !== "off" && (
+            <p className="town-advice">
+              {motivationLine(
+                save.motivation ?? "gentle",
+                save.sessions.length,
+                Math.floor(now / 86400000),
+              )}
+            </p>
+          )}
           {inRoom && room.snapshot && (
             <p className="completion-line">
               {room.snapshot.sharedMinutes} shared minutes · the river beacon
@@ -942,9 +1034,12 @@ function Game() {
           <div className="town-label">
             <span>{scene === "village" ? "Greenvale" : "Lantern House"}</span>
             <small>
-              {getWorldClock(now).label} ·{" "}
-              {String(getWorldClock(now).hour).padStart(2, "0")}:
-              {String(getWorldClock(now).minute).padStart(2, "0")}
+              {getWorldClock(now, save.lighting).label} ·{" "}
+              {String(getWorldClock(now, save.lighting).hour).padStart(2, "0")}:
+              {String(getWorldClock(now, save.lighting).minute).padStart(
+                2,
+                "0",
+              )}
             </small>
             <button
               className="character-name"
@@ -952,6 +1047,12 @@ function Game() {
             >
               {save.characterName || "Name your character"}
             </button>
+            {coffeeActive(save, now) && (
+              <small className="coffee-status">
+                Jun’s coffee · {Math.ceil((save.coffee!.endsAt - now) / 60000)}m
+                left
+              </small>
+            )}
           </div>
           <section className="town-session" aria-label="Town timer">
             <button
@@ -1245,6 +1346,7 @@ function Game() {
         >
           <TownLedger
             kind={panel}
+            inRoom={inRoom}
             save={save}
             now={now}
             canSave={canSave}
@@ -1317,8 +1419,33 @@ function Game() {
           <p className="fine-print">
             Village level {1 + (save.upgrades?.length ?? 0)} ·{" "}
             {save.upgrades?.length ?? 0} improvements built. Streak milestones:
-            3 days / 12 coins, 7 days / 24 coins. Paid once; buildings stay.
+            3 days / 12 coins, 7 days / 24 coins, 14 days / 40 coins, 30 days /
+            75 coins. Paid once; buildings stay.
           </p>
+          <p className="streak-note">
+            {progress.todayMinutes >= 25
+              ? "Today’s lamp is lit. Anything else is a bonus."
+              : 25 -
+                progress.todayMinutes +
+                " more focus minutes to light today’s lamp."}{" "}
+            {progress.bestStreak > progress.currentStreak
+              ? "Your best record and buildings are still here."
+              : ""}
+          </p>
+          <details className="town-guide">
+            <summary>Finding your way</summary>
+            <p>
+              Home is west of the fountain. Lottie’s shop is north; Mira’s
+              library is northeast. Jun’s stall is southwest. Repair the
+              crossing in three stages to reach the glasshouse, orchard and
+              reading garden east of the brook.
+            </p>
+            <p>
+              Every session earns energy as well as coins. Repairs need both.
+              Your friend’s town uses their repairs; leaving returns you to your
+              own town safely.
+            </p>
+          </details>
           {!!save.discoveries?.length && (
             <>
               <h3>Things you found</h3>
@@ -1425,6 +1552,7 @@ function Game() {
               </p>
             )}
           </form>
+          <TownPersonalization save={save} update={update} canSave={canSave} />
           <label className="check-row">
             <input
               type="checkbox"
@@ -1706,7 +1834,10 @@ function Game() {
           <p className="fine-print">
             Rooms last up to 24 hours. Anyone with the invitation can join.
             Completed shared focus earns personal rewards for the ready players.
-            Your save stays on this device.
+            Your save stays on this device. The host’s crossing determines which
+            paths are open. Visitors keep their own coins, discoveries and
+            personal town. Coffee bonuses apply to solo focus; shared rewards
+            come from the room service.
           </p>
         </Modal>
       )}

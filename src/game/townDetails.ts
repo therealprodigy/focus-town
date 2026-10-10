@@ -16,6 +16,7 @@ export function paintSurroundings(
   ctx: CanvasRenderingContext2D,
   time: number,
   daylight: number,
+  width = 960,
 ) {
   const r = townBrush(ctx);
   r(-1600, -1200, 4160, 3000, "#1c2d47");
@@ -36,7 +37,7 @@ export function paintSurroundings(
       }
     }
   for (let y = -80; y < 850; y += 72)
-    for (const x of [-84, 1008]) {
+    for (const x of [-84, width + 48]) {
       r(x - 6, y, 12, 48, "#3b3b50");
       r(x - 52, y - 58, 104, 44, "#203b53");
       r(x - 40, y - 76, 80, 64, "#294d64");

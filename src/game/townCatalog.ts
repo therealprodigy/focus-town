@@ -1,5 +1,32 @@
 export const UPGRADES = [
   {
+    id: "crossing-cleared",
+    name: "Clear the crossing",
+    price: 10,
+    energy: 15,
+    streak: 0,
+    detail:
+      "Rowan clears the old beams. The first step toward the eastern gardens.",
+  },
+  {
+    id: "crossing-boards",
+    name: "Lay the new boards",
+    price: 20,
+    energy: 35,
+    streak: 0,
+    requires: "crossing-cleared",
+    detail: "Oak boards, two railings, and considerably fewer splinters.",
+  },
+  {
+    id: "crossing-lanterns",
+    name: "Open the Old Crossing",
+    price: 25,
+    energy: 50,
+    streak: 0,
+    requires: "crossing-boards",
+    detail: "Light the path to the glasshouse, orchard and Whispering Garden.",
+  },
+  {
     id: "porch-lanterns",
     name: "Porch lanterns",
     price: 12,
@@ -33,12 +60,52 @@ export const validUpgrades = (x: unknown): x is UpgradeId[] =>
   Array.isArray(x) &&
   x.length <= UPGRADES.length &&
   x.every((id) => UPGRADES.some((u) => u.id === id)) &&
-  new Set(x).size === x.length;
+  new Set(x).size === x.length &&
+  (!x.includes("crossing-boards") || x.includes("crossing-cleared")) &&
+  (!x.includes("crossing-lanterns") || x.includes("crossing-boards"));
 export const STREAK_REWARDS = [
   { days: 3, coins: 12 },
   { days: 7, coins: 24 },
+  { days: 14, coins: 40 },
+  { days: 30, coins: 75 },
 ] as const;
 export const MISSIONS = [
+  {
+    id: "old-crossing",
+    title: "A way across",
+    detail: "Finish all three crossing repairs in Lottie’s catalogue.",
+    reward: 12,
+    target: 1,
+  },
+  {
+    id: "garden-pages",
+    title: "The missing field notes",
+    detail:
+      "Find the field journal, the gardener’s bench and the copper telescope across the river.",
+    reward: 10,
+    target: 3,
+  },
+  {
+    id: "steady-week",
+    title: "A week with the lamp on",
+    detail: "Reach a seven-day best streak. Your old record counts.",
+    reward: 12,
+    target: 7,
+  },
+  {
+    id: "five-visits",
+    title: "A habit taking root",
+    detail: "Finish five focus sessions of any length.",
+    reward: 5,
+    target: 5,
+  },
+  {
+    id: "two-hours",
+    title: "Two hours, one page at a time",
+    detail: "Complete 120 focus minutes in total.",
+    reward: 12,
+    target: 120,
+  },
   {
     id: "first-page",
     title: "Main quest: one page",
@@ -80,9 +147,13 @@ export const validMissionClaims = (x: unknown): x is MissionId[] =>
   Array.isArray(x) &&
   x.length <= MISSIONS.length &&
   x.every((id) => MISSIONS.some((m) => m.id === id)) &&
-  new Set(x).size === x.length;
+  new Set(x).size === x.length &&
+  (!x.includes("crossing-boards") || x.includes("crossing-cleared")) &&
+  (!x.includes("crossing-lanterns") || x.includes("crossing-boards"));
 export const validStreakClaims = (x: unknown): x is number[] =>
   Array.isArray(x) &&
   x.length <= STREAK_REWARDS.length &&
   x.every((n) => STREAK_REWARDS.some((r) => r.days === n)) &&
-  new Set(x).size === x.length;
+  new Set(x).size === x.length &&
+  (!x.includes("crossing-boards") || x.includes("crossing-cleared")) &&
+  (!x.includes("crossing-lanterns") || x.includes("crossing-boards"));

@@ -1,3 +1,11 @@
+import {
+  validAppearance,
+  validLightMode,
+  validMotivation,
+  type Appearance,
+  type LightMode,
+  type MotivationMode,
+} from "./personalization.js";
 import { validDiscoveries, type DiscoveryId } from "./discoveries.js";
 import {
   validUpgrades,
@@ -25,6 +33,7 @@ export const BREAK_MINUTES: Record<number, BreakMinutes> = {
   60: 10,
 };
 export type Timer = {
+  coffeeFocusMs?: number;
   id: string;
   kind: "focus" | "break";
   durationMinutes: number;
@@ -42,6 +51,7 @@ export type CompletedSession = {
   localDate: string;
 };
 export type Completion = {
+  coffeeFocusMs?: number;
   id: string;
   focusMinutes: FocusMinutes;
   breakMinutes: BreakMinutes;
@@ -57,6 +67,10 @@ export type Cycle = {
   autoBreak: boolean;
 };
 export type SaveData = {
+  appearance?: Appearance;
+  lighting?: LightMode;
+  motivation?: MotivationMode;
+  coffee?: { startedAt: number; endsAt: number };
   characterName?: string;
   discoveries?: DiscoveryId[];
   upgrades?: UpgradeId[];
@@ -170,6 +184,12 @@ function validTimer(x: unknown): x is Timer {
   )
     return false;
   if (x.remainingMs > x.durationMinutes * 60000) return false;
+  if (
+    x.coffeeFocusMs !== undefined &&
+    (!count(x.coffeeFocusMs) ||
+      x.coffeeFocusMs > x.durationMinutes * 60000 - x.remainingMs)
+  )
+    return false;
   return x.status === "paused"
     ? x.endAt === null
     : x.status === "running" &&
@@ -198,6 +218,19 @@ function validSave(x: unknown): x is SaveData {
   if (
     x.characterName !== undefined &&
     characterNameFrom(x.characterName) !== x.characterName
+  )
+    return false;
+  if (x.appearance !== undefined && !validAppearance(x.appearance))
+    return false;
+  if (x.lighting !== undefined && !validLightMode(x.lighting)) return false;
+  if (x.motivation !== undefined && !validMotivation(x.motivation))
+    return false;
+  if (
+    x.coffee !== undefined &&
+    (!record(x.coffee) ||
+      !time(x.coffee.startedAt) ||
+      !time(x.coffee.endsAt) ||
+      x.coffee.endsAt - x.coffee.startedAt !== COFFEE_DURATION)
   )
     return false;
   if (x.discoveries !== undefined && !validDiscoveries(x.discoveries))
@@ -234,7 +267,12 @@ function validSave(x: unknown): x is SaveData {
       !record(c.rewards)
     )
       return false;
-    const r = getRewards(c.focusMinutes);
+    if (
+      c.coffeeFocusMs !== undefined &&
+      (!count(c.coffeeFocusMs) || c.coffeeFocusMs > c.focusMinutes * 60000)
+    )
+      return false;
+    const r = rewardsWithCoffee(c.focusMinutes, Number(c.coffeeFocusMs ?? 0));
     if (
       c.rewards.energy !== r.energy ||
       c.rewards.xp !== r.xp ||
@@ -294,7 +332,11 @@ export function settleTimer(save: SaveData, now: number): SaveData {
     };
   if (save.sessions.some((s) => s.id === t.id)) return { ...save, timer: null };
   const minutes = t.durationMinutes,
-    r = getRewards(minutes);
+    coffeeFocusMs = Math.min(
+      minutes * 60000,
+      (t.coffeeFocusMs ?? 0) + coffeeOverlap(save, t, t.endAt),
+    ),
+    r = rewardsWithCoffee(minutes, coffeeFocusMs);
   if (
     !count(save.coins + r.coins) ||
     !count(save.energy + r.energy) ||
@@ -333,6 +375,7 @@ export function settleTimer(save: SaveData, now: number): SaveData {
     lastCompletion: {
       id: t.id,
       focusMinutes: minutes,
+      coffeeFocusMs,
       breakMinutes: rest,
       rewards: r,
     },
@@ -431,6 +474,7 @@ export function pauseFocus(save: SaveData, now: number): SaveData {
     timer: {
       ...t,
       status: "paused",
+      coffeeFocusMs: (t.coffeeFocusMs ?? 0) + coffeeOverlap(ready, t, now),
       endAt: null,
       remainingMs: remainingMs(t, now),
     },
@@ -596,6 +640,7 @@ export function pauseTimer(save: SaveData, now: number): SaveData {
     timer: {
       ...t,
       status: "paused",
+      coffeeFocusMs: (t.coffeeFocusMs ?? 0) + coffeeOverlap(ready, t, now),
       endAt: null,
       remainingMs: remainingMs(t, now),
     },
@@ -613,5 +658,46 @@ export function resumeTimer(save: SaveData, now: number): SaveData {
       startedAt: now,
       endAt: now + t.remainingMs,
     },
+  };
+}
+
+export const COFFEE_PRICE = 6;
+export const COFFEE_DURATION = 30 * 60000;
+export function coffeeActive(save: Pick<SaveData, "coffee">, now: number) {
+  return (
+    !!save.coffee && now >= save.coffee.startedAt && now < save.coffee.endsAt
+  );
+}
+function coffeeOverlap(save: SaveData, timer: Timer, until: number) {
+  if (!save.coffee || timer.kind !== "focus" || timer.status !== "running")
+    return 0;
+  return Math.max(
+    0,
+    Math.min(until, timer.endAt ?? until, save.coffee.endsAt) -
+      Math.max(timer.startedAt, save.coffee.startedAt),
+  );
+}
+export function rewardsWithCoffee(minutes: number, boostedMs: number): Rewards {
+  const base = getRewards(minutes);
+  const overlap = Math.max(0, Math.min(minutes * 60000, boostedMs));
+  return {
+    ...base,
+    coins:
+      base.coins + Math.floor((base.coins * overlap) / (minutes * 60000) / 4),
+  };
+}
+export function purchaseCoffee(save: SaveData, now: number): SaveData {
+  if (
+    !time(now) ||
+    !time(now + COFFEE_DURATION) ||
+    save.timer ||
+    coffeeActive(save, now) ||
+    save.coins < COFFEE_PRICE
+  )
+    return save;
+  return {
+    ...save,
+    coins: save.coins - COFFEE_PRICE,
+    coffee: { startedAt: now, endsAt: now + COFFEE_DURATION },
   };
 }

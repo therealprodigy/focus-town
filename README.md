@@ -52,17 +52,21 @@ A connection error usually means the preview stopped. **Terminal → Run Task �
 
 **Town** opens the top-down village. Move with WASD or arrow keys, press E to interact, or use the touch controls. The dock includes full screen, audio, missions and settings. Controls can be hidden. The town desk and Jun's tea stall open session choices without sending you back to Focus.
 
-Greenvale has a reading bench, a tea stall, a rather unhelpful mailbox, Miso the cat, and a library atlas with something pencilled in the margin. Some discoveries need nightfall. The twelve-minute day/night cycle shares the observatory's blue-hour palette; reduced motion keeps the scene still.
+Repair the Old Crossing in three stages to reach Whispering Garden: a glasshouse, orchard, reading bench, workbench and copper telescope. Repairs use 55 coins and 100 energy in total and stay built. The river remains impassable away from the repaired bridge. The library interior is still closed.
 
-Finish sessions and claim noticeboard missions to earn coins. Lottie's shop sells porch lanterns, moonflower beds, a fountain repair and festival bunting. Purchases visibly change the village and stay bought after a missed day. A streak day needs 25 completed focus minutes; reaching your first three- and seven-day streaks pays a one-time bonus.
+Lottie's catalogue also sells porch lanterns, moonflowers, a fountain repair and festival bunting. Ten noticeboard missions reward completed sessions, discoveries, repairs and streaks. A streak day needs 25 completed focus minutes. The first 3-, 7-, 14- and 30-day records each pay a bonus; missing a day never removes a purchased upgrade.
 
-The forest and library interior are closed. The broken bridge cannot be bypassed. Combat and equipment are not implemented.
+Jun's coffee costs 6 coins. For 30 real minutes it increases walking speed by 35% and adds up to 25% to solo focus coins, rounded down and only for the part of the interval covered by coffee. Pauses use up the coffee's time without earning a bonus. Buy before starting a session. Coffee cannot stack and does not multiply shared-room rewards.
+
+**Settings** includes six coats, four skin tones and three headwear choices. Town lighting can follow the twelve-minute day, your local time, permanent daylight or evening. The town clock and night discoveries use the same setting. Reduced motion stops decorative movement while the clock keeps working. Choose gentle, direct or playful encouragement, or turn it off.
+
+Looking for the hidden details? [The spoiler guide](SECRETS.md) lists where to find them.
 
 ## Bring a friend
 
 Open **Together**, choose a nickname and create a room. Send its invitation to someone who can access the same hosted site. Up to eight people can join. Everyone who is online must ready up before the host starts focus. The host controls the timer; each ready participant receives a saved completion receipt. A temporary disconnect keeps eligibility, while explicitly leaving forfeits an unfinished interval.
 
-Guests see the host's village upgrades. Recorded focus minutes and best streaks appear beside friends. The lower total gets the playful **mogged** tag; a tie preserves the existing lead until the other player overtakes it. These are self-reported device totals, not verified study records.
+Guests see the host's village upgrades and crossing repairs. Your own upgrades return when you leave. Chosen outfits travel with companions. Recorded focus minutes and best streaks appear beside friends. The lower total gets the playful **mogged** tag; a tie preserves the existing lead until the other player overtakes it. These are self-reported device totals, not verified study records.
 
 Rooms expire after 24 hours. Earned receipts survive room expiry and are collected when the same browser reconnects. Personal saves do not sync between devices. Town presence updates about once per second: this is a shared study space, not fast-action multiplayer.
 
@@ -70,7 +74,7 @@ Use the public Play link for remote invitations. A localhost invitation works on
 
 ## Your save
 
-Choose a character name in **Settings** or click **Name your character** in Town. Your name, sessions, discoveries, purchases and journal progress save automatically in this browser.
+Choose a character name in **Settings** or click **Name your character** in Town. Your name, appearance, lighting, encouragement setting, coffee expiry, sessions, discoveries, purchases and journal progress save automatically in this browser. The save status in Settings reports whether the write succeeded.
 
 **Settings → Download progress backup** makes a portable copy of that progress. On another device, open the public game and choose **Import progress**. Importing replaces that browser's progress after confirmation and is blocked during a session or room visit. Timer preferences and online identity are not included.
 
@@ -82,7 +86,7 @@ The old `focusraid-save-v1` storage key remains for save compatibility. One tab 
 
 `npm test` checks game and server rules. `npm run build` checks TypeScript and builds the app and Worker. `node scripts/check-worker.mjs` checks the built document routes and audio delivery without opening a browser.
 
-The latest local checks on 9 October 2026 passed **121 automated tests**, both production builds and the built Worker route/audio checks. The eight new tests cover character-name compatibility and save recovery without duplicate rewards. The previous deployment also passed 22 existing room and reward tests against the libSQL adapter. Its public checks passed for the custom 404, audio range delivery, room invitations, timer synchronization, host permissions, reward acknowledgements and mogging ties/overtakes. The earlier town upgrade also passed Worker checks and decoding checks for all five sound files. Visual layout, sound levels and two-device play remain for the owner to test using [TEST_PLAN.md](TEST_PLAN.md).
+The release checks and remaining manual checks are recorded in [TEST_PLAN.md](TEST_PLAN.md). Automated tests cover timers, save recovery, room authorization, rewards, appearance, repair prerequisites, expanded map reachability and coffee accounting. A passing build does not verify the visual layout or two-device experience.
 
 React, Vite, TypeScript, Tailwind and Canvas power the game. Local development uses SQLite; the public shared-room service uses Turso/libSQL. A Cloudflare D1 adapter is also available. [ARCHITECTURE.md](ARCHITECTURE.md) covers saving and co-op. [ASSETS.md](ASSETS.md) records artwork, fonts and the locally bundled CC0 sound library. Flocus informed timer hierarchy; its assets and code are not bundled.
 

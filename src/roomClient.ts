@@ -8,7 +8,9 @@ import {
 } from "./profileClient";
 import type { SharedGrant } from "./game/townProgress";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Appearance } from "./game/personalization";
 export type Presence = {
+  appearance?: Appearance;
   scene: "village" | "house";
   x: number;
   y: number;

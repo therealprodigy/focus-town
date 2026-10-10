@@ -281,7 +281,9 @@ describe("shared rooms with a real SQLite database", () => {
     ).toBeNull();
     for (const patch of [
       { x: -1 },
-      { x: 954 },
+      { x: 1434 },
+      { scene: "house", x: 954 },
+      { appearance: { outfit: 6, skin: 0, hat: "cap" } },
       { x: "448" },
       { y: 601 },
       { scene: ["village"] },
@@ -305,6 +307,22 @@ describe("shared rooms with a real SQLite database", () => {
         (m) => m.id === g.credentials.memberId,
       )?.position?.scene,
     ).toBe("house");
+    const appearance = { outfit: 5, skin: 3, hat: "none" };
+    expect(
+      (
+        await send(g.credentials, 4, {
+          ...position,
+          x: 1300,
+          y: 380,
+          appearance,
+        })
+      ).status,
+    ).toBe(200);
+    expect(
+      (await sync(h.credentials)).snapshot.members.find(
+        (m) => m.id === g.credentials.memberId,
+      )?.position,
+    ).toMatchObject({ x: 1300, y: 380, appearance });
     expect(
       (await sync(h.credentials, now + 31000)).snapshot.members.find(
         (m) => m.id === g.credentials.memberId,

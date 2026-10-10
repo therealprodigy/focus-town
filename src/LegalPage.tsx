@@ -8,11 +8,11 @@ const pages: Record<
     sections: [
       {
         title: "Personal progress",
-        text: "Focus Town stores your character name, sessions, coins, energy, village upgrades, discoveries, mission claims, story progress, timer state and preferences in local storage in your browser. There is no personal account or automatic cross-device backup. Download a progress backup in Settings to move it yourself. A recovery copy is also kept in the same browser; clearing site data removes both copies. Backups do not include timer preferences or online identity.",
+        text: "Focus Town stores your character name and appearance, town lighting, motivation preferences, coffee status, sessions, coins, energy, village upgrades, discoveries, mission claims, story progress, timer state and preferences in local storage in your browser. There is no personal account or automatic cross-device backup. Download a progress backup in Settings to move it yourself. A recovery copy is also kept in the same browser; clearing site data removes both copies. Backups do not include timer preferences or online identity.",
       },
       {
         title: "When you join a room",
-        text: "The room service stores nicknames, hashed device and room secrets, presence, character positions, shared sessions and reward receipts. Your device profile reports total focus minutes, best streak and village upgrades for invited players to compare. Pair standings and profiles persist beyond room expiry. Your task text and detailed solo journal stay local. Clearing site data loses the device secret; importing a game save does not recover that identity.",
+        text: "The room service stores nicknames, hashed device and room secrets, presence, character positions and appearance, shared sessions and reward receipts. Your device profile reports total focus minutes, best streak and village upgrades for invited players to compare. Pair standings and profiles persist beyond room expiry. Your task text and detailed solo journal stay local. Clearing site data loses the device secret; importing a game save does not recover that identity.",
       },
       {
         title: "Room lifetime",
@@ -74,7 +74,7 @@ export function LegalPage() {
         </a>
         {p ? (
           <>
-            <p className="eyebrow">FOCUS TOWN · UPDATED 9 OCTOBER 2026</p>
+            <p className="eyebrow">FOCUS TOWN · UPDATED 10 OCTOBER 2026</p>
             <h1>{p.title}</h1>
             {p.sections.map((s) => (
               <section key={s.title}>

@@ -87,9 +87,20 @@ The automated suite passed 113 tests. Another run checked 22 existing room and r
 
 I supplied the concept, design direction, feedback and bug reports, and contributed bug fixes and work on the friends feature. Codex did much of the implementation, debugging and automated testing. The observatory background used image generation; the asset credits record it. This entry describes the linked Focus Town work, not unrelated projects or extra claimed hours.
 
-
 ## 9 October 2026: names and safer saves
 
 Players can choose a character name in Settings. Old saves still load, and new names carry across progress backups. The save screen explains which browser holds progress and how to move it. A recovery copy can be reviewed if the main save is damaged; it is never silently restored. Import is blocked during sessions and room visits.
 
 The README leads with the public game and uses npm start for desktop source downloads. The updated suite passed 121 tests, both production builds and Worker route/audio checks. Source review found no shipping blockers. Visual layout and two-device play remain for the owner to check. Implementation and review were AI-assisted; no extra human hours are claimed here.
+
+## 10 October 2026: across the Old Crossing
+
+Greenvale has more room now. The Old Crossing is repaired in three stages with coins and energy, opening a glasshouse, orchard, telescope and a bench with two mugs: Start and Again. The original buildings have different details instead of repeating the same facade. The interface uses flat signboards, pixel symbols and local pixel fonts.
+
+The update adds coat, skin and headwear choices, five more missions, 14- and 30-day streak rewards, and Jun's coffee. Coffee lasts thirty real minutes, makes walking faster and adds a small bonus to the solo focus time it covers. Pausing cannot turn a short coffee window into a bonus for an entire long session.
+
+Town lighting can follow a twelve-minute day, local time, daylight or evening. Night discoveries use that same clock. Reduced motion stops residents and decoration without freezing study time. Optional encouragement has gentle, direct and playful settings, plus Off.
+
+Review caught a house beam and a shop crate covering their doors, a reduced-motion interaction mismatch, moving residents that could trap the player, and an old multiplayer boundary that rejected the expanded garden. Those are fixed. All 148 automated tests, both production builds and the route/audio checks pass. Browser layout and a real two-device playtest are still pending; automated results do not prove those work.
+
+The README explains downloads, local saves, backup transfer and shared rooms. SECRETS.md lists the small discoveries. Code and documentation changes were made through VS Code. This update used AI-assisted implementation and review; it claims no additional human coding hours. Pixl posting is a separate step from this repository journal.
