@@ -43,3 +43,5 @@ Clockworks was published on 10 October 2026 at https://focus-town-greenvale.verc
 The personal-desk update (source commit 6e812a8) was published on 10 October 2026 to the same public URL. The deployed bundle includes the background chooser, compact timer and practice intro. HTTP checks returned 200 for the home and cookies pages and 404 for an unknown route. Tests: 161 passed; both builds passed. Visual browser checks remain pending.
 
 The save-handoff and tutorial fixes (source commit 3c114b6) were published on 10 October 2026. The public bundle `/assets/index-CFYVVGTF.js` matches the locally tested build byte for byte. Home and cookies routes return 200; the unknown-route check returns 404. All 173 tests and both builds passed. This verifies publication, not rendered or two-tab browser behavior.
+
+The roof-attachment and fountain fixes (source commit a2bdc2b) were published on 10 October 2026. The home page references `/assets/index-l1w73j8a.js`, which matches the locally tested build byte for byte. Home and cookies return 200; an unknown route returns 404. All 182 tests and both builds passed. Browser appearance remains unverified.
