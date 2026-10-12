@@ -1,17 +1,129 @@
-/* Greenvale's paper, brass and timber. Deliberately shared by both views. */
+/* Warm glass over the world; timber at the desk and paper in the journal. */
 :root {
   --paper: #f3e7d1;
   --paper-edge: #d2bb93;
   --walnut: #43332a;
   --brass: #a8783e;
   --gold: #edcc8b;
-  --muted-text: #c8c4b4;
+  --muted-text: #e2d6c2;
+  --frost: #f3e6cf;
+  --frost-ink: #443328;
+  --frost-muted: #4b3829;
+  --focus-top: clamp(108px, 15vh, 160px);
+  --focus-bottom: max(94px, calc(env(safe-area-inset-bottom) + 78px));
 }
 .app-scene {
   color: #fff5df;
 }
 .topbar {
-  padding: 22px 28px;
+  padding: max(22px, env(safe-area-inset-top)) 28px 0;
+}
+.wordmark,
+.local-clock,
+.chapter-teaser,
+.today-teaser {
+  color: #fff5df;
+  text-shadow:
+    0 1px 4px #181811,
+    0 2px 12px #181811cc;
+}
+/* Equal side tracks keep this switch on the viewport centre in both views. */
+.view-switch,
+.bottom-dock,
+.town-label,
+.town-session,
+.interact-prompt,
+.controls-hint,
+.storage-notice,
+.toast {
+  background: var(--frost);
+  color: var(--frost-ink);
+  border: 1px solid rgb(255 248 232 / 66%);
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 48%),
+    0 6px 24px #201b2226;
+}
+.focus-space {
+  display: block;
+  top: var(--focus-top);
+  bottom: auto;
+  width: min(620px, calc(100% - 32px));
+  max-height: calc(100dvh - var(--focus-top) - var(--focus-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 22px 28px 24px;
+  color: #fff5e3;
+  background: #292722;
+  border: 1px solid rgb(255 241 209 / 28%);
+  border-radius: 24px;
+  box-shadow:
+    inset 0 1px rgb(255 248 228 / 12%),
+    0 12px 48px #16192124;
+  scrollbar-width: thin;
+  scrollbar-color: #c8b99e66 transparent;
+}
+.focus-space .timer-buttons {
+  flex-wrap: wrap;
+}
+.focus-space .start-button {
+  max-width: 100%;
+  white-space: normal;
+}
+.focus-space :is(.small-link, .completion-line, .shared-ready) {
+  color: #f5e2bc;
+}
+.focus-space.is-compact {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) minmax(0, auto) auto;
+  align-items: center;
+  gap: 12px 18px;
+  width: min(520px, calc(100% - 32px));
+  padding: 14px 18px;
+  border-radius: 18px;
+  text-align: left;
+}
+.is-compact .compact-clock {
+  grid-column: 1;
+  grid-row: 1;
+}
+.is-compact .timer-buttons {
+  min-width: 0;
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+  gap: 8px;
+}
+.is-compact .timer-fold {
+  grid-column: 3;
+  grid-row: 1;
+  margin: 0;
+  padding: 8px;
+  border-color: transparent;
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.focus-space.is-compact .start-button {
+  min-width: 88px;
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  color: #fff0d5;
+  background: rgb(250 226 178 / 16%);
+  border: 1px solid rgb(255 235 194 / 38%);
+  border-radius: 10px;
+  box-shadow: inset 0 1px rgb(255 245 223 / 12%);
+}
+.focus-space.is-compact .start-button:hover {
+  background: rgb(250 226 178 / 24%);
+}
+.is-compact > :is(.button-outline, .shared-ready, .small-link) {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.is-compact .timer-buttons > button:not(.start-button) {
+  padding-inline: 4px;
 }
 .wordmark {
   font-size: clamp(0.85rem, 1.7vw, 1.35rem);
@@ -22,35 +134,28 @@
   color: #efe0bc;
 }
 .view-switch {
-  background: #40342ae8;
   padding: 4px;
-  border: 1px solid #b0946e;
-  border-radius: 8px;
-  box-shadow:
-    inset 0 1px #e4c99d55,
-    0 3px #241d18aa;
+  gap: 4px;
 }
 .view-switch button {
   min-width: 74px;
   padding: 8px 18px;
-  color: #e8d7b8;
+  color: var(--frost-ink);
   font-size: 1.1rem;
-  border-radius: 4px;
+  border-radius: 9px;
 }
 .view-switch button[aria-pressed="true"] {
-  background: #ebd9b3;
+  background: rgb(255 248 232 / 88%);
   color: #443128;
-  box-shadow: inset 0 1px #fff5dc;
+  box-shadow:
+    inset 0 1px #ffffffcc,
+    0 2px 5px #46372b20;
 }
 .local-clock span {
   color: #e3d3b4;
 }
 .local-clock {
   min-width: 105px;
-}
-.focus-space {
-  top: clamp(100px, 19vh, 220px);
-  width: min(720px, 94%);
 }
 .focus-space .phase-tabs {
   margin-bottom: 14px;
@@ -85,10 +190,12 @@
   align-items: center;
   gap: 6px;
   font-family: VT323, monospace;
-  font-size: clamp(3.6rem, 10vw, 8.5rem);
+  --clock-size: clamp(3.6rem, 10vw, 8.5rem);
+  font-size: var(--clock-size);
   line-height: 1.06;
 }
 .clock-digit {
+  flex-shrink: 0;
   display: block;
   position: relative;
   width: 0.65em;
@@ -195,10 +302,10 @@
   border-radius: 4px;
 }
 .desk-customizer {
-  width: max-content;
-  max-width: 100%;
+  width: 100%;
+  max-width: 490px;
   margin: 16px auto 0;
-  color: #ebd8b4;
+  color: #efdfc3;
   font-size: 1.05rem;
 }
 .desk-customizer summary {
@@ -206,23 +313,82 @@
   text-underline-offset: 4px;
 }
 .desk-customizer[open] {
-  padding: 10px 14px;
-  background: #302b27ed;
-  border: 1px solid #a58962;
-  border-radius: 6px;
+  padding: 14px;
+  background: rgb(20 22 21 / 32%);
+  border: 1px solid rgb(255 242 215 / 20%);
+  border-radius: 14px;
 }
 .desk-customizer label {
   display: inline-flex;
-  gap: 8px;
+  flex-wrap: wrap;
   align-items: center;
-  margin: 10px;
+  gap: 8px;
+  margin: 8px;
 }
 .desk-customizer select {
-  background: #554433;
-  color: #ffebc6;
-  border: 1px solid #9c835c;
-  padding: 2px 6px;
-  border-radius: 3px;
+  background: #3c3831;
+  color: #fff1d8;
+  border: 1px solid #9b886b;
+  border-radius: 6px;
+  padding: 4px 7px;
+  max-width: 185px;
+}
+.desk-customizer select:disabled {
+  opacity: 0.65;
+}
+.backdrop-setting {
+  text-align: left;
+  margin-top: 12px;
+}
+.backdrop-choices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin: 14px 0;
+}
+.desk-customizer .backdrop-choice {
+  display: block;
+  position: relative;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  padding: 4px;
+  overflow: hidden;
+  text-decoration: none;
+  text-align: left;
+  color: #f8e9ce;
+  background: rgb(255 243 218 / 6%);
+  border: 1px solid rgb(255 243 218 / 22%);
+  border-radius: 9px;
+}
+.desk-customizer .backdrop-choice:hover {
+  background: rgb(255 243 218 / 14%);
+}
+.desk-customizer .backdrop-choice[aria-pressed="true"] {
+  background: rgb(246 221 173 / 19%);
+  border-color: #f1d6a1;
+  box-shadow: 0 0 0 1px #f1d6a1;
+}
+.backdrop-preview {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.backdrop-name {
+  display: block;
+  padding: 5px 3px 2px;
+  font-size: 1rem;
+  line-height: 1.15;
+}
+.backdrop-choice[aria-pressed="true"] .backdrop-name::after {
+  content: "Selected";
+  display: block;
+  margin-top: 3px;
+  color: #f5d596;
+  min-height: 1em;
+  font-size: 0.85rem;
 }
 .desk-customizer button {
   text-decoration: underline;
@@ -238,15 +404,15 @@
   color: #f3e5c7;
 }
 [data-focus-theme="lamplight"] .scene-backdrop {
-  filter: sepia(0.1) saturate(1.05) brightness(1.17);
+  filter: sepia(0.08) saturate(1.03) brightness(1.03);
 }
 [data-focus-theme="moonlight"] .scene-backdrop {
-  filter: saturate(0.95) brightness(0.98);
+  filter: saturate(0.8) brightness(0.88);
 }
 [data-focus-theme="ink"] .scene-backdrop {
-  filter: grayscale(0.85) brightness(0.6);
+  filter: grayscale(0.85) brightness(0.76);
 }
-[data-focus-theme="ink"] .desk-clock {
+[data-focus-theme="ink"] .desk-clock:not(.plain-clock) {
   background: #393b34;
   border-color: #8a8e7b;
 }
@@ -254,22 +420,21 @@
   bottom: max(18px, env(safe-area-inset-bottom));
   gap: 3px;
   padding: 5px 8px;
-  border: 1px solid #a38a62;
-  border-top: 2px solid #cfb589;
-  border-radius: 8px;
-  background: #3c3028f5;
-  box-shadow: inset 0 -3px #221e1b;
 }
 .bottom-dock button {
   min-width: 38px;
   padding: 9px 11px;
   font-size: 1rem;
-  color: #f1e3c8;
-  border-radius: 3px;
+  color: var(--frost-ink);
+  border-radius: 9px;
 }
 .bottom-dock button:hover {
-  color: #fff5dc;
-  background: #796043;
+  color: #35271f;
+  background: rgb(255 247 225 / 72%);
+}
+.bottom-dock button[aria-pressed="true"],
+.bottom-dock small {
+  color: #53351c;
 }
 .bottom-dock svg {
   width: 17px;
@@ -315,20 +480,15 @@
   left: 24px;
   top: 24px;
   padding: 7px 10px;
-  background: #f3e7d1ed;
-  color: #49362a;
-  border: 1px solid #c3a67c;
-  border-radius: 5px;
-  max-width: 220px;
+  max-width: min(220px, calc((100vw - 240px) / 2));
   gap: 1px;
-  box-shadow: inset 0 1px #fff6e2;
 }
 .town-label span {
   font-size: 1rem;
 }
 .town-label small {
   font-size: 0.8rem;
-  color: #786044;
+  color: var(--frost-muted);
   letter-spacing: 0;
 }
 .character-name {
@@ -343,21 +503,20 @@
   right: 24px;
   left: auto;
   width: 244px;
+  max-height: calc(100dvh - 100px - var(--focus-bottom));
+  overflow-y: auto;
+  scrollbar-width: thin;
   padding: 12px 14px;
-  background: #f3e7d1f2;
-  color: #46372b;
-  border: 1px solid #bca37b;
-  border-radius: 6px;
-  box-shadow:
-    inset 0 1px #fff8e9,
-    0 3px #4a382f55;
+}
+.town-session .shared-ready {
+  color: var(--frost-ink);
 }
 .town-session-heading {
-  color: #564131;
+  color: var(--frost-muted);
   font-size: 1.05rem;
 }
 .town-session-heading span:last-child {
-  color: #775b38;
+  color: var(--frost-muted);
   font-size: 0.95rem;
 }
 .town-session .phase-tabs {
@@ -365,7 +524,7 @@
   margin-top: 8px;
 }
 .town-session .phase-tabs button {
-  color: #806b51;
+  color: var(--frost-muted);
   font-size: 0.9rem;
 }
 .town-session .phase-tabs button[aria-pressed="true"] {
@@ -381,7 +540,7 @@
 .town-session-options,
 .town-session-options button {
   font-size: 0.9rem;
-  color: #745634;
+  color: var(--frost-muted);
 }
 .town-session .timer-buttons {
   margin-top: 8px;
@@ -395,16 +554,12 @@
 }
 .town-session .completion-line,
 .town-session .small-link {
-  color: #66503b;
+  color: var(--frost-muted);
   font-size: 0.85rem;
 }
 .interact-prompt {
   bottom: 100px;
   padding: 7px 13px;
-  color: #43332a;
-  background: #f4e7ccee;
-  border: 1px solid #baa077;
-  border-radius: 5px;
   font-size: 1.1rem;
   max-width: 90vw;
   white-space: normal;
@@ -418,9 +573,6 @@
   bottom: 95px;
   left: 24px;
   padding: 5px 9px;
-  color: #ebdcc1;
-  background: #44382fdc;
-  border-radius: 4px;
   font-size: 0.9rem;
   gap: 10px;
 }
@@ -432,20 +584,13 @@
 .town-view .storage-notice {
   bottom: 145px;
   left: 28px;
-  color: #f6e4bc;
   padding: 2px 7px;
-  background: #44382fc9;
-  border-radius: 4px;
   font-size: 0.85rem;
 }
 .toast {
   top: auto;
   bottom: 96px;
   padding: 10px 16px;
-  color: #4c3527;
-  background: #f5e7c9;
-  border: 1px solid #b69870;
-  border-radius: 5px;
   font-size: 1.1rem;
   max-width: min(460px, 90vw);
 }
@@ -780,6 +925,225 @@ dialog .phase-tabs button:after {
     transform: rotateX(-180deg);
   }
 }
+/* Header labels remain clickable through the sparse town chrome. */
+.town-view .topbar {
+  pointer-events: none;
+}
+.town-view .topbar .view-switch {
+  pointer-events: auto;
+}
+.town-label {
+  z-index: 5;
+}
+dialog .eyebrow,
+dialog .session-list b {
+  color: #805730;
+}
+dialog .session-list li {
+  border-color: #cbb697;
+}
+
+dialog .connection-state,
+dialog .rival-tag {
+  color: #825830;
+}
+
+.focus-space .start-button,
+.focus-space .button-primary,
+.tour-rhythm button,
+.practice-buttons button {
+  background: #ead6b5;
+  color: #49372b;
+  border: 1px solid #c6a880;
+  border-radius: 10px;
+  box-shadow:
+    inset 2px 2px 3px #fff5dccc,
+    inset -2px -3px 4px #b3926455,
+    0 3px 0 #9b7a50;
+}
+.focus-space .start-button:hover,
+.practice-buttons button:hover:not(:disabled),
+.tour-rhythm button:hover:not(:disabled) {
+  background: #f3dfbc;
+}
+.focus-space .start-button:active:not(:disabled),
+.practice-buttons button:active:not(:disabled) {
+  box-shadow: inset 1px 2px 4px #9b7a5080;
+}
+.desk-customizer input[type="checkbox"] {
+  accent-color: #986444;
+  width: 16px;
+  height: 16px;
+}
+.desk-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  border-top: 1px solid #f7e3bd30;
+  margin-top: 8px;
+  padding-top: 5px;
+}
+.desk-tools button {
+  margin: 0;
+  font-size: 1rem;
+}
+.timer-fold {
+  display: block;
+  margin: 0 auto 10px;
+  padding: 5px 13px;
+  border: 1px solid #f4ddad42;
+  background: #fff0ce0d;
+  color: #f4e2c3;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.focus-body {
+  container-type: inline-size;
+}
+.clock-digits:has(> :nth-child(6)) {
+  font-size: min(var(--clock-size), 8rem);
+}
+@supports (width: 1cqi) {
+  .clock-digits:has(> :nth-child(6)) {
+    font-size: min(var(--clock-size), calc((100cqi - 70px) / 3.6));
+  }
+}
+.focus-body[hidden] {
+  display: none;
+}
+.compact-clock span {
+  display: block;
+  font-size: 0.9rem;
+  color: #efdfc3;
+}
+.compact-clock strong {
+  display: block;
+  font:
+    2.7rem/1.05 VT323,
+    monospace;
+  font-variant-numeric: tabular-nums;
+  color: #fff2d8;
+}
+[data-clock-size="small"] .clock-digits {
+  --clock-size: clamp(3rem, 8vw, 5.5rem);
+}
+[data-clock-size="large"] .clock-digits {
+  --clock-size: clamp(3.6rem, 12vw, 9.5rem);
+}
+[data-desk-finish="porcelain"] .desk-clock:not(.plain-clock) {
+  background: #eadbc2;
+  border-color: #baac95;
+  box-shadow:
+    inset 0 2px #fff6e8,
+    inset 0 -4px #a8977c,
+    0 4px #4b403b40;
+}
+[data-desk-finish="porcelain"] .clock-maker,
+[data-desk-finish="porcelain"] .desk-clock:not(.plain-clock) .clock-colon {
+  color: #685442;
+}
+[data-desk-finish="terracotta"] .desk-clock:not(.plain-clock) {
+  background: #b16f50;
+  border-color: #875139;
+  box-shadow:
+    inset 0 2px #e6ad80,
+    inset 0 -4px #754b38,
+    0 4px #4b403b40;
+}
+[data-desk-finish="terracotta"] .clock-maker,
+[data-desk-finish="terracotta"] .desk-clock:not(.plain-clock) .clock-colon {
+  color: #fff1d7;
+}
+dialog {
+  background: #f6ead4;
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px #fffaf0,
+    0 5px 0 #76604644;
+}
+dialog::backdrop {
+  -webkit-backdrop-filter: blur(3px);
+}
+.tour-try,
+.tour-practice,
+.tour-secret {
+  border-top: 1px solid #cbb594;
+  padding-top: 12px;
+  margin: 12px 0 18px;
+}
+.tour-try .text-field input {
+  width: 100%;
+}
+.tour-rhythm,
+.practice-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.tour-rhythm button,
+.practice-buttons button {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 7px 10px;
+  font: inherit;
+}
+.tour-rhythm button[aria-pressed="true"] {
+  background: #a47047;
+  color: #fff5df;
+  box-shadow: inset 0 2px 3px #54382266;
+  border-color: #805735;
+}
+.practice-map {
+  max-width: 340px;
+  margin: 0 auto;
+  border: 4px solid #a48963;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.practice-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+.practice-map:focus-visible {
+  outline: 3px solid #775031;
+  outline-offset: 4px;
+}
+.practice-status {
+  min-height: 2.7em;
+  margin-top: 12px;
+}
+.tour-secret summary {
+  cursor: pointer;
+  padding: 8px 0;
+  color: #754d2f;
+}
+.tour-secret p {
+  margin-top: 10px;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .view-switch,
+  .bottom-dock,
+  .town-label,
+  .town-session,
+  .interact-prompt,
+  .controls-hint,
+  .storage-notice,
+  .toast {
+    background: rgb(255 245 222 / 70%);
+    backdrop-filter: blur(18px) saturate(1.12);
+    -webkit-backdrop-filter: blur(18px) saturate(1.12);
+  }
+  .focus-space {
+    background: rgb(28 27 24 / 72%);
+    backdrop-filter: blur(18px) saturate(0.9);
+    -webkit-backdrop-filter: blur(18px) saturate(0.9);
+  }
+}
 @media (max-width: 1000px) {
   .chapter-teaser,
   .today-teaser {
@@ -793,35 +1157,58 @@ dialog .phase-tabs button:after {
   }
 }
 @media (max-width: 650px) {
+  .app-scene {
+    --focus-top: max(102px, calc(env(safe-area-inset-top) + 82px));
+    --focus-bottom: max(80px, calc(env(safe-area-inset-bottom) + 68px));
+  }
   .topbar {
-    padding: 14px 16px;
-    align-items: flex-start;
+    padding: max(14px, env(safe-area-inset-top)) 16px 0;
+    gap: 8px;
+  }
+  .focus-space {
+    padding: 16px 14px 18px;
+    border-radius: 18px;
+  }
+  .desk-customizer {
+    margin-top: 10px;
+  }
+  .desk-customizer[open] {
+    padding: 10px;
+  }
+  .desk-customizer label {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+  }
+  .desk-customizer select {
+    max-width: 66%;
+  }
+  .desk-tools button {
+    font-size: 0.95rem;
+  }
+  [data-clock-size="large"] .clock-digits {
+    --clock-size: clamp(3.4rem, 11vw, 5.5rem);
   }
   .wordmark {
-    font-size: 0.8rem;
-    max-width: 120px;
+    font-size: 0.65rem;
+    max-width: 84px;
+    line-height: 1.35;
   }
   .wordmark span {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    margin-top: 3px;
   }
   .local-clock {
     display: none;
-  }
-  .view-switch {
-    position: static;
-    transform: none;
-    margin-left: auto;
   }
   .view-switch button {
     min-width: 56px;
     padding: 5px 9px;
     font-size: 1rem;
   }
-  .focus-space {
-    top: 118px;
-  }
   .clock-digits {
-    font-size: clamp(3.3rem, 12vw, 5rem);
+    --clock-size: clamp(3.3rem, 12vw, 5rem);
     gap: 3px;
   }
   .desk-clock {
@@ -838,14 +1225,11 @@ dialog .phase-tabs button:after {
   .task-line input {
     font-size: 1.12rem;
   }
-  .desk-customizer {
-    margin-top: 10px;
-  }
   .town-label {
-    top: 14px;
+    top: max(76px, calc(env(safe-area-inset-top) + 60px));
     left: 12px;
-    max-width: 165px;
-    padding: 6px 8px;
+    max-width: calc(100% - 24px);
+    padding: 6px 10px;
   }
   .town-label span {
     font-size: 0.8rem;
@@ -857,7 +1241,11 @@ dialog .phase-tabs button:after {
     font-size: 0.8rem;
   }
   .town-session {
-    top: 98px;
+    top: max(178px, calc(env(safe-area-inset-top) + 162px));
+    max-height: calc(
+      100dvh - max(178px, calc(env(safe-area-inset-top) + 162px)) -
+        var(--focus-bottom)
+    );
     right: 12px;
     left: 12px;
     width: auto;
@@ -934,12 +1322,12 @@ dialog .phase-tabs button:after {
     font-size: 1rem;
   }
 }
-@media (max-height: 700px) {
-  .focus-space {
-    top: 92px;
+@media (max-height: 700px) and (min-width: 651px) {
+  .app-scene {
+    --focus-top: max(96px, calc(env(safe-area-inset-top) + 76px));
   }
   .clock-digits {
-    font-size: clamp(3.5rem, 9vh, 6rem);
+    --clock-size: clamp(3.5rem, 9vh, 6rem);
   }
   .desk-clock {
     margin: 10px auto;
@@ -950,14 +1338,16 @@ dialog .phase-tabs button:after {
   .focus-space .phase-tabs {
     margin-bottom: 6px;
   }
-  .desk-customizer {
-    margin-top: 8px;
+}
+@media (max-height: 650px) {
+  .focus-space {
+    padding-block: 12px 16px;
+  }
+  [data-clock-size] .clock-digits {
+    --clock-size: clamp(3rem, 8vw, 4.5rem);
   }
 }
 @media (max-height: 530px) {
-  .focus-space {
-    top: 68px;
-  }
   .focus-space .phase-tabs {
     margin: 0;
   }
@@ -965,7 +1355,7 @@ dialog .phase-tabs button:after {
     padding: 0;
   }
   .clock-digits {
-    font-size: 3rem;
+    --clock-size: 3rem;
   }
   .desk-clock {
     padding: 6px 9px;
@@ -978,26 +1368,10 @@ dialog .phase-tabs button:after {
   .timer-buttons {
     margin-top: 8px;
   }
-  .desk-customizer {
-    position: absolute;
-    right: 0;
-    top: 32px;
-    width: 145px;
-    font-size: 0.85rem;
-  }
-  .town-session {
-    top: 80px;
-    max-height: calc(100dvh - 166px);
-    overflow: auto;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   .digit-turn {
     display: none;
-  }
-  dialog,
-  .focus-space {
-    animation: none;
   }
 }
 .reduced-motion .digit-turn {
@@ -1010,398 +1384,92 @@ dialog .phase-tabs button:after {
   transition: none !important;
 }
 
-/* Header labels remain clickable through the sparse town chrome. */
-.town-view .topbar {
-  pointer-events: none;
-}
-.town-view .topbar .view-switch {
-  pointer-events: auto;
-}
-.town-label {
-  z-index: 5;
-}
-dialog .eyebrow,
-dialog .session-list b {
-  color: #805730;
-}
-dialog .session-list li {
-  border-color: #cbb697;
-}
-
-dialog .connection-state,
-dialog .rival-tag {
-  color: #825830;
-}
-@media (max-width: 650px) and (max-height: 700px) {
-  .focus-space {
-    top: 90px;
-    max-height: calc(100dvh - 165px);
-    overflow-y: auto;
-    padding: 0 6px 10px;
-    scrollbar-width: thin;
+@media (max-width: 430px) {
+  .focus-space.is-compact {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 12px 16px;
+    gap: 10px 12px;
   }
-  .desk-customizer {
-    position: static;
-    width: max-content;
-    max-width: 100%;
+  .is-compact .timer-fold {
+    grid-column: 2;
+  }
+  .is-compact .timer-buttons {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
   }
 }
-
-/* Clay at the desk, glass over the town, paper in the book. */
-:root {
-  --frost: #fff3dd;
-  --frost-edge: #fdf5e5;
-  --frost-ink: #49372b;
+@media (max-width: 380px) {
+  .backdrop-choices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .view-switch button {
+    min-width: 52px;
+    padding-inline: 8px;
+  }
 }
-.view-switch,
-.bottom-dock,
-.town-label,
-.town-session,
-.interact-prompt,
-.controls-hint,
-.storage-notice,
-.town-view .storage-notice,
-.toast {
-  background: var(--frost);
-  color: var(--frost-ink);
-  border: 1px solid var(--frost-edge);
-  border-radius: 12px;
-  box-shadow:
-    inset 0 1px #ffffffb3,
-    0 4px 14px #43332a24;
-}
-.view-switch button,
-.bottom-dock button,
-.controls-hint,
-.storage-notice,
-.town-view .storage-notice {
-  color: var(--frost-ink);
-}
-.view-switch button[aria-pressed="true"] {
-  background: #e5d0a9;
-  color: #49372b;
-  border-radius: 8px;
-  box-shadow: inset 0 2px 3px #b39b7866;
-}
-.bottom-dock button:hover {
-  background: #e5d0a9;
-  color: #49372b;
-}
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .view-switch,
-  .bottom-dock,
-  .town-label,
-  .town-session,
-  .interact-prompt,
-  .controls-hint,
-  .storage-notice,
-  .town-view .storage-notice,
-  .toast {
-    background: rgb(255 245 225 / 86%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+@media (max-height: 530px) and (min-width: 651px) {
+  .app-scene {
+    --focus-top: max(76px, calc(env(safe-area-inset-top) + 60px));
+    --focus-bottom: max(80px, calc(env(safe-area-inset-bottom) + 68px));
+  }
+  .topbar {
+    padding-top: max(12px, env(safe-area-inset-top));
+  }
+  .town-label {
+    top: max(12px, env(safe-area-inset-top));
   }
   .town-session {
-    background: rgb(255 245 225 / 92%);
+    top: var(--focus-top);
+    max-height: calc(100dvh - var(--focus-top) - var(--focus-bottom));
+  }
+  .bottom-dock {
+    bottom: max(12px, env(safe-area-inset-bottom));
   }
 }
-.focus-space .start-button,
-.focus-space .button-primary,
-.tour-rhythm button,
-.practice-buttons button {
-  background: #ead6b5;
-  color: #49372b;
-  border: 1px solid #c6a880;
-  border-radius: 10px;
-  box-shadow:
-    inset 2px 2px 3px #fff5dccc,
-    inset -2px -3px 4px #b3926455,
-    0 3px 0 #9b7a50;
-}
-.focus-space .start-button:hover,
-.practice-buttons button:hover:not(:disabled),
-.tour-rhythm button:hover:not(:disabled) {
-  background: #f3dfbc;
-}
-.focus-space .start-button:active:not(:disabled),
-.practice-buttons button:active:not(:disabled) {
-  box-shadow: inset 1px 2px 4px #9b7a5080;
-}
-.desk-customizer[open] {
-  background: #eee0c8;
-  color: #4c382a;
-  border: 1px solid #c2a888;
-  border-radius: 14px;
-  box-shadow:
-    inset 2px 2px 3px #fff9eb,
-    inset -2px -3px 4px #b39a7844;
-}
-.desk-customizer select {
-  background: #fcf1de;
-  color: #49372b;
-  border-color: #b69c78;
-  border-radius: 6px;
-  max-width: 185px;
-}
-.desk-customizer label {
-  margin: 7px;
-  flex-wrap: wrap;
-}
-.desk-customizer input[type="checkbox"] {
-  accent-color: #986444;
-  width: 16px;
-  height: 16px;
-}
-.desk-tools {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  border-top: 1px solid #cdb697;
-  margin-top: 8px;
-  padding-top: 5px;
-}
-.desk-tools button {
-  margin: 0;
-  font-size: 1rem;
-}
-.timer-fold {
-  display: block;
-  margin: 0 auto 10px;
-  padding: 5px 13px;
-  border: 1px solid #c5aa84;
-  background: #f5e5ca;
-  color: #59412c;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-.focus-body[hidden] {
-  display: none;
-}
-.focus-space {
-  max-height: calc(100dvh - clamp(100px, 19vh, 220px) - 100px);
-  overflow-y: auto;
-  padding: 0 6px 12px;
-  scrollbar-width: thin;
-}
-.focus-space.is-compact {
-  width: min(340px, 92vw);
-  padding: 16px 20px 22px;
-  border-radius: 16px;
-  background: #efdfc2;
-  color: #49372b;
-  border: 1px solid #c9af89;
-  box-shadow:
-    inset 2px 2px #fff3dc,
-    inset -2px -3px 5px #baa07855;
-}
-.compact-clock span {
-  display: block;
-  font-size: 1.1rem;
-}
-.compact-clock strong {
-  display: block;
-  font:
-    4.8rem/1.1 VT323,
-    monospace;
-  font-variant-numeric: tabular-nums;
-  color: #49372b;
-}
-.is-compact .timer-buttons {
-  margin-top: 10px;
-}
-.is-compact :is(.small-link, .completion-line) {
-  color: #654932;
-}
-[data-clock-size="small"] .clock-digits {
-  font-size: clamp(3rem, 8vw, 5.5rem);
-}
-[data-clock-size="large"] .clock-digits {
-  font-size: clamp(3.6rem, 12vw, 9.5rem);
-}
-[data-desk-finish="porcelain"] .desk-clock:not(.plain-clock) {
-  background: #eadbc2;
-  border-color: #baac95;
-  box-shadow:
-    inset 0 2px #fff6e8,
-    inset 0 -4px #a8977c,
-    0 4px #4b403b40;
-}
-[data-desk-finish="porcelain"] .clock-maker,
-[data-desk-finish="porcelain"] .desk-clock:not(.plain-clock) .clock-colon {
-  color: #685442;
-}
-[data-desk-finish="terracotta"] .desk-clock:not(.plain-clock) {
-  background: #b16f50;
-  border-color: #875139;
-  box-shadow:
-    inset 0 2px #e6ad80,
-    inset 0 -4px #754b38,
-    0 4px #4b403b40;
-}
-[data-desk-finish="terracotta"] .clock-maker,
-[data-desk-finish="terracotta"] .desk-clock:not(.plain-clock) .clock-colon {
-  color: #fff1d7;
-}
-.scene-backdrop.drawn-backdrop {
-  filter: none;
-}
-.app-scene:not(.town-view):is(
-    [data-background="paper"],
-    [data-background="garden"]
-  ) {
-  color: #433b2c;
-  --muted-text: #66563f;
-}
-.app-scene:not(.town-view):is(
-    [data-background="paper"],
-    [data-background="garden"]
-  )
-  :is(
-    .wordmark span,
-    .local-clock span,
-    .phase-tabs button,
-    .task-line input,
-    .round-line,
-    .round-line button,
-    .small-link,
-    .completion-line,
-    .town-advice,
-    .desk-customizer,
-    .chapter-teaser > span,
-    .today-teaser > span
-  ) {
-  color: #574830;
-}
-.app-scene:not(.town-view):is(
-    [data-background="paper"],
-    [data-background="garden"]
-  )
-  .task-line
-  input::placeholder {
-  color: #574830;
-}
-.app-scene:not(.town-view):is(
-    [data-background="paper"],
-    [data-background="garden"]
-  )
-  .phase-tabs
-  button[aria-pressed="true"] {
-  color: #342c21;
-}
-.app-scene:not(.town-view):is(
-    [data-background="paper"],
-    [data-background="garden"]
-  )
-  .plain-clock
-  .clock-digit {
-  color: #44372a;
-}
-.app-scene:not(.town-view):is(
-    [data-background="paper"],
-    [data-background="garden"]
-  )
-  .plain-clock
-  .clock-colon {
-  color: #665038;
-}
-dialog {
-  background: #f6ead4;
-  border-radius: 10px;
-  box-shadow:
-    inset 0 1px #fffaf0,
-    0 5px 0 #76604644;
-}
-dialog::backdrop {
-  -webkit-backdrop-filter: blur(3px);
-}
-.tour-try,
-.tour-practice,
-.tour-secret {
-  border-top: 1px solid #cbb594;
-  padding-top: 12px;
-  margin: 12px 0 18px;
-}
-.tour-try .text-field input {
-  width: 100%;
-}
-.tour-rhythm,
-.practice-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 12px 0;
-}
-.tour-rhythm button,
-.practice-buttons button {
-  min-width: 40px;
-  min-height: 40px;
-  padding: 7px 10px;
-  font: inherit;
-}
-.tour-rhythm button[aria-pressed="true"] {
-  background: #a47047;
-  color: #fff5df;
-  box-shadow: inset 0 2px 3px #54382266;
-  border-color: #805735;
-}
-.practice-map {
-  max-width: 340px;
-  margin: 0 auto;
-  border: 4px solid #a48963;
-  border-radius: 6px;
-  overflow: hidden;
-}
-.practice-map svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  image-rendering: pixelated;
-}
-.practice-map:focus-visible {
-  outline: 3px solid #775031;
-  outline-offset: 4px;
-}
-.practice-status {
-  min-height: 2.7em;
-  margin-top: 12px;
-}
-.tour-secret summary {
-  cursor: pointer;
-  padding: 8px 0;
-  color: #754d2f;
-}
-.tour-secret p {
-  margin-top: 10px;
-}
-@media (max-width: 650px) {
-  .desk-customizer {
-    position: static;
-    width: auto;
-  }
-  .desk-customizer label {
-    display: flex;
-    justify-content: space-between;
-    margin: 8px 0;
-  }
-  .desk-tools button {
-    font-size: 0.95rem;
-  }
-  [data-clock-size="large"] .clock-digits {
-    font-size: clamp(3.4rem, 11vw, 5.5rem);
-  }
-}
-@media (max-height: 650px) {
-  .focus-space {
+/* Keep the timer and walking controls in separate lanes on short phones. */
+@media (max-width: 650px) and (min-width: 480px) and (max-height: 530px) {
+  .town-label {
     top: 80px;
-    max-height: calc(100dvh - 166px);
+    max-width: calc(45% - 24px);
   }
-  [data-clock-size] .clock-digits {
-    font-size: clamp(3rem, 8vw, 4.5rem);
+  .town-session {
+    top: 80px;
+    left: auto;
+    width: calc(55% - 18px);
+    max-height: calc(100dvh - 216px);
   }
-  .desk-customizer {
-    position: static;
-    width: auto;
+  .town-view .touch-pad {
+    bottom: max(76px, calc(env(safe-area-inset-bottom) + 64px));
+    max-width: calc(45% - 24px);
+  }
+  .town-view #town-session-body {
+    display: block;
+  }
+  .town-session .timer-buttons {
+    flex-wrap: wrap;
+  }
+  .town-view .interact-prompt {
+    left: auto;
+    right: 12px;
+    bottom: 76px;
+    width: calc(55% - 18px);
+    transform: none;
+  }
+}
+@media (max-width: 479px) and (max-height: 530px) and (pointer: coarse) {
+  /* The persistent Use button remains available when there is no room for a hint. */
+  .town-view .interact-prompt {
+    display: none;
+  }
+  .town-view .touch-pad {
+    bottom: max(76px, calc(env(safe-area-inset-bottom) + 64px));
+    max-width: calc(100% - 32px);
+  }
+  .town-session {
+    max-height: calc(
+      100dvh - 178px - max(132px, calc(env(safe-area-inset-bottom) + 120px))
+    );
   }
 }
 @media (prefers-reduced-transparency: reduce) {
@@ -1412,9 +1480,13 @@ dialog::backdrop {
   .interact-prompt,
   .controls-hint,
   .storage-notice,
-  .town-view .storage-notice,
   .toast {
     background: var(--frost);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .focus-space {
+    background: #292722;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
@@ -1431,10 +1503,10 @@ dialog::backdrop {
   .interact-prompt,
   .controls-hint,
   .storage-notice,
-  .town-view .storage-notice,
   .toast,
-  .focus-space.is-compact,
+  .focus-space,
   .desk-customizer[open],
+  .desk-customizer .backdrop-choice,
   dialog {
     background: Canvas;
     color: CanvasText;
@@ -1443,36 +1515,15 @@ dialog::backdrop {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
-}
-
-/* Keep the new timer structure out of the retired two-column short-screen layout. */
-.focus-space {
-  display: block;
-  bottom: auto;
-}
-.focus-space .timer-buttons {
-  flex-wrap: wrap;
-}
-.is-compact .start-button {
-  min-width: 0;
-  flex: 1 1 160px;
-  padding-inline: 12px;
-}
-.is-compact .shared-ready,
-.town-session .shared-ready {
-  color: #654932;
-}
-.app-scene:not(.town-view):is(
-    [data-background="paper"],
-    [data-background="garden"]
-  )
-  .focus-space {
-  color: #49372b;
-}
-.app-scene:not(.town-view):is(
-    [data-background="paper"],
-    [data-background="garden"]
-  )
-  .shared-ready {
-  color: #654932;
+  .view-switch button[aria-pressed="true"],
+  .desk-customizer .backdrop-choice[aria-pressed="true"] {
+    outline: 2px solid Highlight;
+    outline-offset: -3px;
+  }
+  .wordmark,
+  .local-clock,
+  .chapter-teaser,
+  .today-teaser {
+    text-shadow: none;
+  }
 }

@@ -144,3 +144,13 @@ The screenshots caught two small gaps with a large effect: Lottie's chimney and 
 The fountain's collision footprint now includes the rim on both sides. Standing below it still draws the character in front, as it should. The grey paving blocks use warmer stone, earth-filled joints and clipped corners to fit the path.
 
 Nine new checks inspect the actual drawing coordinates, front/back order and movement around all four fountain edges, including the coffee speed boost. All 182 tests and both production builds passed. Source review found no regression. The paving's appearance still needs a browser check; the automated checks do not establish visual quality. No additional human coding hours are claimed.
+
+## 12 October: let the scenery breathe
+
+The latest screenshot showed a collapsed timer that still covered most of the view. It kept the big cream panel, oversized button and a message from the finished plan. Compact mode now puts the time, Start/Pause and Expand in a short glass strip. Finished-session details stay in the full view. Save recovery and shared-room readiness remain available when needed.
+
+Garden morning and Library window replace the sparse garden and paper drawings. Both are new pixel illustrations made with the built-in image generator, using the observatory as the style reference. The image files were inspected directly. The scenery picker now shows thumbnails, and existing background preferences still load. Asset details and the exact prompts are in ASSETS.md and ART_PROMPTS.md.
+
+The Focus/Town switch sits between equal-width header columns, so the logo and local clock no longer pull it off centre. Focus uses dark translucent glass with pale lettering. The chosen clock finish stays separate from the surrounding panel. Review also corrected long-timer sizing and the space between town controls on short screens.
+
+All 183 tests, both production builds, and the Worker checks for pages, 404, three backgrounds and audio passed. Source review found no remaining blockers. Browser access was denied by the saved permission rule, so rendered layout and interaction still need a manual pass. These notes record implementation and checks, with no additional human coding hours claimed.

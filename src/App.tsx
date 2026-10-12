@@ -1,7 +1,7 @@
 import { DeskClock, TOUR_STEPS, TourPicture } from "./DeskClock";
 import { TourPractice } from "./TourPractice";
 import { deskDefaults, parseDeskPrefs } from "./deskPreferences";
-import { DeskBackdrop } from "./DeskBackdrop";
+import { DeskBackdrop, DESK_BACKGROUNDS } from "./DeskBackdrop";
 import { TownPersonalization } from "./TownPersonalization";
 import { motivationLine } from "./game/personalization";
 import { coffeeActive } from "./game/state";
@@ -856,6 +856,9 @@ function Game() {
         : cycle?.next === "focus" && cycle.completed > 0
           ? "Start round " + (cycle.completed + 1)
           : "Start " + phaseLabel(currentPhase).toLowerCase();
+  const compactFocus = view === "focus" && prefs.focusCollapsed;
+  const actionLabel =
+    inRoom && !room.isHost ? "Host controls the timer" : mainLabel;
   const sessionTabs = (
     <div className="phase-tabs" role="group" aria-label="Session type">
       {(["focus", "short", "long"] as Phase[]).map((p) => (
@@ -908,6 +911,7 @@ function Game() {
         <Button
           className="start-button"
           variant="default"
+          aria-label={actionLabel}
           disabled={
             (!active && !valid) ||
             (inRoom &&
@@ -923,7 +927,15 @@ function Game() {
           onClick={active ? togglePause : begin}
         >
           <Icon name={active && !isPaused ? "pause" : "play"} />
-          {inRoom && !room.isHost ? "Host controls the timer" : mainLabel}
+          {compactFocus
+            ? inRoom && !room.isHost
+              ? "Host timer"
+              : active
+                ? isPaused
+                  ? "Resume"
+                  : "Pause"
+                : "Start"
+            : actionLabel}
         </Button>
         {((active && (!inRoom || room.isHost)) || (!inRoom && !!planned)) && (
           <Button
@@ -940,27 +952,38 @@ function Game() {
         </button>
       )}
       {!inRoom && cycle?.next === "done" && !timer && (
-        <p className="completion-line" role="status">
+        <p
+          className={compactFocus ? "sr-only" : "completion-line"}
+          role="status"
+        >
           All {cycle.rounds} rounds finished. Take your time.
         </p>
       )}
       {inRoom && rt?.status === "complete" && (
-        <p className="session-result" role="status">
+        <p
+          className={compactFocus ? "sr-only" : "session-result"}
+          role="status"
+        >
           {rt.kind === "focus"
             ? "Shared interval complete. Ready players’ rewards will be saved shortly."
             : "Break finished. Ready for another page?"}
         </p>
       )}
       {!inRoom && save.lastCompletion && !timer && (
-        <p className="completion-line" role="status">
+        <p
+          className={compactFocus ? "sr-only" : "completion-line"}
+          role="status"
+        >
           {save.lastCompletion.focusMinutes} minutes saved · +
           {save.lastCompletion.rewards.xp} XP{" "}
-          <button
-            aria-label="Dismiss session result"
-            onClick={() => update(dismissCompletion)}
-          >
-            ×
-          </button>
+          {!compactFocus && (
+            <button
+              aria-label="Dismiss session result"
+              onClick={() => update(dismissCompletion)}
+            >
+              ×
+            </button>
+          )}
         </p>
       )}
     </>
@@ -978,7 +1001,7 @@ function Game() {
         (prefs.quiet ? "reduced-motion" : "")
       }
     >
-      <DeskBackdrop kind={prefs.background} />
+      {view === "focus" && <DeskBackdrop kind={prefs.background} />}
       <div className="world-stage" hidden={view !== "town"}>
         <canvas
           ref={canvas}
@@ -1033,11 +1056,14 @@ function Game() {
         >
           <button
             className="timer-fold"
+            aria-label={
+              prefs.focusCollapsed ? "Expand full timer" : "Collapse timer"
+            }
             aria-expanded={!prefs.focusCollapsed}
             aria-controls="focus-timer-body"
             onClick={() => setting("focusCollapsed", !prefs.focusCollapsed)}
           >
-            {prefs.focusCollapsed ? "Open full timer" : "Collapse timer"}
+            {prefs.focusCollapsed ? "Expand" : "Collapse timer"}
           </button>
           {prefs.focusCollapsed && (
             <div className="compact-clock">
@@ -1121,12 +1147,6 @@ function Game() {
                 Light{" "}
                 <select
                   value={prefs.deskTheme}
-                  disabled={prefs.background !== "observatory"}
-                  title={
-                    prefs.background !== "observatory"
-                      ? "Garden and paper have their own daylight palette"
-                      : undefined
-                  }
                   onChange={(e) => setting("deskTheme", e.target.value)}
                 >
                   <option value="lamplight">Lamplight</option>
@@ -1144,22 +1164,38 @@ function Game() {
                   <option value="plain">Plain digits</option>
                 </select>
               </label>
-              <label>
-                Background{" "}
-                <select
-                  value={prefs.background}
-                  onChange={(e) =>
-                    setting(
-                      "background",
-                      e.target.value as typeof prefs.background,
-                    )
-                  }
+              <div className="backdrop-setting">
+                <span id="backdrop-label">Scenery</span>
+                <div
+                  className="backdrop-choices"
+                  role="group"
+                  aria-labelledby="backdrop-label"
                 >
-                  <option value="observatory">The observatory</option>
-                  <option value="paper">Paper desk</option>
-                  <option value="garden">Garden morning</option>
-                </select>
-              </label>
+                  {(
+                    Object.keys(DESK_BACKGROUNDS) as (typeof prefs.background)[]
+                  ).map((kind) => (
+                    <button
+                      key={kind}
+                      className="backdrop-choice"
+                      aria-pressed={prefs.background === kind}
+                      onClick={() => setting("background", kind)}
+                    >
+                      <img
+                        className="backdrop-preview"
+                        src={DESK_BACKGROUNDS[kind].src}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        width="160"
+                        height="90"
+                      />
+                      <span className="backdrop-name">
+                        {DESK_BACKGROUNDS[kind].name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
               <label>
                 Finish{" "}
                 <select

@@ -96,3 +96,14 @@ These browser checks have not been completed by the agent; the saved preview rul
 - [ ] Scroll to the bottom of a guide page, then choose Next or Back. Confirm the heading becomes visible and receives keyboard focus. Enter a name and choose Next; return to confirm it saved.
 
 The twelve controller tests use a deterministic browser-lock model. They verify that aborting a granted request does not release its lock; the old holder must explicitly finish first. They are not a substitute for the browser checks above.
+
+## Glass and scenery final pass
+
+The 12 October update passed 183 automated tests, both production builds and built Worker route, image and audio checks. The image files were visually inspected; the rendered interface was not, because browser access was denied.
+
+- [ ] Open Arrange your desk, then Scenery. Try Observatory, Library window and Garden morning with each Light option. Reload and confirm the chosen scene remains.
+- [ ] Compare the Focus/Town switch in both views at desktop width and 320px. Its centre should stay on the window's centre, even when the side labels are hidden.
+- [ ] Collapse an idle, running and paused timer. Check the short glass strip, Start/Pause/Resume and Expand. End a two-round plan: old completion text should appear only in the full view.
+- [ ] Try 720 minutes, large digits, and a 640 by 360 window. Check that the clock stays inside the pane and the town timer does not cover movement controls.
+- [ ] In compact mode, check Use this tab and shared-room readiness. A guest should still see that the host controls the timer. Tab through the strip: no hidden dismiss button should receive focus.
+- [ ] Enable reduced transparency or high contrast in the operating system. The timer should remain readable without a blur effect.

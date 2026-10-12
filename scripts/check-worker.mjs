@@ -14,13 +14,19 @@ const missing = await worker.fetch(
   {},
 );
 assert.equal(missing.status, 404);
-const image = await worker.fetch(
-  new Request("https://town.test/art/observatory.png"),
-  {},
-);
-assert.equal(image.status, 200);
-assert.equal(image.headers.get("content-type"), "image/png");
-assert.ok((await image.arrayBuffer()).byteLength > 100000);
+for (const [name, type] of [
+  ["observatory.png", "image/png"],
+  ["garden-morning.webp", "image/webp"],
+  ["library-study.webp", "image/webp"],
+]) {
+  const image = await worker.fetch(
+    new Request("https://town.test/art/" + name),
+    {},
+  );
+  assert.equal(image.status, 200);
+  assert.equal(image.headers.get("content-type"), type);
+  assert.ok((await image.arrayBuffer()).byteLength > 100000);
+}
 const head = await worker.fetch(
   new Request("https://town.test/", { method: "HEAD" }),
   {},
@@ -36,7 +42,7 @@ const api = await worker.fetch(
 );
 assert.equal(api.status, 503);
 console.log(
-  "Built Worker checks passed: documents, 404, image, HEAD, unavailable storage. No browser preview was opened.",
+  "Built Worker checks passed: documents, 404, three backgrounds, HEAD, unavailable storage. No browser preview was opened.",
 );
 
 for (const name of ["rain", "forest", "fire", "lofi", "chime"]) {

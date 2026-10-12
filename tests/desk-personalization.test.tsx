@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
+import { readFileSync } from "node:fs";
 import { deskDefaults, parseDeskPrefs } from "../src/deskPreferences";
 import {
   practiceStart,
@@ -7,7 +8,7 @@ import {
   nearPracticeSign,
   TourPractice,
 } from "../src/TourPractice";
-import { DeskBackdrop } from "../src/DeskBackdrop";
+import { DeskBackdrop, DESK_BACKGROUNDS } from "../src/DeskBackdrop";
 
 describe("personal desk and first visit", () => {
   it("migrates older preferences without removing their chosen light or clock", () => {
@@ -66,13 +67,30 @@ describe("personal desk and first visit", () => {
     expect(html).toContain("Practice only");
     expect(html).toContain("disabled");
   });
-  it("renders built-in daytime scenes without external requests", () => {
-    for (const kind of ["paper", "garden"] as const) {
+  it("keeps the old paper choice when loading the new library artwork", () => {
+    const prefs = parseDeskPrefs({
+      background: "paper",
+      deskFinish: "porcelain",
+    });
+    expect(prefs.background).toBe("paper");
+    expect(prefs.deskFinish).toBe("porcelain");
+    expect(DESK_BACKGROUNDS[prefs.background].name).toBe("Library window");
+  });
+  it("ships every background locally and keeps decorative images out of the accessibility tree", () => {
+    for (const kind of ["observatory", "paper", "garden"] as const) {
       const html = renderToStaticMarkup(<DeskBackdrop kind={kind} />);
       expect(html).toContain('aria-hidden="true"');
-      expect(html).toContain('viewBox="0 0 960 600"');
+      expect(html).toContain('alt=""');
+      const { src } = DESK_BACKGROUNDS[kind];
+      expect(html).toContain('src="' + src + '"');
       expect(html).not.toContain("https:");
-      expect(html).not.toContain("<image");
+      const bytes = readFileSync(new URL("../public" + src, import.meta.url));
+      if (src.endsWith(".webp")) {
+        expect(bytes.subarray(0, 4).toString()).toBe("RIFF");
+        expect(bytes.subarray(8, 12).toString()).toBe("WEBP");
+      } else {
+        expect(bytes.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+      }
     }
   });
 });

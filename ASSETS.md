@@ -55,4 +55,17 @@ Research used [Minecraft building advice](https://www.minecraft.net/en-us/articl
 
 ## Personal desk materials
 
-The paper-desk and garden-morning backdrops are original SVG drawings in src/DeskBackdrop.tsx. The practice yard is drawn in src/TourPractice.tsx. Both were created with AI assistance in VS Code; no external artwork or new downloads were used. The existing observatory credit still applies. Clay controls, frosted town chrome and the paper journal are CSS treatments written for this project.
+The original paper-desk and garden-morning SVG placeholders were replaced on 12 October 2026. The practice yard remains an original code drawing in src/TourPractice.tsx, made with AI assistance. Glass controls, the timber clock and paper journal are CSS treatments written for this project.
+
+## Garden and library illustrations
+
+Both replacement scenes were generated for Focus Town on 12 October 2026 with the built-in OpenAI image generation tool, using the existing observatory as a style reference. They are not screenshots from another game or artwork drawn by the owner. The generated PNGs were compressed to WebP at quality 91 without resizing or changing the composition.
+
+| File                           | Size       | Bytes   |
+| ------------------------------ | ---------- | ------- |
+| public/art/garden-morning.webp | 1672 × 941 | 618,272 |
+| public/art/library-study.webp  | 1672 × 941 | 588,352 |
+
+The assets are served from the game's own origin. Background selection makes no requests to an image generator or third-party image host. The old saved key `paper` now selects the library illustration so existing preferences continue to load.
+
+The complete generation prompts are in [ART_PROMPTS.md](ART_PROMPTS.md).
