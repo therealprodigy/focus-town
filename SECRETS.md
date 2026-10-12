@@ -24,3 +24,17 @@ The references are written jokes and original drawings. No Minecraft, Terraria o
 ## Two things in Lantern House
 
 Walk to the blue travel poster beside the desk and press E. Its unreliable delivery date and generous interior measurements are a Doctor Who nod. Then inspect the fireplace on the right. The fellowship of the kettle has very modest equipment, and a firm opinion about second breakfast. Both discoveries appear in your journal; repeated visits do not pay extra coins.
+
+## Cherrybank and the keeper’s crown
+
+Start with Edda’s cherry-stamped letter on the post southwest of the fountain. Collect **A letter under the blossoms** in Quests to earn a brass compass. Its directions follow the town you are visiting, including a friend’s repaired crossing.
+
+After the Old Crossing is open, follow the glasshouse path east. Edda is by the archive in the north-west of Cherrybank. Oren works near the centre; Pip waits beside the outdoor cinema to the east. His reel is just north of him. The station and its ticket are south of the cinema. The star chart is on a table in the south-west clearing.
+
+- **Platform Nine and a little bit:** a wizard-school commuter joke. Please do not run at the wall.
+- **Pip’s reel:** a blue police box has parked across two centuries. The ticket supplies the missing-scene clue.
+- **Star chart:** forty-two marks and a towel nod to The Hitchhiker’s Guide to the Galaxy.
+- **Pocket projector:** after collecting Pip’s quest reward, talk to him to open three illustrated films. The kettle expedition and dramatic orchard gardener nod to fantasy quests and space operas.
+- **Oren’s puzzle:** the correct final scene is Nightfall. Wrong guesses cost nothing, and solving the puzzle twice cannot duplicate its reward.
+
+The crown is earned through the first five Cherrybank requests. The cloak follows the garden rounds and final focus goal. Both are worn from Settings and appear to companions. The seal and garden ribbon are keepsakes; they do not secretly multiply coins or shorten the timer.

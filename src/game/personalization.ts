@@ -1,3 +1,4 @@
+import type { SaveData } from "./state.js";
 export const OUTFITS = [
   { name: "Brook teal", coat: "#376f70", light: "#80b2a3", trim: "#d9af65" },
   { name: "Brick red", coat: "#945446", light: "#c88b67", trim: "#e7c68e" },
@@ -15,7 +16,8 @@ export const SKINS = [
 export type Appearance = {
   outfit: number;
   skin: number;
-  hat: "witch" | "cap" | "none";
+  hat: "witch" | "cap" | "none" | "crown";
+  cloak?: "none" | "royal";
 };
 export const DEFAULT_APPEARANCE: Appearance = {
   outfit: 0,
@@ -32,7 +34,8 @@ export function validAppearance(value: unknown): value is Appearance {
     Number.isInteger(a.skin) &&
     a.skin >= 0 &&
     a.skin < SKINS.length &&
-    ["witch", "cap", "none"].includes(a.hat)
+    ["witch", "cap", "none", "crown"].includes(a.hat) &&
+    (a.cloak === undefined || a.cloak === "none" || a.cloak === "royal")
   );
 }
 export type LightMode = "cycle" | "local" | "day" | "night";
@@ -81,4 +84,33 @@ export function motivationLine(
   if (mode === "off") return "";
   const lines = LINES[mode];
   return lines[Math.abs(Math.floor(completed + day)) % lines.length];
+}
+
+/** Item ownership has one source of truth: the mission reward already claimed. */
+export function ownedRoyalItems(save: Pick<SaveData, "missionClaims">) {
+  const has = (id: string) =>
+    save.missionClaims?.some((claim) => claim === id) ?? false;
+  return {
+    compass: has("cherry-post"),
+    projector: has("lantern-cut"),
+    seal: has("keeper-watch"),
+    crown: has("town-coronation"),
+    ribbon: has("royal-rounds"),
+    cloak: has("kings-cloak"),
+  };
+}
+export function canWearAppearance(
+  save: Pick<SaveData, "missionClaims">,
+  appearance: Appearance,
+) {
+  const items = ownedRoyalItems(save);
+  return (
+    (appearance.hat !== "crown" || items.crown) &&
+    (appearance.cloak !== "royal" || items.cloak)
+  );
+}
+export function equipAppearance(save: SaveData, appearance: unknown): SaveData {
+  if (!validAppearance(appearance) || !canWearAppearance(save, appearance))
+    return save;
+  return { ...save, appearance: { ...appearance } };
 }

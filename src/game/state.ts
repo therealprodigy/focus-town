@@ -1,5 +1,6 @@
 import {
   validAppearance,
+  canWearAppearance,
   validLightMode,
   validMotivation,
   type Appearance,
@@ -10,6 +11,7 @@ import { validDiscoveries, type DiscoveryId } from "./discoveries.js";
 import {
   validUpgrades,
   validMissionClaims,
+  validRoyalHistory,
   validStreakClaims,
   type UpgradeId,
   type MissionId,
@@ -238,6 +240,21 @@ function validSave(x: unknown): x is SaveData {
   if (x.upgrades !== undefined && !validUpgrades(x.upgrades)) return false;
   if (x.missionClaims !== undefined && !validMissionClaims(x.missionClaims))
     return false;
+  if (
+    x.appearance !== undefined &&
+    !canWearAppearance(
+      { missionClaims: x.missionClaims as MissionId[] | undefined },
+      x.appearance as Appearance,
+    )
+  )
+    return false;
+  if (
+    Array.isArray(x.discoveries) &&
+    x.discoveries.includes("bellmaker-riddle") &&
+    (!Array.isArray(x.missionClaims) ||
+      !x.missionClaims.includes("lantern-cut"))
+  )
+    return false;
   if (x.streakClaims !== undefined && !validStreakClaims(x.streakClaims))
     return false;
   if (x.cycle !== undefined && x.cycle !== null && !validCycle(x.cycle))
@@ -255,6 +272,14 @@ function validSave(x: unknown): x is SaveData {
       return false;
     ids.add(s.id);
   }
+  if (
+    !validRoyalHistory({
+      missionClaims: x.missionClaims as MissionId[] | undefined,
+      discoveries: x.discoveries as DiscoveryId[] | undefined,
+      sessions: x.sessions as CompletedSession[],
+    })
+  )
+    return false;
   if (x.timer !== null && (!validTimer(x.timer) || ids.has(x.timer.id)))
     return false;
   if (x.lastCompletion !== null) {

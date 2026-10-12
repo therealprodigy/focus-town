@@ -1,4 +1,4 @@
-import type { UpgradeId } from "./townCatalog";
+import type { UpgradeId } from "./townCatalog.js";
 export type SceneId = "village" | "house";
 export type Facing = "up" | "down" | "left" | "right";
 export interface Point {
@@ -99,8 +99,8 @@ const r = (x: number, y: number, width: number, height: number): Rect => ({
 export const WORLDS: Record<SceneId, WorldScene> = {
   village: {
     id: "village",
-    width: 1440,
-    height: 600,
+    width: 1920,
+    height: 800,
     spawn: { x: 448, y: 416 },
     solids: [
       ...TOWN_LAMPS.map(({ x, y }) => r(x - 4, y - 8, 8, 8)),
@@ -109,11 +109,14 @@ export const WORLDS: Record<SceneId, WorldScene> = {
       r(136, 456, 68, 20),
       r(538, 272, 32, 12),
       r(374, 514, 24, 10),
+      r(368, 448, 4, 12),
       r(702, 312, 30, 12),
       ...BUILDINGS.map(({ x, y, width, height }) => r(x, y, width, height)),
       ...VILLAGE_TREES.map(({ x, y }) => r(x - 12, y - 18, 24, 20)),
       r(856, 0, 104, 320),
-      r(796, 0, 644, 600),
+      r(796, 0, 1124, 800),
+      // The original town ends at the southern treeline. Only the east bank expands.
+      r(0, 600, 796, 200),
       r(748, 292, 108, 28),
       r(748, 320, 48, 280),
       r(420, 336, 72, 44),
@@ -123,6 +126,17 @@ export const WORLDS: Record<SceneId, WorldScene> = {
       r(584, 432, 92, 48),
     ],
     interactions: [
+      {
+        id: "cherry-letter",
+        kind: "sign",
+        label: "Read the cherry-stamped letter",
+        bounds: r(354, 440, 32, 20),
+        title: "A map on the back",
+        lines: [
+          "A pink stamp holds a pressed cherry petal. On the back, Edda has drawn a compass and a route over the Old Crossing.",
+          "Collect A letter under the blossoms in Quests to borrow my compass. Repair the Old Crossing with Lottie, then follow the garden path east to Cherrybank.",
+        ],
+      },
       {
         id: "bench",
         label: "Check the reading bench",
@@ -471,6 +485,122 @@ export const GARDEN_INTERACTIONS: Interaction[] = [
     title: "Coffee, delivered",
   },
 ];
+// Cherrybank shares the repaired east bank; it cannot unlock a second river crossing.
+export const CHERRY_TREES: Point[] = [
+  { x: 1480, y: 140 },
+  { x: 1616, y: 130 },
+  { x: 1748, y: 142 },
+  { x: 1872, y: 202 },
+  { x: 1456, y: 320 },
+  { x: 1688, y: 294 },
+  { x: 1880, y: 386 },
+  { x: 1456, y: 510 },
+  { x: 1736, y: 550 },
+  { x: 1884, y: 572 },
+  { x: 1420, y: 718 },
+  { x: 1600, y: 760 },
+  { x: 1720, y: 762 },
+  { x: 1870, y: 750 },
+  { x: 1176, y: 724 },
+  { x: 1000, y: 710 },
+];
+export const CHERRYBANK_LAMPS: Point[] = [
+  { x: 1442, y: 394 },
+  { x: 1640, y: 566 },
+  { x: 1860, y: 496 },
+  { x: 1468, y: 694 },
+  { x: 1830, y: 718 },
+];
+export const CHERRYBANK_SOLIDS: Rect[] = [
+  ...CHERRYBANK_LAMPS.map(({ x, y }) => r(x - 4, y - 8, 8, 8)),
+  r(1488, 206, 112, 76), // Edda's archive kiosk
+  r(1528, 420, 96, 26), // Oren's casting bench
+  r(1796, 394, 68, 8), // projection screen's two supports and canvas
+  r(1766, 468, 44, 24), // Pip's projector trolley
+  r(1738, 612, 112, 22), // station bench and luggage
+  r(1496, 646, 64, 22), // star chart table
+  r(1638, 334, 8, 10), // direction sign post
+];
+export const CHERRYBANK_INTERACTIONS: Interaction[] = [
+  {
+    id: "edda",
+    kind: "npc",
+    label: "Talk to Edda, the archivist",
+    bounds: r(1526, 292, 28, 18),
+    title: "Edda / keeper of the small things",
+    lines: [
+      "I keep the letters people leave in library books. Receipts too. The receipts have better dates.",
+      "Pip is east by the outdoor screen. Oren works just south of here. If you find my cherry-stamped letter, read the back.",
+    ],
+  },
+  {
+    id: "oren",
+    kind: "npc",
+    label: "Talk to Oren, the bellmaker",
+    bounds: r(1570, 456, 28, 18),
+    title: "Oren / bellmaker",
+    lines: [
+      "A loud bell is easy. A bell you want to hear twice takes a bit longer.",
+      "I left you a riddle. Come back when you have checked Pip's reel and the little station.",
+    ],
+  },
+  {
+    id: "pip",
+    kind: "npc",
+    label: "Talk to Pip, the projectionist",
+    bounds: r(1786, 520, 28, 18),
+    title: "Pip / one-person picture house",
+    lines: [
+      "The screen is a bedsheet. The projector is older than me. Please judge the film separately.",
+      "The reel is on my trolley, just north of here. Platform Nine is down the path. There is no train, but the bench is excellent.",
+    ],
+  },
+
+  {
+    id: "lantern-reel",
+    kind: "sign",
+    label: "Inspect the lantern reel",
+    bounds: r(1766, 468, 44, 24),
+    title: "The lantern reel",
+    lines: [
+      "Frame one: the station at sunrise. Frame two: the station at midday. The last frame is missing.",
+      "A blue police box in the background has been fined for parking across two centuries. Pip has pencilled Platform Nine on the reel tin.",
+    ],
+  },
+  {
+    id: "platform-nine",
+    kind: "sign",
+    label: "Read the Platform Nine timetable",
+    bounds: r(1746, 620, 40, 18),
+    title: "Platform Nine and a little bit",
+    lines: [
+      "Departures: when you are ready. Arrivals: sooner than you think. Please do not run at the wall.",
+      "A brass ticket is tucked behind the timetable. On the back, Pip wrote: Last scene: lamps lit, stars out, not a scrap of sunlight.",
+    ],
+  },
+  {
+    id: "star-chart",
+    kind: "sign",
+    label: "Unfold the star chart",
+    bounds: r(1496, 646, 64, 22),
+    title: "Mostly harmless stargazing",
+    lines: [
+      "There are forty-two pencil marks, one tea stain and a reminder to bring a towel for the damp bench.",
+      "The brightest star is named Home. Someone has added: check which way you came.",
+    ],
+  },
+  {
+    id: "cherrybank-sign",
+    kind: "sign",
+    label: "Read the Cherrybank directions",
+    bounds: r(1634, 330, 16, 18),
+    title: "Cherrybank promenade",
+    lines: [
+      "West: glasshouse, Old Crossing, home. North-west: Edda's archive.",
+      "South-west: Oren's workshop and the star table. East: Pip's picture house. South-east: Platform Nine.",
+    ],
+  },
+];
 export function crossingOpen(upgrades: readonly UpgradeId[]) {
   return upgrades.includes("crossing-lanterns");
 }
@@ -483,6 +613,9 @@ export function residentPositions(now: number) {
     rowan: { x: 346 + walk(0) * 44, y: 352 },
     mira: { x: 590 + walk(30) * 42, y: 314 },
     cat: { x: 546 + walk(65) * 24, y: 284 },
+    edda: { x: 1540 + walk(12) * 22, y: 308 },
+    oren: { x: 1584 + walk(42) * 24, y: 472 },
+    pip: { x: 1800 + walk(75) * 20, y: 536 },
   };
 }
 export function getWorldScene(
@@ -505,11 +638,12 @@ export function getWorldScene(
   // Residents yield to the player; moving collision bodies can trap an idle apprentice.
   if (open) {
     solids = solids.filter(
-      (s) => !(s.x === 796 && s.width === 644) && !(s.x === 748 && s.y === 320),
+      (s) =>
+        !(s.x === 796 && s.width === 1124) && !(s.x === 748 && s.y === 320),
     );
     solids.push(
       r(748, 320, 48, 80),
-      r(748, 456, 48, 144),
+      r(748, 456, 48, 344),
       r(724, 396, 88, 4),
       r(724, 456, 88, 4),
     );
@@ -520,6 +654,8 @@ export function getWorldScene(
     r(1274, 396, 64, 16),
     r(978, 466, 54, 20),
     r(1304, 292, 24, 18),
+    ...CHERRY_TREES.map((p) => r(p.x - 10, p.y - 16, 20, 18)),
+    ...CHERRYBANK_SOLIDS,
   );
   const interactions = base.interactions.map((i): Interaction => {
     if (i.id === "rowan" || i.id === "mira" || i.id === "cat") {
@@ -562,7 +698,17 @@ export function getWorldScene(
     ...base,
     solids,
     interactions: open
-      ? [...interactions, ...GARDEN_INTERACTIONS]
+      ? [
+          ...interactions,
+          ...GARDEN_INTERACTIONS,
+          ...CHERRYBANK_INTERACTIONS.map((i) => {
+            if (i.id === "edda" || i.id === "oren" || i.id === "pip") {
+              const p = residents[i.id];
+              return { ...i, bounds: r(p.x - 14, p.y - 16, 28, 18) };
+            }
+            return i;
+          }),
+        ]
       : interactions,
   };
 }

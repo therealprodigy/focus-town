@@ -1,33 +1,47 @@
 import { Button } from "./components/ui/button";
+import { useState } from "react";
+import { RoyalKeepsakes, KeepsakeIcon } from "./RoyalKeepsakes";
 import type { SaveData } from "./game/state";
 import { coffeeActive, purchaseCoffee, COFFEE_PRICE } from "./game/state";
 import { getProgress } from "./game/state";
-import { UPGRADES, MISSIONS } from "./game/townCatalog";
+import { UPGRADES, MISSIONS, type UpgradeId } from "./game/townCatalog";
 import {
   purchaseUpgrade,
   claimMission,
   missionProgress,
+  missionUnlocked,
+  missionLockReason,
+  missionRewardLabel,
+  ROYAL_MISSION_IDS,
+  compassHint,
 } from "./game/townProgress";
 type Props = {
   kind: "shop" | "missions";
   inRoom?: boolean;
+  worldUpgrades?: readonly UpgradeId[];
   save: SaveData;
   now: number;
   canSave: boolean;
   update: (fn: (s: SaveData) => SaveData) => boolean;
   message: (text: string) => void;
   openShop: () => void;
+  openWardrobe: () => void;
 };
 export function TownLedger({
   kind,
   inRoom = false,
+  worldUpgrades,
   save,
   now,
   canSave,
   update,
   message,
   openShop,
+  openWardrobe,
 }: Props) {
+  const [page, setPage] = useState<"cherrybank" | "town" | "keepsakes">(
+    "cherrybank",
+  );
   const best = getProgress(save, now).bestStreak;
   const perform = (fn: (s: SaveData) => SaveData, text: string) => {
     let changed = false;
@@ -148,42 +162,90 @@ export function TownLedger({
         </>
       ) : (
         <>
-          <p className="muted">
-            A few things worth doing. No daily chores to catch up on.
-          </p>
-          <div className="ledger-list">
-            {MISSIONS.map((m) => {
-              const value = missionProgress(save, m.id, now),
-                claimed = save.missionClaims?.includes(m.id);
-              return (
-                <article key={m.id}>
-                  <div>
-                    <h3>{m.title}</h3>
-                    <p>{m.detail}</p>
-                    <progress
-                      aria-label={m.title}
-                      max={m.target}
-                      value={value}
-                    />
-                    <small>
-                      {value} / {m.target} · {m.reward} coins
-                    </small>
-                  </div>
-                  <Button
-                    disabled={!canSave || claimed || value < m.target}
-                    onClick={() =>
-                      perform(
-                        (s) => claimMission(s, m.id, now),
-                        "Mission complete. " + m.reward + " coins saved.",
-                      )
-                    }
-                  >
-                    {claimed ? "Done" : "Claim"}
-                  </Button>
-                </article>
-              );
-            })}
+          <div
+            className="ledger-tabs"
+            role="group"
+            aria-label="Noticeboard pages"
+          >
+            {(["cherrybank", "town", "keepsakes"] as const).map((id) => (
+              <button
+                key={id}
+                aria-pressed={page === id}
+                onClick={() => setPage(id)}
+              >
+                {id === "cherrybank"
+                  ? "Cherrybank"
+                  : id === "town"
+                    ? "Town errands"
+                    : "Keepsakes"}
+              </button>
+            ))}
           </div>
+          {page === "keepsakes" ? (
+            <RoyalKeepsakes save={save} openWardrobe={openWardrobe} />
+          ) : (
+            <>
+              {page === "cherrybank" ? (
+                <div className="compass-note">
+                  <KeepsakeIcon kind="compass" />
+                  <p>{compassHint(save, worldUpgrades)}</p>
+                </div>
+              ) : (
+                <p className="muted">
+                  Small jobs around Greenvale. Earlier sessions count, and there
+                  is no deadline.
+                </p>
+              )}
+              <div className="ledger-list royal-requests">
+                {MISSIONS.filter(
+                  (m) =>
+                    (ROYAL_MISSION_IDS as readonly string[]).includes(m.id) ===
+                    (page === "cherrybank"),
+                ).map((m) => {
+                  const value = missionProgress(save, m.id, now),
+                    claimed = save.missionClaims?.includes(m.id),
+                    unlocked = missionUnlocked(save, m.id);
+                  return (
+                    <article key={m.id} data-complete={!!claimed}>
+                      <div>
+                        <h3>{m.title}</h3>
+                        <p>{m.detail}</p>
+                        <progress
+                          aria-label={m.title}
+                          max={m.target}
+                          value={value}
+                        />
+                        <small>
+                          {value} / {m.target} · {missionRewardLabel(m.id)}
+                        </small>
+                        {!unlocked && (
+                          <small className="quest-prerequisite">
+                            {missionLockReason(save, m.id)}
+                          </small>
+                        )}
+                      </div>
+                      <Button
+                        disabled={
+                          !canSave || claimed || !unlocked || value < m.target
+                        }
+                        onClick={() =>
+                          perform(
+                            (s) => claimMission(s, m.id, now),
+                            missionRewardLabel(m.id) +
+                              ("item" in m
+                                ? " saved. Check your keepsakes."
+                                : " saved."),
+                          )
+                        }
+                      >
+                        {claimed ? "Done" : !unlocked ? "Locked" : "Collect"}
+                      </Button>
+                    </article>
+                  );
+                })}
+              </div>
+            </>
+          )}
           <Button onClick={openShop}>Lottie’s catalogue</Button>
         </>
       )}

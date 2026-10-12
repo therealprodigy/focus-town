@@ -2,6 +2,26 @@ import type { SaveData } from "./state.js";
 import type { Interaction } from "./world.js";
 
 export const DISCOVERIES = {
+  "cherry-letter": {
+    title: "The Cherrybank invitation",
+    text: "Edda’s letter is pinned to the wayfinding post southwest of the fountain: We need a keeper, not a conqueror. First job: help Pip find the ending of his film. There is a brass compass with your name on it in the quest ledger.",
+  },
+  "lantern-reel": {
+    title: "One frame short",
+    text: "Pip’s reel shows the same station at sunrise, then at midday. The last frame is missing. A tiny blue police box in the background has been fined for parking across two centuries.",
+  },
+  "platform-nine": {
+    title: "A ticket to almost somewhere",
+    text: "The timetable lists Platform Nine and a Bit. Its train has been delayed by an owl. On the back of the ticket, Pip wrote: Last scene: lamps lit, stars out, not a scrap of sunlight.",
+  },
+  "star-chart": {
+    title: "The kettle nebula",
+    text: "Five stars make a saucepan. A sixth makes Edda’s argument that it is a crown. Edda has drawn a suspiciously ring-shaped moon and stamped it: not for lending.",
+  },
+  "bellmaker-riddle": {
+    title: "The missing final frame",
+    text: "Nightfall. Oren fits the little bell to Pip’s projector: one clear note when the final stars appear. Pip calls it surround sound. Oren calls it a bell.",
+  },
   "blue-door": {
     title: "Room for one more",
     text: "A blue box on a travel poster promises more room than the rent suggests. Delivery date: yesterday.",
@@ -91,7 +111,9 @@ export function recordDiscovery(
   hour: number,
   taps = 0,
 ): SaveData {
-  if (!known(id) || save.discoveries?.includes(id)) return save;
+  // The bellmaker answer is deliberate input, never an automatic proximity reward.
+  if (!known(id) || id === "bellmaker-riddle" || save.discoveries?.includes(id))
+    return save;
   if ((id === "night-choir" || id === "window-star") && !isTownNight(hour))
     return save;
   if (id === "quiet-bell" && (!canAnswerBell(save) || taps !== 3)) return save;
@@ -100,6 +122,10 @@ export function recordDiscovery(
 export function discoveryAt(id: string): DiscoveryId | undefined {
   return (
     {
+      "cherry-letter": "cherry-letter",
+      "lantern-reel": "lantern-reel",
+      "platform-nine": "platform-nine",
+      "star-chart": "star-chart",
       "blue-door": "blue-door",
       hearth: "hearth",
       "field-notes": "field-notes",
@@ -123,6 +149,61 @@ export function encounterText(
   save: SaveData,
   hour: number,
 ): Interaction {
+  if (i.id === "edda")
+    return {
+      ...i,
+      title: "Edda / keeper of things people meant to return",
+      lines: save.missionClaims?.includes("kings-cloak")
+        ? [
+            "The cloak fits. Good. I guessed your size from how much shelf space you take up.",
+            "A keeper visits the town, does the work, and comes back. You have managed all three.",
+          ]
+        : save.missionClaims?.includes("town-coronation")
+          ? [
+              "That crown is for showing up. We tried handing it to the most dramatic person, but Pip would not give it back.",
+              "Take the long way through the garden. The field notes, bench and copper telescope are still worth your time.",
+            ]
+          : [
+              "I sent the letter to Rowan because the postbox here is mostly bees. Polite bees. Terrible clerks.",
+              "Pip has misplaced a film ending. Look beside his projector, then at the little station to the south.",
+              "The crown is earned with attention, not coins. The quest ledger has the particulars.",
+            ],
+    };
+  if (i.id === "pip")
+    return {
+      ...i,
+      title: "Pip / director, audience of one",
+      lines: save.missionClaims?.includes("lantern-cut")
+        ? [
+            "You found my ending. That is already better than the last festival jury.",
+            "Keep the pocket projector. It plays my three tiny films, and only one of them is about a kettle.",
+            "Oren is fitting the bell. Take him the station clues; he refuses to ring it at the wrong time.",
+          ]
+        : [
+            "My epic has a beginning, a middle and an empty reel tin. A bold choice, according to nobody.",
+            "Check the reel beside the projector. Then the ticket at Platform Nine, south of here.",
+            "The train is not magical. The punctuality is pure fantasy, though.",
+          ],
+    };
+  if (i.id === "oren")
+    return {
+      ...i,
+      title: "Oren / bellmaker, fewer words than bells",
+      lines: save.discoveries?.includes("bellmaker-riddle")
+        ? [
+            "Nightfall. Bell fitted. Film finished.",
+            "Pip wanted thunder. I make bells.",
+          ]
+        : canSolveBellmaker(save)
+          ? [
+              "Pip’s film: sunrise, midday, missing frame. The ticket says lamps lit, stars out, no sunlight.",
+              "Which scene comes last? Choose it below. No charge for thinking twice.",
+            ]
+          : [
+              "No guessing without the clues. Reel by the cinema. Ticket by the station.",
+              "Collect Pip’s missing ending in the quest ledger, then bring me the pocket projector.",
+            ],
+    };
   if (i.id === "cat")
     return {
       ...i,
@@ -180,3 +261,49 @@ export function encounterText(
     };
   return i;
 }
+
+export const BELLMAKER_CHOICES = [
+  { id: "sunrise", label: "Sunrise: the first train" },
+  { id: "midday", label: "Midday: the busy platform" },
+  { id: "nightfall", label: "Nightfall: the station lights" },
+] as const;
+export const canSolveBellmaker = (save: SaveData) =>
+  !!save.missionClaims?.includes("lantern-cut") &&
+  ["lantern-reel", "platform-nine"].every((id) =>
+    save.discoveries?.some((found) => found === id),
+  ) &&
+  !save.discoveries?.includes("bellmaker-riddle");
+export function solveBellmaker(save: SaveData, choice: unknown): SaveData {
+  if (!canSolveBellmaker(save) || choice !== "nightfall") return save;
+  return {
+    ...save,
+    discoveries: [...(save.discoveries ?? []), "bellmaker-riddle"],
+  };
+}
+
+export const POCKET_FILMS = [
+  {
+    title: "The Long Walk to the Kettle",
+    frames: [
+      "A traveller packs for a grand expedition.",
+      "A mountain of unread books blocks the path.",
+      "Jun points out the kettle is on this side of the mountain.",
+    ],
+  },
+  {
+    title: "Platform Nine and a Bit",
+    frames: [
+      "Sunrise. One traveller and a very large suitcase.",
+      "Midday. The suitcase has become a cat bed.",
+      "Nightfall. The train arrives. The cat declines to travel.",
+    ],
+  },
+  {
+    title: "A Small Disturbance in the Orchard",
+    frames: [
+      "A tiny gardener raises a wooden rake.",
+      "An apple falls with unusual dramatic timing.",
+      "Miso takes the credit. The orchard remains unconvinced.",
+    ],
+  },
+] as const;

@@ -1,3 +1,4 @@
+import { WORLDS, type SceneId } from "../src/game/world.js";
 import { validAppearance } from "../src/game/personalization.js";
 import {
   authenticateProfile,
@@ -401,12 +402,12 @@ export async function handleApi(
           typeof p.x !== "number" ||
           !Number.isFinite(p.x) ||
           p.x < 7 ||
-          p.x > (p.scene === "village" ? 1433 : 953) ||
+          p.x > WORLDS[p.scene as SceneId].width - 7 ||
           (p.appearance !== undefined && !validAppearance(p.appearance)) ||
           typeof p.y !== "number" ||
           !Number.isFinite(p.y) ||
           p.y < 10 ||
-          p.y > 600 ||
+          p.y > WORLDS[p.scene as SceneId].height ||
           !Number.isSafeInteger(data.positionSeq) ||
           Number(data.positionSeq) < 1
         )

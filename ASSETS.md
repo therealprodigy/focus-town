@@ -68,4 +68,8 @@ Both replacement scenes were generated for Focus Town on 12 October 2026 with th
 
 The assets are served from the game's own origin. Background selection makes no requests to an image generator or third-party image host. The old saved key `paper` now selects the library illustration so existing preferences continue to load.
 
+## Cherrybank, portraits and keepsakes
+
+Cherrybank’s trees, petals, buildings, props, fountain water, resident sprites, portraits, crown, cloak and keepsake symbols are original Canvas/SVG code written for this repository with AI assistance. Pip’s three films use original small SVG illustrations and text. No additional image, video or sound downloads were used for this expansion. References to wizard-school trains, travelling blue boxes, fantasy quests and space comedies are written allusions; no film footage or licensed game sprites are bundled.
+
 The complete generation prompts are in [ART_PROMPTS.md](ART_PROMPTS.md).

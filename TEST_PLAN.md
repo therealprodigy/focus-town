@@ -107,3 +107,15 @@ The 12 October update passed 183 automated tests, both production builds and bui
 - [ ] Try 720 minutes, large digits, and a 640 by 360 window. Check that the clock stays inside the pane and the town timer does not cover movement controls.
 - [ ] In compact mode, check Use this tab and shared-room readiness. A guest should still see that the host controls the timer. Tab through the strip: no hidden dismiss button should receive focus.
 - [ ] Enable reduced transparency or high contrast in the operating system. The timer should remain readable without a blur effect.
+
+## Cherrybank release pass
+
+Automated checks: 201 tests pass, including all new interactions reachable by route search, all unfinished crossing stages blocked, fountain water/depth, camera extents, new room bounds, quest prerequisites, invalid puzzle choices, one-time claims and earned equipment in backups. Both production builds and Worker asset checks passed. The following are still manual checks, not completed playtest claims.
+
+- [ ] Find the cherry-stamped letter southwest of the fountain. Open Quests, collect the first request and check the compass direction. Read the letter again; no second reward should appear.
+- [ ] With the Old Crossing repaired, walk east through the glasshouse garden into Cherrybank. Find all three residents, the reel, ticket and star chart. Walk behind and in front of trees, lamps, kiosk and cinema props.
+- [ ] Inspect the reel and ticket, collect Pip’s missing ending, then speak to Oren. Try a wrong scene and then Nightfall. The puzzle should save once. Open Pip’s projector, try all three films, Previous, Next and Roll credits.
+- [ ] Progress through the requests using completed focus sessions. Equip the earned crown and cloak in Settings; reload and export/import a backup. The same outfit and claims should return.
+- [ ] Join a friend with a repaired crossing while your own crossing is closed. The compass should direct you through their town. A companion with no saved outfit should not inherit your crown or cloak.
+- [ ] Check the fountain before and after restoration. Water should be visible in both states. Reduced motion should leave still water and petals without stopping the study clock.
+- [ ] At 320px, check the quest tabs, puzzle choices and film selector. Use the keyboard to change pages and close NPC conversations. Check that the portrait matches the resident outside.

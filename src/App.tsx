@@ -7,18 +7,24 @@ import { motivationLine } from "./game/personalization";
 import { coffeeActive } from "./game/state";
 import { SoundLibrary, useSoundLibrary } from "./SoundLibrary";
 import { TownLedger } from "./TownLedger";
+import { LanternReel } from "./LanternReel";
+import { ResidentPortrait, hasResidentPortrait } from "./ResidentPortrait";
 import {
   DISCOVERIES,
   discoveryAt,
   encounterText,
   recordDiscovery,
   canAnswerBell,
+  BELLMAKER_CHOICES,
+  canSolveBellmaker,
+  solveBellmaker,
   type DiscoveryEffect,
 } from "./game/discoveries";
 import {
   settleStreakRewards,
   rowanAdvice,
   applySharedGrant,
+  ownedRoyalItems,
 } from "./game/townProgress";
 import {
   useCallback,
@@ -269,6 +275,7 @@ function Modal({
   wide = false,
   pageKey,
   dismissOnBackdrop = true,
+  className = "",
 }: {
   title: string;
   children: ReactNode;
@@ -276,6 +283,7 @@ function Modal({
   wide?: boolean;
   pageKey?: number;
   dismissOnBackdrop?: boolean;
+  className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -292,7 +300,7 @@ function Modal({
   return (
     <dialog
       ref={ref}
-      className={wide ? "wide" : ""}
+      className={(wide ? "wide " : "") + className}
       aria-labelledby="dialog-title"
       onCancel={(e) => {
         e.preventDefault();
@@ -1302,6 +1310,14 @@ function Game() {
                 left
               </small>
             )}
+            {ownedRoyalItems(save).compass && (
+              <button
+                className="character-name"
+                onClick={() => setPanel("missions")}
+              >
+                Read brass compass
+              </button>
+            )}
           </div>
           <section className="town-session" aria-label="Town timer">
             <button
@@ -1431,10 +1447,10 @@ function Game() {
         </Button>
         <Button
           onClick={() => setPanel("missions")}
-          aria-label="Missions and village upgrades"
+          aria-label="Quests and village upgrades"
         >
           <Icon name="missions" />
-          <span>Missions</span>
+          <span>Quests</span>
         </Button>
         <Button onClick={() => setPanel("audio")} aria-label="Sound library">
           <Icon name="audio" />
@@ -1793,12 +1809,18 @@ function Game() {
           <TownLedger
             kind={panel}
             inRoom={inRoom}
+            worldUpgrades={
+              inRoom
+                ? (room.snapshot?.social?.world.upgrades ?? [])
+                : (save.upgrades ?? [])
+            }
             save={save}
             now={now}
             canSave={canSave}
             update={update}
             message={setMessage}
             openShop={() => setPanel("shop")}
+            openWardrobe={() => setPanel("settings")}
           />
         </Modal>
       )}
@@ -2381,7 +2403,21 @@ function Game() {
         </Modal>
       )}
       {panel && typeof panel === "object" && (
-        <Modal title={panel.title ?? panel.label} onClose={close}>
+        <Modal
+          title={
+            hasResidentPortrait(panel.id)
+              ? (panel.title?.split("/")[0]?.trim() ?? panel.label)
+              : (panel.title ?? panel.label)
+          }
+          onClose={close}
+          className={hasResidentPortrait(panel.id) ? "resident-dialog" : ""}
+        >
+          {hasResidentPortrait(panel.id) && (
+            <div className="resident-intro">
+              <ResidentPortrait id={panel.id} />
+              <p>{panel.title?.split("/")[1]?.trim()}</p>
+            </div>
+          )}
           {panel.lines?.map((line, i) => (
             <p key={i}>{line}</p>
           ))}
@@ -2411,6 +2447,42 @@ function Game() {
             <Button onClick={() => setPanel("missions")}>
               See the noticeboard
             </Button>
+          )}
+          {["edda", "oren", "pip", "cherry-letter"].includes(panel.id) && (
+            <Button onClick={() => setPanel("missions")}>
+              Open Cherrybank requests
+            </Button>
+          )}
+          {panel.id === "oren" && canSolveBellmaker(save) && (
+            <fieldset className="bellmaker-choices" disabled={!canSave}>
+              <legend>Which scene belongs at the end?</legend>
+              {BELLMAKER_CHOICES.map((choice) => (
+                <Button
+                  key={choice.id}
+                  onClick={() => {
+                    let solved = false;
+                    const saved = update((current) => {
+                      const next = solveBellmaker(current, choice.id);
+                      solved = next !== current;
+                      return next;
+                    });
+                    setDiscoveryNote(
+                      !saved
+                        ? "This answer could not be saved. Try again."
+                        : solved
+                          ? "The station lights come on. Oren nods. Collect your reward on the noticeboard."
+                          : "Oren checks the ticket. The lamps are lit and the stars are out. Try another scene.",
+                    );
+                    if (saved && solved) engine.current?.reveal("bell");
+                  }}
+                >
+                  {choice.label}
+                </Button>
+              ))}
+            </fieldset>
+          )}
+          {panel.id === "pip" && ownedRoyalItems(save).projector && (
+            <LanternReel />
           )}
           {(panel.id === "mira" || panel.id === "library") && (
             <Button onClick={() => setPanel("journal")}>Open journal</Button>

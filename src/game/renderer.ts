@@ -6,6 +6,7 @@ import {
   type LightMode,
 } from "./personalization";
 import { paintGarden, paintBuildingIdentity } from "./gardenArt";
+import { paintCherrybank, paintCherryLetter } from "./cherrybankArt";
 import { getRoofGeometry } from "./buildingGeometry";
 import {
   paintReadingCorner,
@@ -15,7 +16,7 @@ import {
   paintNorthFence,
   paintUpgrades,
   paintMoonflower,
-  paintFountainUpgrade,
+  paintFountainWater,
   paintDiscoveries,
   type TownLife,
 } from "./townLife";
@@ -472,10 +473,11 @@ export function renderWorld(
             t: "#b8b9ab",
           }
         : { ...palette };
-    const look =
-      peer?.appearance ??
-      (!npc ? o.appearance : undefined) ??
-      DEFAULT_APPEARANCE;
+    const look = peer
+      ? (peer.appearance ?? DEFAULT_APPEARANCE)
+      : npc
+        ? DEFAULT_APPEARANCE
+        : (o.appearance ?? DEFAULT_APPEARANCE);
     if (!npc) {
       const outfit = OUTFITS[look.outfit],
         skin = SKINS[look.skin];
@@ -486,6 +488,18 @@ export function renderWorld(
         S: skin.light,
         s: skin.shade,
       });
+    }
+    const royal = !npc && look.cloak === "royal";
+    if (royal) {
+      // The full cape sits behind the body; broad hems remain visible from the front.
+      rect(-21, -37, 42, 13, "#603745");
+      rect(-25, -28, 50, 22, "#8e4859");
+      rect(-28, -16, 56, 10, "#8e4859");
+      rect(-28, -8, 56, 3, "#e2ba70");
+      rect(-25, -28, 3, 22, "#e2ba70");
+      rect(22, -28, 3, 22, "#e2ba70");
+      rect(-21, -35, 6, 10, "#eee0c0");
+      rect(15, -35, 6, 10, "#eee0c0");
     }
     matrix(
       ctx,
@@ -506,6 +520,24 @@ export function renderWorld(
       4,
       colors,
     );
+    if (royal && facing === "up") {
+      rect(-18, -34, 36, 25, "#8e4859");
+      rect(-18, -34, 36, 5, "#eee0c0");
+      rect(-16, -9, 32, 3, "#e2ba70");
+      rect(-2, -26, 4, 13, "#e2ba70");
+      rect(-7, -22, 14, 3, "#e2ba70");
+    }
+    if (!npc && look.hat === "crown") {
+      // Five points, a brass rim and a ruby produce a crown silhouette, not a hat recolour.
+      rect(-18, -57, 36, 9, "#b7873c");
+      for (const cx of [-18, -10, -2, 6, 14]) {
+        rect(cx, -65 + (Math.abs(cx + 2) > 8 ? 3 : 0), 4, 12, "#e9c678");
+        rect(cx, -66 + (Math.abs(cx + 2) > 8 ? 3 : 0), 4, 3, "#fff0bc");
+      }
+      rect(-18, -53, 36, 4, "#f2d894");
+      rect(-3, -56, 6, 6, "#be6672");
+      rect(-2, -56, 2, 2, "#f3b5b3");
+    }
     if (walking) {
       rect(-12, -4, 8, 4, "#243139");
       rect(0, -4, 8, 4, "#243139");
@@ -521,9 +553,21 @@ export function renderWorld(
   ctx.imageSmoothingEnabled = false;
   const frame = o.camera ?? { x: 0, y: 0, width: 960, height: 600 };
   ctx.clearRect(frame.x, frame.y, frame.width, frame.height);
-  paintSurroundings(ctx, o.time, clock.daylight, WORLDS[sceneId].width);
+  paintSurroundings(
+    ctx,
+    o.time,
+    clock.daylight,
+    WORLDS[sceneId].width,
+    WORLDS[sceneId].height,
+  );
   if (sceneId === "village") {
-    rect(0, 0, 1440, 600, clock.daylight > 0.6 ? "#91a36c" : C.grass);
+    rect(
+      0,
+      0,
+      WORLDS.village.width,
+      WORLDS.village.height,
+      clock.daylight > 0.6 ? "#91a36c" : C.grass,
+    );
     for (let i = 0; i < 170; i++) {
       const x = Math.floor(hash(i + 6000) * 240) * 4,
         y = Math.floor(hash(i + 9000) * 150) * 4;
@@ -546,6 +590,8 @@ export function renderWorld(
       }
     }
     paintGarden(ctx, layers, o.time, o.upgrades ?? [], clock.daylight);
+    paintCherrybank(ctx, layers, o.time, o.residentTime ?? 0);
+    layers.push({ y: 460, paint: () => paintCherryLetter(ctx) });
     const path = (x: number, y: number, w: number, h: number) => {
       rect(x - 6, y - 4, w + 12, h + 8, "#7f805b");
       rect(x - 2, y - 2, w + 4, h + 4, "#8c8967");
@@ -716,8 +762,11 @@ export function renderWorld(
         rect(452, 300, 4, 8, "#d3efca");
         rect(444, 328, 4, 12, "#b5ceab");
         rect(464, 336, 4, 12, "#b5ceab");
-        rect(432 + (Math.floor(t * 4) % 3) * 12, 356, 12, 2, "#a3c4ac");
-        if (o.upgrades?.includes("fountain")) paintFountainUpgrade(ctx, o.time);
+        paintFountainWater(
+          ctx,
+          o.time,
+          o.upgrades?.includes("fountain") ?? false,
+        );
       },
     });
     layers.push(

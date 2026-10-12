@@ -9,7 +9,7 @@ A small town for the thing you keep putting off. Pick a task, light the desk lam
       _|__|_   one page at a time
         ||
 
-> Release status: the public Play link now includes the Old Crossing expansion and the warmer Clockworks redesign. Automated checks pass. Browser layout, sound levels and a real two-device playtest still need a manual pass; see TEST_PLAN.md.
+> Release status: this source includes the Cherrybank expansion and compact glass timer. Publication is recorded separately in DEPLOYMENT.md. Automated checks pass. Browser layout, sound levels and a real two-device playtest still need a manual pass; see TEST_PLAN.md.
 
 Choose **Arrange your desk → Scenery** to preview the observatory, garden morning and library window. All three are illustrated scenes stored with the game. Glass controls keep the scenery visible around the timer. Pick a walnut, porcelain or terracotta clock, change its size, or hide the task and encouragement. **Collapse timer** keeps the countdown and session controls in a small panel. Desk choices save in this browser and do not change a running session. An older Paper desk preference now opens the library window.
 
@@ -60,11 +60,13 @@ A connection error usually means the preview stopped. **Terminal → Run Task �
 
 Repair the Old Crossing in three stages to reach Whispering Garden: a glasshouse, orchard, reading bench, workbench and copper telescope. Repairs use 55 coins and 100 energy in total and stay built. The river remains impassable away from the repaired bridge. The library interior is still closed.
 
-Lottie's catalogue also sells porch lanterns, moonflowers, a fountain repair and festival bunting. Ten noticeboard missions reward completed sessions, discoveries, repairs and streaks. A streak day needs 25 completed focus minutes. The first 3-, 7-, 14- and 30-day records each pay a bonus; missing a day never removes a purchased upgrade.
+Lottie's catalogue also sells porch lanterns, moonflowers, a fountain repair and festival bunting. The fountain runs with a small stream from the start; restoration adds stronger jets and spray. The noticeboard has ten town errands and seven linked Cherrybank requests. A streak day needs 25 completed focus minutes. The first 3-, 7-, 14- and 30-day records each pay a bonus; missing a day never removes a purchased upgrade.
+
+**Cherrybank** extends the eastern garden into a blossom-lined promenade with Edda’s archive, Oren’s bell workshop, Pip’s outdoor cinema and Platform Nine. Read the cherry-stamped letter southwest of the fountain to start. Open **Quests → Cherrybank** to collect rewards and follow the brass compass. The later requests need the repaired crossing, film clues, a small puzzle and completed focus time. The keeper’s crown requires the quest chain, star chart and 60 total focus minutes; the king’s cloak requires the garden rounds and 120 total minutes. Earlier focus sessions count. Equip earned pieces in Settings. **Quests → Keepsakes** shows what you have found; the pocket projector unlocks three short illustrated films when you talk to Pip.
 
 Jun's coffee costs 6 coins. For 30 real minutes it increases walking speed by 35% and adds up to 25% to solo focus coins, rounded down and only for the part of the interval covered by coffee. Pauses use up the coffee's time without earning a bonus. Buy before starting a session. Coffee cannot stack and does not multiply shared-room rewards.
 
-**Settings** includes six coats, four skin tones and three headwear choices. Town lighting can follow the twelve-minute day, your local time, permanent daylight or evening. The town clock and night discoveries use the same setting. Reduced motion stops decorative movement while the clock keeps working. Choose gentle, direct or playful encouragement, or turn it off.
+**Settings** includes six coats, four skin tones, three starting headwear choices, and the earned crown and royal cloak. Town lighting can follow the twelve-minute day, your local time, permanent daylight or evening. The town clock and night discoveries use the same setting. Reduced motion stops decorative movement while the clock keeps working. Choose gentle, direct or playful encouragement, or turn it off.
 
 **First visit** offers a five-step town guide. Replay it from Settings. On Focus, open **Arrange your desk** to choose Lamplight, Moonlight or Ink, plus the split-flap clock or plain digits. The listening shelf now has seven choices: four recordings and three original ambient loops. Sound starts only when you press Play.
 

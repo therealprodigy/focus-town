@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getCamera } from "../src/game/camera";
-import { WORLDS, canStand } from "../src/game/world";
+import { WORLDS, canStand, getWorldScene } from "../src/game/world";
 
 describe("town framing", () => {
   it.each([
@@ -12,10 +12,17 @@ describe("town framing", () => {
   ])(
     "keeps the whole character reachable on a %i x %i screen",
     (width, height) => {
-      for (const scene of Object.values(WORLDS)) {
+      for (const scene of [
+        getWorldScene("village", [
+          "crossing-cleared",
+          "crossing-boards",
+          "crossing-lanterns",
+        ]),
+        WORLDS.house,
+      ]) {
         const positions = [scene.spawn, { x: 7, y: 10 }, { x: 953, y: 600 }];
-        for (let y = 10; y <= 600; y += 40)
-          for (let x = 7; x <= 953; x += 40)
+        for (let y = 10; y <= scene.height; y += 40)
+          for (let x = 7; x <= scene.width - 7; x += 40)
             if (canStand(scene, x, y)) positions.push({ x, y });
         for (const p of positions) {
           const c = getCamera(scene, p, width, height);
@@ -35,6 +42,6 @@ describe("town framing", () => {
     getCamera(WORLDS.village, player, 390, 844);
     getCamera(WORLDS.village, player, 2560, 1080);
     expect(player).toEqual(before);
-    expect(WORLDS.village.width).toBe(1440);
+    expect(WORLDS.village.width).toBe(1920);
   });
 });

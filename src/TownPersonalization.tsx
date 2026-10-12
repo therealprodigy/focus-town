@@ -7,6 +7,7 @@ import {
   type MotivationMode,
 } from "./game/personalization";
 import type { SaveData } from "./game/state";
+import { equipAppearance, ownedRoyalItems } from "./game/townProgress";
 export function TownPersonalization({
   save,
   update,
@@ -17,11 +18,14 @@ export function TownPersonalization({
   canSave: boolean;
 }) {
   const appearance = save.appearance ?? DEFAULT_APPEARANCE;
+  const keepsakes = ownedRoyalItems(save);
   const dress = (part: Partial<Appearance>) =>
-    update((s) => ({
-      ...s,
-      appearance: { ...(s.appearance ?? DEFAULT_APPEARANCE), ...part },
-    }));
+    update((s) =>
+      equipAppearance(s, {
+        ...(s.appearance ?? DEFAULT_APPEARANCE),
+        ...part,
+      }),
+    );
   const coat = OUTFITS[appearance.outfit],
     skin = SKINS[appearance.skin];
   return (
@@ -36,10 +40,23 @@ export function TownPersonalization({
           role="img"
           aria-label={coat.name + " outfit preview"}
         >
+          {appearance.cloak === "royal" && (
+            <>
+              <path d="M6 10h8l3 13H3z" fill="#793b3c" />
+              <path d="M6 10h1L5 22h10l-2-12h1l3 14H3z" fill="#e7b960" />
+              <path d="M6 10h8v3H6z" fill="#f4e6c9" />
+            </>
+          )}
           <rect x="7" y="5" width="6" height="6" fill={skin.light} />
           <rect x="8" y="7" width="1" height="1" fill="#233c40" />
           <rect x="11" y="7" width="1" height="1" fill="#233c40" />
-          {appearance.hat === "witch" ? (
+          {appearance.hat === "crown" ? (
+            <>
+              <path d="M6 2h2v2h1V1h2v3h1V2h2v5H6z" fill="#edc46b" />
+              <path d="M6 6h8v1H6z" fill="#a67535" />
+              <rect x="9" y="4" width="2" height="2" fill="#789b95" />
+            </>
+          ) : appearance.hat === "witch" ? (
             <path d="M9 0h2v2h2v2h2v2H5V4h2V2h2z" fill="#405966" />
           ) : appearance.hat === "cap" ? (
             <path d="M7 3h6v2h2v1H5V5h2z" fill="#697d7a" />
@@ -92,8 +109,31 @@ export function TownPersonalization({
           <option value="witch">Traveller’s hat</option>
           <option value="cap">Wool cap</option>
           <option value="none">No hat</option>
+          <option value="crown" disabled={!keepsakes.crown}>
+            Keeper’s crown{keepsakes.crown ? "" : " · quest reward"}
+          </option>
         </select>
       </label>
+      <label className="setting-row">
+        Cloak
+        <select
+          value={appearance.cloak ?? "none"}
+          onChange={(e) =>
+            dress({ cloak: e.target.value as Appearance["cloak"] })
+          }
+        >
+          <option value="none">Travelling light</option>
+          <option value="royal" disabled={!keepsakes.cloak}>
+            King’s cloak{keepsakes.cloak ? "" : " · quest reward"}
+          </option>
+        </select>
+      </label>
+      {(!keepsakes.crown || !keepsakes.cloak) && (
+        <p className="fine-print">
+          The crown and cloak are earned through Cherrybank’s requests on the
+          town noticeboard.
+        </p>
+      )}
       <label className="setting-row">
         Town lighting
         <select

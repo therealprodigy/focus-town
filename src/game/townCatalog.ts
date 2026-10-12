@@ -1,3 +1,4 @@
+import type { SaveData } from "./state.js";
 export const UPGRADES = [
   {
     id: "crossing-cleared",
@@ -70,6 +71,74 @@ export const STREAK_REWARDS = [
   { days: 30, coins: 75 },
 ] as const;
 export const MISSIONS = [
+  {
+    id: "cherry-post",
+    title: "A letter under the blossoms",
+    detail:
+      "Read Edda’s letter on the wayfinding post southwest of the fountain. Claim your brass compass here.",
+    reward: 3,
+    target: 1,
+    item: "Brass compass",
+  },
+  {
+    id: "lantern-cut",
+    title: "Pip’s missing ending",
+    detail:
+      "Find the lantern reel at the outdoor cinema and the ticket at Platform Nine.",
+    requires: "cherry-post",
+    reward: 4,
+    target: 2,
+    item: "Pocket projector",
+  },
+  {
+    id: "bellmaker-code",
+    title: "The bellmaker’s last scene",
+    detail:
+      "Take Pip’s clues to Oren and choose the missing scene. A wrong guess costs nothing.",
+    requires: "lantern-cut",
+    reward: 4,
+    target: 1,
+  },
+  {
+    id: "keeper-watch",
+    title: "A watch of your own",
+    detail:
+      "Complete 25 focus minutes in total, then collect the keeper’s seal. Earlier sessions count.",
+    requires: "bellmaker-code",
+    reward: 5,
+    target: 25,
+    item: "Keeper’s seal",
+  },
+  {
+    id: "town-coronation",
+    title: "A crown for showing up",
+    detail:
+      "Read Cherrybank’s star chart and complete 60 focus minutes in total. The crown is yours to wear.",
+    requires: "keeper-watch",
+    reward: 6,
+    target: 2,
+    item: "Keeper’s crown",
+  },
+  {
+    id: "royal-rounds",
+    title: "The long way home",
+    detail:
+      "With your crown earned, find the field notes, garden bench and copper telescope across the Old Crossing.",
+    requires: "town-coronation",
+    reward: 6,
+    target: 3,
+    item: "Garden ribbon",
+  },
+  {
+    id: "kings-cloak",
+    title: "The king’s cloak",
+    detail:
+      "Finish your garden rounds and reach 120 focus minutes in total. Edda has kept the cloak for you.",
+    requires: "royal-rounds",
+    reward: 8,
+    target: 120,
+    item: "King’s cloak",
+  },
   {
     id: "old-crossing",
     title: "A way across",
@@ -148,12 +217,57 @@ export const validMissionClaims = (x: unknown): x is MissionId[] =>
   x.length <= MISSIONS.length &&
   x.every((id) => MISSIONS.some((m) => m.id === id)) &&
   new Set(x).size === x.length &&
-  (!x.includes("crossing-boards") || x.includes("crossing-cleared")) &&
-  (!x.includes("crossing-lanterns") || x.includes("crossing-boards"));
+  MISSIONS.every(
+    (mission) =>
+      !x.includes(mission.id) ||
+      !("requires" in mission) ||
+      x.includes(mission.requires),
+  );
 export const validStreakClaims = (x: unknown): x is number[] =>
   Array.isArray(x) &&
   x.length <= STREAK_REWARDS.length &&
   x.every((n) => STREAK_REWARDS.some((r) => r.days === n)) &&
-  new Set(x).size === x.length &&
-  (!x.includes("crossing-boards") || x.includes("crossing-cleared")) &&
-  (!x.includes("crossing-lanterns") || x.includes("crossing-boards"));
+  new Set(x).size === x.length;
+
+export const ROYAL_MISSION_IDS = [
+  "cherry-post",
+  "lantern-cut",
+  "bellmaker-code",
+  "keeper-watch",
+  "town-coronation",
+  "royal-rounds",
+  "kings-cloak",
+] as const satisfies readonly MissionId[];
+export function missionRewardLabel(id: string): string {
+  const mission = MISSIONS.find((item) => item.id === id);
+  if (!mission) return "";
+  return `${mission.reward} coins${"item" in mission ? ` + ${mission.item}` : ""}`;
+}
+
+/** Backups must carry the evidence for new keepsakes, as well as the claim chain. */
+export function validRoyalHistory(
+  save: Pick<SaveData, "missionClaims" | "discoveries" | "sessions">,
+): boolean {
+  const claimed = (id: MissionId) => save.missionClaims?.includes(id) ?? false;
+  const found = (id: string) =>
+    save.discoveries?.some((d) => d === id) ?? false;
+  const minutes = save.sessions.reduce(
+    (sum, session) => sum + session.minutes,
+    0,
+  );
+  return (
+    (!claimed("cherry-post") || found("cherry-letter")) &&
+    (!claimed("lantern-cut") ||
+      (found("lantern-reel") && found("platform-nine"))) &&
+    (!found("bellmaker-riddle") ||
+      (claimed("lantern-cut") &&
+        found("lantern-reel") &&
+        found("platform-nine"))) &&
+    (!claimed("bellmaker-code") || found("bellmaker-riddle")) &&
+    (!claimed("keeper-watch") || minutes >= 25) &&
+    (!claimed("town-coronation") || (minutes >= 60 && found("star-chart"))) &&
+    (!claimed("royal-rounds") ||
+      ["field-notes", "garden-bench", "copper-scope"].every(found)) &&
+    (!claimed("kings-cloak") || minutes >= 120)
+  );
+}

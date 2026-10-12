@@ -17,12 +17,13 @@ export function paintSurroundings(
   time: number,
   daylight: number,
   width = 960,
+  height = 600,
 ) {
   const r = townBrush(ctx);
   r(-1600, -1200, 4160, 3000, "#4d624b");
   // A continuous forest surrounds the map, including on wide monitors.
   for (let x = -1500; x < 2500; x += 56)
-    for (const y of [-68, 652]) {
+    for (const y of [-68, height + 52]) {
       r(x + 18, y - 20, 12, 96, "#574b38");
       for (let tier = 0; tier < 4; tier++) {
         const w = 36 + tier * 20;
@@ -36,7 +37,7 @@ export function paintSurroundings(
         r(x + 28 - w / 2, y - 108 + tier * 22, w - 14, 3, "#799057");
       }
     }
-  for (let y = -80; y < 850; y += 72)
+  for (let y = -80; y < height + 250; y += 72)
     for (const x of [-84, width + 48]) {
       r(x - 6, y, 12, 48, "#624b36");
       r(x - 52, y - 58, 104, 44, "#38563a");

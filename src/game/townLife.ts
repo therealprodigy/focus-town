@@ -81,18 +81,51 @@ export function paintMoonflower(ctx: CanvasRenderingContext2D, n: number) {
   r(x - 2, y - 16, 6, 10, "#d5cbea");
   r(x, y - 12, 2, 2, "#f5dfad");
 }
+export function paintFountainWater(
+  ctx: CanvasRenderingContext2D,
+  time: number,
+  repaired = false,
+) {
+  const r = townBrush(ctx);
+  // The original pump trickles continuously. Repair adds pressure and side jets.
+  // These opaque streams remain visible at time zero for reduced-motion play.
+  r(451, 308, 3, 30, "#91cecf");
+  r(458, 311, 3, 27, "#c7e9da");
+  r(449, 328, 4, 18, "#72bfc6");
+  r(460, 331, 4, 17, "#a4dddc");
+  for (let n = 0; n < 4; n++) {
+    const phase = (time / 100 + n * 9) % 32;
+    r(n % 2 ? 461 : 449, 316 + phase, 2, 4, "#e3f3df");
+  }
+  for (let n = 0; n < 4; n++) {
+    const swell = Math.floor((time / 240 + n) % 3) * 2;
+    const x = 431 + n * 12,
+      y = 353 + (n % 2) * 6;
+    r(x - swell / 2, y, 6 + swell, 2, "#b7dfd3");
+    r(x + 2, y + 3, 5, 1, "#619b9a");
+  }
+  if (!repaired) return;
+  r(450, 294, 12, 4, "#ead1a0");
+  r(454, 281, 4, 16, "#d6f0e1");
+  r(451, 287, 3, 9, "#91cecf");
+  r(459, 287, 3, 9, "#91cecf");
+  for (const side of [-1, 1]) {
+    // Stepped parabolic arcs keep the spray in the same pixel language as the town.
+    for (let n = 0; n < 7; n++) {
+      const x = 456 + side * (5 + n * 3);
+      const y = 294 + n * n;
+      r(x, y, 3, 5 + Math.floor(n / 2), "#b6dedb");
+      if ((n + Math.floor(time / 180)) % 3 === 0) r(x, y, 2, 3, "#f0f5dd");
+    }
+    r(456 + side * 24 - 4, 350, 10, 2, "#f0f5dd");
+  }
+}
+// Kept as a small compatibility export for callers that only paint the upgrade.
 export function paintFountainUpgrade(
   ctx: CanvasRenderingContext2D,
   time: number,
 ) {
-  const r = townBrush(ctx);
-  for (let n = 0; n < 7; n++) {
-    const phase = (time / 80 + n * 7) % 28,
-      x = 431 + n * 8;
-    r(x, 326 - phase, 2, 5, "#b6d9dc");
-    r(x, 359 + Math.sin(time / 380 + n) * 3, 5, 2, "#e3e6d1");
-  }
-  r(450, 294, 12, 4, "#ead1a0");
+  paintFountainWater(ctx, time, true);
 }
 export function paintDiscoveries(
   ctx: CanvasRenderingContext2D,

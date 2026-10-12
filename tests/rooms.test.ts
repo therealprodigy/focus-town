@@ -281,11 +281,12 @@ describe("shared rooms with a real SQLite database", () => {
     ).toBeNull();
     for (const patch of [
       { x: -1 },
-      { x: 1434 },
+      { x: 1914 },
       { scene: "house", x: 954 },
       { appearance: { outfit: 6, skin: 0, hat: "cap" } },
       { x: "448" },
-      { y: 601 },
+      { y: 801 },
+      { scene: "house", y: 601 },
       { scene: ["village"] },
       { facing: "north" },
     ])
