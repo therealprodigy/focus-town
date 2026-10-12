@@ -9,7 +9,7 @@ A small town for the thing you keep putting off. Pick a task, light the desk lam
       _|__|_   one page at a time
         ||
 
-> Release status: this source includes the Cherrybank expansion and compact glass timer. Publication is recorded separately in DEPLOYMENT.md. Automated checks pass. Browser layout, sound levels and a real two-device playtest still need a manual pass; see TEST_PLAN.md.
+> Release status: the Cherrybank expansion and compact glass timer went live on 12 October 2026. All 201 automated tests and both production builds pass. The public game assets match the tested build. Browser layout, sound levels and a real two-device playtest still need a manual pass; see TEST_PLAN.md.
 
 Choose **Arrange your desk → Scenery** to preview the observatory, garden morning and library window. All three are illustrated scenes stored with the game. Glass controls keep the scenery visible around the timer. Pick a walnut, porcelain or terracotta clock, change its size, or hide the task and encouragement. **Collapse timer** keeps the countdown and session controls in a small panel. Desk choices save in this browser and do not change a running session. An older Paper desk preference now opens the library window.
 

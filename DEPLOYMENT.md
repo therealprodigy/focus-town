@@ -45,3 +45,16 @@ The personal-desk update (source commit 6e812a8) was published on 10 October 202
 The save-handoff and tutorial fixes (source commit 3c114b6) were published on 10 October 2026. The public bundle `/assets/index-CFYVVGTF.js` matches the locally tested build byte for byte. Home and cookies routes return 200; the unknown-route check returns 404. All 173 tests and both builds passed. This verifies publication, not rendered or two-tab browser behavior.
 
 The roof-attachment and fountain fixes (source commit a2bdc2b) were published on 10 October 2026. The home page references `/assets/index-l1w73j8a.js`, which matches the locally tested build byte for byte. Home and cookies return 200; an unknown route returns 404. All 182 tests and both builds passed. Browser appearance remains unverified.
+
+## 12 October: Cherrybank release
+
+Source commit `8006405`, including the earlier glass and scenery update `f28b199`, is live at [Focus Town](https://focus-town-greenvale.vercel.app). Vercel deployment `dpl_EpHB3fsnos6wL7wFsTNZoRecTZbE` completed and received the existing production alias. An initial authorization failure was resolved by retrying with the same account, team and project; no account, database or plan was changed.
+
+All 201 automated tests and both production builds passed. The built Worker also passed document, 404, background and audio delivery checks. On the public Vercel address:
+
+- JavaScript `/assets/index-CUnDBogJ.js` and stylesheet `/assets/index-zJWulzg2.css` return 200 and match the locally tested files byte for byte.
+- Library window and Garden morning return 200 as `image/webp` and match the local assets.
+- Home, privacy, terms and cookies return 200. An unknown document route returns 404.
+- GET `/api/rooms` returns the expected 405 JSON response. This verifies routing, not room creation or a live co-op session.
+
+Browser preview remained blocked by the saved permission rule. Rendered layout, sound levels and a real two-device session are still manual checks in TEST_PLAN.md. This release does not claim those checks were completed.
