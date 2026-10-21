@@ -4,7 +4,7 @@
 
 Focus Street is a browser focus timer with a walkable pixel village. Set a task, finish focus intervals, and spend earned coins on village repairs and decorations.
 
-> Current source: Focus Street includes the quieter desk layout and fixes for save recovery, shared profiles, touch controls and garden collisions. All 218 automated tests pass. Publication is recorded in [DEPLOYMENT.md](DEPLOYMENT.md); browser layout, sound levels and a real two-device playtest remain manual checks.
+> Latest release: Focus Street went live on 21 October 2026 with a quieter desk, safer recovery, corrected shared profiles and garden collisions. All 218 automated tests and both builds pass; the live files match the tested build. Browser layout, sound levels and two-device play remain manual checks. See [TEST_PLAN.md](TEST_PLAN.md) and [DEPLOYMENT.md](DEPLOYMENT.md).
 
 Choose **Scenery & clock** to preview the observatory, garden morning and library window. All three are illustrated scenes stored with the game. Glass controls keep the scenery visible around the timer. Pick a walnut, porcelain or terracotta clock, change its size, or hide the task and encouragement. **Minimise** keeps the countdown and session controls in a small panel. Desk choices save in this browser and do not change a running session. An older Paper desk preference now opens the library window.
 

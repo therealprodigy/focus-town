@@ -58,3 +58,17 @@ All 201 automated tests and both production builds passed. The built Worker also
 - GET `/api/rooms` returns the expected 405 JSON response. This verifies routing, not room creation or a live co-op session.
 
 Browser preview remained blocked by the saved permission rule. Rendered layout, sound levels and a real two-device session are still manual checks in TEST_PLAN.md. This release does not claim those checks were completed.
+
+
+## 21 October: Focus Street
+
+Source commit `57e6f2e` is live at the existing public address. Deployment `5NLpVcMSZNPi1eUFYVtRdRX1brPV` received the production alias after a retry of the existing project. No database, hosting plan, save namespace or public hostname was changed.
+
+All 218 tests, both production builds and the built Worker document, image and audio delivery checks passed. Public HTTP verification confirmed:
+
+- Home returns 200 with the title Focus Street.
+- `/assets/index-BjhfQDYL.js` and `/assets/index-Ws2bhPHm.css` return 200 and match the locally tested files byte for byte.
+- Privacy, terms and cookies return 200; an unknown page returns 404.
+- GET `/api/rooms` returns the expected 405, confirming routing only.
+
+The source review found no actionable release blockers. Browser visuals, listening and real two-device play remain unverified because the saved browser permission blocks inspection. Keep those manual checks separate from the automated and HTTP results.

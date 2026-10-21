@@ -179,3 +179,6 @@ The audit found a reading book that drew over foreground trees, plus orchard tru
 Save and room checks found two ownership problems: an unchanged local profile could skip a necessary report after another tab changed the server, and rewards could arrive after a tab lost write access. Both now recheck the current state. If the main save is missing and its only recovery copy is damaged or inaccessible, the game stops writing instead of replacing the remaining evidence. A backup export can preserve the recovery bytes. The session dialog also uses the same ready-player rule as the main timer button.
 
 All 218 automated tests passed. The combined source review found no remaining actionable blockers. Browser layout, listening and two-device checks remain unverified because the saved preview rule still blocks access. This entry describes AI-assisted implementation and automated checks; it does not claim human coding hours or a browser playtest. Publication is recorded separately in DEPLOYMENT.md.
+
+
+The Focus Street update was then pushed to GitHub and published to the existing Vercel address. The live page uses the new title, and its script and stylesheet match the tested files. Home and legal pages return 200, the missing-page check returns 404, and the room route returns its expected 405 for GET. Existing links remain unchanged.
