@@ -1,62 +1,57 @@
-# Focus Town
+# Focus Street
 
-[**Play Focus Town**](https://focus-town-greenvale.vercel.app) · [Download ZIP](https://github.com/therealprodigy/focus-town/archive/refs/heads/main.zip) · [Development journal](DEVLOG.md)
+[**Play Focus Street**](https://focus-town-greenvale.vercel.app) · [Download ZIP](https://github.com/therealprodigy/focus-town/archive/refs/heads/main.zip) · [Development journal](DEVLOG.md)
 
-A small town for the thing you keep putting off. Pick a task, light the desk lamp, and give it one interval. Greenvale will still be here when you need a break.
+Focus Street is a browser focus timer with a walkable pixel village. Set a task, finish focus intervals, and spend earned coins on village repairs and decorations.
 
-       .--.
-       |::|    GREENVALE
-      _|__|_   one page at a time
-        ||
+> Current source: Focus Street includes the quieter desk layout and fixes for save recovery, shared profiles, touch controls and garden collisions. All 218 automated tests pass. Publication is recorded in [DEPLOYMENT.md](DEPLOYMENT.md); browser layout, sound levels and a real two-device playtest remain manual checks.
 
-> Release status: the Cherrybank expansion and compact glass timer went live on 12 October 2026. All 201 automated tests and both production builds pass. The public game assets match the tested build. Browser layout, sound levels and a real two-device playtest still need a manual pass; see TEST_PLAN.md.
-
-Choose **Arrange your desk → Scenery** to preview the observatory, garden morning and library window. All three are illustrated scenes stored with the game. Glass controls keep the scenery visible around the timer. Pick a walnut, porcelain or terracotta clock, change its size, or hide the task and encouragement. **Collapse timer** keeps the countdown and session controls in a small panel. Desk choices save in this browser and do not change a running session. An older Paper desk preference now opens the library window.
+Choose **Scenery & clock** to preview the observatory, garden morning and library window. All three are illustrated scenes stored with the game. Glass controls keep the scenery visible around the timer. Pick a walnut, porcelain or terracotta clock, change its size, or hide the task and encouragement. **Minimise** keeps the countdown and session controls in a small panel. Desk choices save in this browser and do not change a running session. An older Paper desk preference now opens the library window.
 
 The first-visit guide lets you choose a name, set a task and practise walking to a sign with the keyboard or touch buttons. Replay it from **Settings → New here? Take the town tour**. Practice does not award coins or alter the town.
 
 ## Play now
 
-Open [Focus Town](https://focus-town-greenvale.vercel.app) on a phone, tablet or computer. No account, terminal or download is needed. This is the easiest way to play with friends.
+Open [Focus Street](https://focus-town-greenvale.vercel.app) on a phone, tablet or computer. No account, terminal or download is needed. This is the easiest way to play with friends. The address retains the old name so existing browser saves and invitation links keep working.
 
 ## Run your own desktop copy
 
-[**Download Focus Town ZIP**](https://github.com/therealprodigy/focus-town/archive/refs/heads/main.zip)
+[**Download Focus Street ZIP**](https://github.com/therealprodigy/focus-town/archive/refs/heads/main.zip)
 
 For Windows, macOS or Linux, install [Node.js 24 or newer](https://nodejs.org/en/download) and [Git](https://git-scm.com/downloads) first. Paste the matching block into a terminal in the folder where you want to keep the game. It downloads the project, installs its dependencies and opens the game in your browser.
 
 **Mac or Linux**
 
 ```sh
-git clone https://github.com/therealprodigy/focus-town.git "focus-town" && cd "focus-town" && npm start
+git clone https://github.com/therealprodigy/focus-town.git "focus-street" && cd "focus-street" && npm start
 ```
 
 **Windows PowerShell**
 
 ```powershell
-git clone https://github.com/therealprodigy/focus-town.git "focus-town"
-if ($LASTEXITCODE -ne 0) { throw "Download failed. Check Git and choose a folder without an existing focus-town directory." }
-Set-Location -LiteralPath "focus-town" -ErrorAction Stop
+git clone https://github.com/therealprodigy/focus-town.git "focus-street"
+if ($LASTEXITCODE -ne 0) { throw "Download failed. Check Git and choose a folder without an existing focus-street directory." }
+Set-Location -LiteralPath "focus-street" -ErrorAction Stop
 npm.cmd start
 ```
 
-Leave the terminal open while playing. If the browser does not open, visit the local address printed by Vite. Press **Ctrl+C** in the terminal to stop it. If port 5173 is already occupied by Focus Town, use the running copy.
+Leave the terminal open while playing. If the browser does not open, visit the local address printed by Vite. Press **Ctrl+C** in the terminal to stop it. If port 5173 is already occupied by Focus Street, use the running copy.
 
 **Downloaded the ZIP?** It contains source code, not a standalone app. Install Node.js 24 or newer, extract the ZIP, open the extracted folder in VS Code and choose **Terminal → New Terminal**. Run `npm start` (`npm.cmd start` in Windows PowerShell). The first run installs dependencies and opens the game. Use the same command next time. No Git is needed for this route.
 
-**Phones and tablets:** open [Play Focus Town](https://focus-town-greenvale.vercel.app). No terminal or installation is needed. The commands above are for running your own desktop copy.
+**Phones and tablets:** open [Play Focus Street](https://focus-town-greenvale.vercel.app). No terminal or installation is needed. The commands above are for running your own desktop copy.
 
 ## Run and debug in VS Code
 
-Open the downloaded folder in VS Code, then choose **Run and Debug → Focus Town: start preview → Play**. If the server is already running, open the local address printed in its terminal.
+Open the downloaded folder in VS Code, then choose **Run and Debug → Focus Street: start preview → Play**. If the server is already running, open the local address printed in its terminal.
 
-A connection error usually means the preview stopped. **Terminal → Run Task → Focus Town: start preview** starts it again. Keep that terminal open and avoid starting another copy on port 5173.
+A connection error usually means the preview stopped. **Terminal → Run Task → Focus Street: start preview** starts it again. Keep that terminal open and avoid starting another copy on port 5173.
 
 ## One page, then a walk
 
 **Sessions** sets focus, short break and long break durations from 1 to 720 minutes. Choose a preset or a custom plan of up to 12 rounds. The last round ends with a long break. Automatic breaks are optional; the next focus interval waits for you.
 
-**Town** opens the top-down village. Move with WASD or arrow keys, press E to interact, or use the touch controls. The dock includes full screen, audio, missions and settings. Controls can be hidden. The town desk and Jun's tea stall open session choices without sending you back to Focus.
+**Town** opens the top-down village. Move with WASD or arrow keys, press E to interact, or use the touch controls. The dock includes full screen, audio, missions and settings. The keyboard hint can be hidden; phone movement buttons stay available. The town desk and Jun's tea stall open session choices without sending you back to Focus.
 
 Repair the Old Crossing in three stages to reach Whispering Garden: a glasshouse, orchard, reading bench, workbench and copper telescope. Repairs use 55 coins and 100 energy in total and stay built. The river remains impassable away from the repaired bridge. The library interior is still closed.
 
@@ -68,7 +63,7 @@ Jun's coffee costs 6 coins. For 30 real minutes it increases walking speed by 35
 
 **Settings** includes six coats, four skin tones, three starting headwear choices, and the earned crown and royal cloak. Town lighting can follow the twelve-minute day, your local time, permanent daylight or evening. The town clock and night discoveries use the same setting. Reduced motion stops decorative movement while the clock keeps working. Choose gentle, direct or playful encouragement, or turn it off.
 
-**First visit** offers a five-step town guide. Replay it from Settings. On Focus, open **Arrange your desk** to choose Lamplight, Moonlight or Ink, plus the split-flap clock or plain digits. The listening shelf now has seven choices: four recordings and three original ambient loops. Sound starts only when you press Play.
+**First visit** offers a five-step town guide. Replay it from Settings. On Focus, open **Scenery & clock** to choose Lamplight, Moonlight or Ink, plus the split-flap clock or plain digits. The listening shelf now has seven choices: four recordings and three original ambient loops. Sound starts only when you press Play.
 
 Looking for the hidden details? [The spoiler guide](SECRETS.md) lists where to find them.
 
@@ -84,7 +79,7 @@ Use the public Play link for remote invitations. A localhost invitation works on
 
 ## Your save
 
-If another Focus Town tab has your save open, choose **Use this tab** beside the timer or in Settings. Your saved timer and progress move over; the other tab becomes read-only. You can dismiss the notice without losing that option. An older tab may not understand the switch request: close other Focus Town tabs once, then the waiting tab opens your save automatically. Do not clear site data to fix this message.
+If another Focus Street tab has your save open, choose **Use this tab** beside the timer or in Settings. Your saved timer and progress move over; the other tab becomes read-only. You can dismiss the notice without losing that option. An older tab may not understand the switch request: close other Focus Street tabs once, then the waiting tab opens your save automatically. Do not clear site data to fix this message.
 
 Choose a character name in **Settings** or click **Name your character** in Town. Your name, appearance, lighting, encouragement setting, coffee expiry, sessions, discoveries, purchases and journal progress save automatically in this browser. The save status in Settings reports whether the write succeeded.
 
@@ -92,7 +87,7 @@ Choose a character name in **Settings** or click **Name your character** in Town
 
 Settings shows the current save status and website address. A recovery copy is kept beside the main save. If the main copy is damaged, you can review the recovery copy before restoring it. Clearing site data removes both copies and the device's co-op credential. Keep a downloaded backup; the recovery copy is not cloud storage.
 
-The old `focusraid-save-v1` storage key remains for save compatibility. One tab owns the writing lock. Shared rewards are acknowledged only after they have been saved locally. The server stores device profiles, reported totals, upgrades, room presence, comparisons and reward receipts. Task text stays local. See the in-game Privacy and Storage pages.
+Focus Street keeps the existing browser storage keys and accepts earlier progress backups, including those made under the Focus Town name. The old `focusraid-save-v1` storage key remains for save compatibility. One tab owns the writing lock. Shared rewards are acknowledged only after they have been saved locally. The server stores device profiles, reported totals, upgrades, room presence, comparisons and reward receipts. Task text stays local. See the in-game Privacy and Storage pages.
 
 ## Development
 
@@ -102,7 +97,9 @@ The release checks and remaining manual checks are recorded in [TEST_PLAN.md](TE
 
 React, Vite, TypeScript, Tailwind and Canvas power the game. Local development uses SQLite; the public shared-room service uses Turso/libSQL. A Cloudflare D1 adapter is also available. [ARCHITECTURE.md](ARCHITECTURE.md) covers saving and co-op. [ASSETS.md](ASSETS.md) records artwork, fonts and the locally bundled CC0 sound library. Flocus informed timer hierarchy; its assets and code are not bundled.
 
-Hackatime's local project name is now **Focus Town**. Historical project grouping in Pixl is separate from that setting and does not change previously recorded categories or hours.
+The recorded Hackatime local project name is **Focus Town**. Renaming the game does not establish a change to that setting or to historical project grouping in Pixl.
+
+Codex did much of the implementation, debugging and automated testing. Some illustrated backgrounds used AI image generation. See [DEVLOG.md](DEVLOG.md) for the contribution record and [ASSETS.md](ASSETS.md) for asset credits.
 
 ## Public hosting
 

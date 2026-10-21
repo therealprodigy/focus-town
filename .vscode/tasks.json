@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Focus Town: start preview",
+      "label": "Focus Street: start preview",
       "type": "shell",
       "command": "npm",
       "args": [
@@ -47,14 +47,14 @@
       }
     },
     {
-      "label": "Focus Town: test",
+      "label": "Focus Street: test",
       "type": "npm",
       "script": "test",
       "group": "test",
       "problemMatcher": []
     },
     {
-      "label": "Focus Town: build",
+      "label": "Focus Street: build",
       "type": "npm",
       "script": "build",
       "group": {

@@ -25,7 +25,6 @@ export type SocialSnapshot = {
 };
 const KEY = "focus-town-profile-v1";
 let current: DeviceProfile | null = null,
-  lastReport = "",
   jobs: Promise<unknown> = Promise.resolve();
 export function profileCredential(): { secret: string; name: string } | null {
   try {
@@ -91,8 +90,8 @@ async function sendReport(
   report: Report,
   canReport: () => boolean,
 ) {
-  const fingerprint = JSON.stringify({ ...report, name: c.name });
-  if (fingerprint === lastReport && current) return;
+  // Another tab can change this profile while it owns the save. Even an
+  // unchanged local report must check the server revision after a handoff.
   if (!current) {
     const r = await request("create", { name: c.name }, c.secret);
     if (!r.ok) throw new Error(r.data.error);
@@ -107,7 +106,6 @@ async function sendReport(
     );
     if (r.data.profile) current = r.data.profile;
     if (r.ok) {
-      lastReport = fingerprint;
       return;
     }
     if (r.status !== 409 || i === 1) throw new Error(r.data.error);
@@ -123,12 +121,14 @@ export function syncProfile(
     const c = profileCredential();
     if (!c) return null;
     for (let page = 0; page < 4; page++) {
+      if (!canReport()) return current;
       const r = await request("grants", {}, c.secret);
       if (!r.ok) throw new Error(r.data.error);
       const grants = r.data.grants as SharedGrant[];
       if (!Array.isArray(grants))
         throw new Error("Could not read shared rewards.");
       if (!grants.length) break;
+      if (!canReport()) return current;
       if (!receive(grants))
         throw new Error(
           "Shared rewards are waiting. Open the tab that owns this save to collect them.",

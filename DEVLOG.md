@@ -166,3 +166,16 @@ Review found a shared-world mismatch: the compass used your personal bridge even
 All 201 tests pass, including route searches for every new interaction, closed-bridge bypass checks, fountain depth, peer clothing, puzzle choices and save compatibility. Both production builds and Worker page, image and audio checks pass. The art and dialogue were implemented with AI assistance. No human hours or browser playtest are claimed. The saved browser permission still blocks rendered inspection.
 
 The first publication attempt failed with Not authorized despite valid account and project access. The retry succeeded using the same account and project. Cherrybank is now live at the existing Focus Town address. The public JavaScript, styles and two new backgrounds match the tested files byte for byte. Home and legal pages return 200; an unknown route returns 404. The room endpoint responds to GET with its expected 405. These checks confirm publication, not a live multiplayer session.
+
+
+## 21 October: Focus Street, with less in the way
+
+The game now calls itself Focus Street. The browser title, menus, legal pages, backup filenames and VS Code tasks use the new name. The existing website address and internal save keys stay unchanged, so the rename does not strand a player’s save or invitation.
+
+The desk had accumulated too many controls. Scenery, lighting and clock options now open in their own panel. The timer has a smaller glass surround, a plain Minimise control and a thin progress indicator during an interval. The town timer starts folded, leaving more of the map visible. Session presets spell out minutes rather than showing three unexplained numbers. Hiding the keyboard hint no longer removes the phone’s movement buttons, and losing touch capture releases movement.
+
+The audit found a reading book that drew over foreground trees, plus orchard trunks, lamps, the coffee crate and the shared beacon that could be walked through. The book now shares the player’s depth layer. The props use the same geometry for drawing and collision, and every existing interaction remains reachable in the route tests.
+
+Save and room checks found two ownership problems: an unchanged local profile could skip a necessary report after another tab changed the server, and rewards could arrive after a tab lost write access. Both now recheck the current state. If the main save is missing and its only recovery copy is damaged or inaccessible, the game stops writing instead of replacing the remaining evidence. A backup export can preserve the recovery bytes. The session dialog also uses the same ready-player rule as the main timer button.
+
+All 218 automated tests passed. The combined source review found no remaining actionable blockers. Browser layout, listening and two-device checks remain unverified because the saved preview rule still blocks access. This entry describes AI-assisted implementation and automated checks; it does not claim human coding hours or a browser playtest. Publication is recorded separately in DEPLOYMENT.md.

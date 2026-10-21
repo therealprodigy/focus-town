@@ -106,3 +106,50 @@ it("acknowledges only after persistence and skips reporting if ownership moves",
   );
   expect(paths).toEqual(["/api/profile/grants", "/api/profile/grants/ack"]);
 });
+
+it("rechecks unchanged reports after another tab has changed the profile", async () => {
+  let remote = { ...profile };
+  const revisions: number[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string, init: RequestInit) => {
+      if (url.endsWith("create")) return response({ profile: remote });
+      if (url.endsWith("grants")) return response({ grants: [] });
+      const sent = JSON.parse(init.body as string);
+      revisions.push(sent.revision);
+      if (sent.revision !== remote.revision)
+        return response({ profile: remote, error: "Changed" }, 409);
+      remote = { ...remote, ...sent, revision: remote.revision + 1 };
+      return response({ profile: remote });
+    }),
+  );
+  const { prepareProfile, syncProfile } = await import("../src/profileClient");
+  await prepareProfile("Reader", report, () => true);
+  // Another owning tab reports a restored save while this tab is read-only.
+  remote = { ...remote, name: "Other tab", streak: 9, revision: 2 };
+  const synced = await syncProfile(
+    () => report,
+    () => true,
+    () => true,
+  );
+  expect(revisions).toEqual([0, 1, 2]);
+  expect(synced).toMatchObject({ name: "Reader", streak: 1, revision: 3 });
+});
+
+it("does not apply or acknowledge grants when ownership moves during retrieval", async () => {
+  let writable = true;
+  const receive = vi.fn(() => true);
+  const fetcher = vi.fn(async () => {
+    writable = false;
+    return response({ grants: [{ id: "e".repeat(32) }] });
+  });
+  vi.stubGlobal("fetch", fetcher);
+  const { syncProfile } = await import("../src/profileClient");
+  await syncProfile(
+    () => report,
+    receive,
+    () => writable,
+  );
+  expect(receive).not.toHaveBeenCalled();
+  expect(fetcher).toHaveBeenCalledTimes(1);
+});

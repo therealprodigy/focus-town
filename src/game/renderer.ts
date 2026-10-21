@@ -26,6 +26,7 @@ import {
   getWorldScene,
   residentPositions,
   TOWN_LAMPS,
+  TOWN_BEACON_BASE,
   VILLAGE_TREES,
   WORLDS,
   type Player,
@@ -1063,6 +1064,11 @@ export function renderWorld(
           if (Math.floor(t * 2) % 2)
             rect(player.x + 18, player.y - 42, 4, 4, C.pale);
         }
+        if (o.activity === "idle" && (o.idleSeconds ?? 0) > 16) {
+          rect(player.x - 12, player.y - 31, 24, 13, "#a08aa4");
+          rect(player.x - 10, player.y - 30, 20, 9, "#e5d4b8");
+          rect(player.x, player.y - 30, 2, 10, "#89778d");
+        }
       },
     });
   const groups: Peer[][] = [];
@@ -1095,7 +1101,8 @@ export function renderWorld(
       y: 390,
       paint: () => {
         const light = Math.min((o.sharedMinutes ?? 0) / 120, 1);
-        rect(808, 364, 24, 24, "#3e5552");
+        const { x, y, width, height } = TOWN_BEACON_BASE;
+        rect(x, y, width, height, "#3e5552");
         rect(812, 340, 16, 28, "#75998c");
         rect(808, 332, 24, 8, "#b5c5a4");
         rect(816, 320, 8, 12, light > 0 ? "#a9f0d8" : "#435e61");
@@ -1113,11 +1120,6 @@ export function renderWorld(
     layers.push({ y: 416, paint: () => paintCat(ctx, 568, 416, o.time) });
   layers.sort((a, b) => a.y - b.y).forEach((layer) => layer.paint());
   paintDiscoveries(ctx, sceneId, o, o.time, clock.hour < 5 || clock.hour >= 20);
-  if (o.activity === "idle" && (o.idleSeconds ?? 0) > 16) {
-    rect(player.x - 12, player.y - 31, 24, 13, "#a08aa4");
-    rect(player.x - 10, player.y - 30, 20, 9, "#e5d4b8");
-    rect(player.x, player.y - 30, 2, 10, "#89778d");
-  }
   // A uniform tint keeps every pixel crisp; illumination uses rectangular patches.
   ctx.save();
   ctx.globalAlpha = darkness * (sceneId === "village" ? 0.18 : 0.04);

@@ -177,7 +177,7 @@ dialog.resident-dialog .dialog-top h2 {
   --frost: #f3e6cf;
   --frost-ink: #443328;
   --frost-muted: #4b3829;
-  --focus-top: clamp(108px, 15vh, 160px);
+  --focus-top: clamp(104px, 17vh, 180px);
   --focus-bottom: max(94px, calc(env(safe-area-inset-bottom) + 78px));
 }
 .app-scene {
@@ -216,15 +216,15 @@ dialog.resident-dialog .dialog-top h2 {
   display: block;
   top: var(--focus-top);
   bottom: auto;
-  width: min(620px, calc(100% - 32px));
+  width: min(560px, calc(100% - 32px));
   max-height: calc(100dvh - var(--focus-top) - var(--focus-bottom));
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 22px 28px 24px;
+  padding: 18px 28px 22px;
   color: #fff5e3;
   background: #292722;
   border: 1px solid rgb(255 241 209 / 28%);
-  border-radius: 24px;
+  border-radius: 16px;
   box-shadow:
     inset 0 1px rgb(255 248 228 / 12%),
     0 12px 48px #16192124;
@@ -294,7 +294,7 @@ dialog.resident-dialog .dialog-top h2 {
   padding-inline: 4px;
 }
 .wordmark {
-  font-size: clamp(0.85rem, 1.7vw, 1.35rem);
+  font-size: clamp(0.85rem, 1.5vw, 1.15rem);
   letter-spacing: 0;
 }
 .wordmark span {
@@ -358,7 +358,7 @@ dialog.resident-dialog .dialog-top h2 {
   align-items: center;
   gap: 6px;
   font-family: VT323, monospace;
-  --clock-size: clamp(3.6rem, 10vw, 8.5rem);
+  --clock-size: clamp(3.6rem, 9vw, 7.2rem);
   font-size: var(--clock-size);
   line-height: 1.06;
 }
@@ -471,35 +471,29 @@ dialog.resident-dialog .dialog-top h2 {
 }
 .desk-customizer {
   width: 100%;
-  max-width: 490px;
-  margin: 16px auto 0;
-  color: #efdfc3;
-  font-size: 1.05rem;
+  margin: 0;
+  color: #4a3a2c;
+  font-size: 1.1rem;
 }
-.desk-customizer summary {
-  cursor: pointer;
-  text-underline-offset: 4px;
-}
-.desk-customizer[open] {
-  padding: 14px;
-  background: rgb(20 22 21 / 32%);
-  border: 1px solid rgb(255 242 215 / 20%);
-  border-radius: 14px;
-}
-.desk-customizer label {
-  display: inline-flex;
-  flex-wrap: wrap;
+.desk-customizer > label {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 8px;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  margin: 0;
+  border-bottom: 1px solid #bfa98766;
+}
+.desk-customizer > label:has(input) {
+  justify-content: flex-start;
 }
 .desk-customizer select {
-  background: #3c3831;
-  color: #fff1d8;
-  border: 1px solid #9b886b;
-  border-radius: 6px;
-  padding: 4px 7px;
-  max-width: 185px;
+  background: #fff7e7;
+  color: #49372b;
+  border: 1px solid #b6a084;
+  border-radius: 5px;
+  padding: 6px 9px;
+  max-width: 65%;
 }
 .desk-customizer select:disabled {
   opacity: 0.65;
@@ -524,23 +518,23 @@ dialog.resident-dialog .dialog-top h2 {
   overflow: hidden;
   text-decoration: none;
   text-align: left;
-  color: #f8e9ce;
-  background: rgb(255 243 218 / 6%);
-  border: 1px solid rgb(255 243 218 / 22%);
+  color: #49372b;
+  background: #fff7e766;
+  border: 1px solid #c5af8e;
   border-radius: 9px;
 }
 .desk-customizer .backdrop-choice:hover {
-  background: rgb(255 243 218 / 14%);
+  background: #fff7e7;
 }
 .desk-customizer .backdrop-choice[aria-pressed="true"] {
-  background: rgb(246 221 173 / 19%);
-  border-color: #f1d6a1;
-  box-shadow: 0 0 0 1px #f1d6a1;
+  background: #f1ddba;
+  border-color: #82603b;
+  box-shadow: 0 0 0 1px #82603b;
 }
 .backdrop-preview {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
   border-radius: 5px;
 }
@@ -554,7 +548,7 @@ dialog.resident-dialog .dialog-top h2 {
   content: "Selected";
   display: block;
   margin-top: 3px;
-  color: #f5d596;
+  color: #775332;
   min-height: 1em;
   font-size: 0.85rem;
 }
@@ -563,6 +557,79 @@ dialog.resident-dialog .dialog-top h2 {
   display: block;
   margin: auto;
   padding: 6px;
+}
+.desk-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  color: #d7ccb7;
+  font-size: 0.95rem;
+}
+.desk-caption > span {
+  letter-spacing: 0.08em;
+}
+.desk-caption button {
+  padding: 5px 0 5px 12px;
+  color: #e9dbc3;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.focus-tools {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  border-top: 1px solid #f5e7ce24;
+  margin-top: 22px;
+  padding-top: 12px;
+  color: #e2d5bf;
+}
+.focus-tools button {
+  padding: 5px;
+  font-size: 1rem;
+}
+.focus-tools button:hover {
+  color: #fff4de;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.focus-space .start-button {
+  border-radius: 8px;
+  border: 1px solid #ffeed0b0;
+  background: #ebd7b4;
+  box-shadow: inset 0 1px #fff4dd80;
+  color: #3b3025;
+}
+.focus-space .start-button:hover:not(:disabled) {
+  background: #f6e5c7;
+}
+.interval-progress {
+  display: block;
+  appearance: none;
+  width: min(320px, 90%);
+  height: 3px;
+  border: 0;
+  border-radius: 2px;
+  margin: 20px auto 12px;
+  overflow: hidden;
+  background: #f8e8ce26;
+  color: #e9c78f;
+}
+.interval-progress::-webkit-progress-bar {
+  background: #f8e8ce26;
+}
+.interval-progress::-webkit-progress-value {
+  background: #e9c78f;
+}
+.interval-progress::-moz-progress-bar {
+  background: #e9c78f;
+}
+.appearance-dialog .reset-desk {
+  margin: 18px 0;
+  padding: 0;
+  color: #755333;
+  text-underline-offset: 4px;
 }
 .town-advice {
   max-width: 380px;
@@ -1097,7 +1164,8 @@ dialog .phase-tabs button:after {
 .town-view .topbar {
   pointer-events: none;
 }
-.town-view .topbar .view-switch {
+.town-view .topbar .view-switch,
+.town-view .topbar .wordmark {
   pointer-events: auto;
 }
 .town-label {
@@ -1116,8 +1184,6 @@ dialog .rival-tag {
   color: #825830;
 }
 
-.focus-space .start-button,
-.focus-space .button-primary,
 .tour-rhythm button,
 .practice-buttons button {
   background: #ead6b5;
@@ -1129,12 +1195,10 @@ dialog .rival-tag {
     inset -2px -3px 4px #b3926455,
     0 3px 0 #9b7a50;
 }
-.focus-space .start-button:hover,
 .practice-buttons button:hover:not(:disabled),
 .tour-rhythm button:hover:not(:disabled) {
   background: #f3dfbc;
 }
-.focus-space .start-button:active:not(:disabled),
 .practice-buttons button:active:not(:disabled) {
   box-shadow: inset 1px 2px 4px #9b7a5080;
 }
@@ -1307,9 +1371,9 @@ dialog::backdrop {
     -webkit-backdrop-filter: blur(18px) saturate(1.12);
   }
   .focus-space {
-    background: rgb(28 27 24 / 72%);
-    backdrop-filter: blur(18px) saturate(0.9);
-    -webkit-backdrop-filter: blur(18px) saturate(0.9);
+    background: rgb(28 29 28 / 64%);
+    backdrop-filter: blur(18px) saturate(0.92);
+    -webkit-backdrop-filter: blur(18px) saturate(0.92);
   }
 }
 @media (max-width: 1000px) {
@@ -1359,7 +1423,7 @@ dialog::backdrop {
   }
   .wordmark {
     font-size: 0.65rem;
-    max-width: 84px;
+    max-width: 100%;
     line-height: 1.35;
   }
   .wordmark span {

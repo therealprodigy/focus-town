@@ -1,6 +1,6 @@
-# Hosting Focus Town
+# Hosting Focus Street
 
-[Play Focus Town](https://focus-town-greenvale.vercel.app)
+[Play Focus Street](https://focus-town-greenvale.vercel.app)
 
 The public frontend and room API run on Vercel. Turso stores device profiles, invitations, room state, comparisons and completion receipts. Personal progress still lives in each player’s browser.
 

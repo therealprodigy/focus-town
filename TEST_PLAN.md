@@ -4,7 +4,7 @@ Automated checks on 10 October 2026: 173 tests, TypeScript and both production b
 
 ## Open it
 
-In VS Code, select **Run and Debug → Focus Town: start preview → Play**. If the preview is already running, use http://127.0.0.1:5173/ in Brave. Leave its terminal open.
+In VS Code, select **Run and Debug → Focus Street: start preview → Play**. If the preview is already running, use http://127.0.0.1:5173/ in Brave. Leave its terminal open.
 
 ## Start with the town
 
@@ -101,7 +101,7 @@ The twelve controller tests use a deterministic browser-lock model. They verify 
 
 The 12 October update passed 183 automated tests, both production builds and built Worker route, image and audio checks. The image files were visually inspected; the rendered interface was not, because browser access was denied.
 
-- [ ] Open Arrange your desk, then Scenery. Try Observatory, Library window and Garden morning with each Light option. Reload and confirm the chosen scene remains.
+- [ ] Open Scenery & clock, then Scenery. Try Observatory, Library window and Garden morning with each Light option. Reload and confirm the chosen scene remains.
 - [ ] Compare the Focus/Town switch in both views at desktop width and 320px. Its centre should stay on the window's centre, even when the side labels are hidden.
 - [ ] Collapse an idle, running and paused timer. Check the short glass strip, Start/Pause/Resume and Expand. End a two-round plan: old completion text should appear only in the full view.
 - [ ] Try 720 minutes, large digits, and a 640 by 360 window. Check that the clock stays inside the pane and the town timer does not cover movement controls.
@@ -119,3 +119,17 @@ Automated checks: 201 tests pass, including all new interactions reachable by ro
 - [ ] Join a friend with a repaired crossing while your own crossing is closed. The compass should direct you through their town. A companion with no saved outfit should not inherit your crown or cloak.
 - [ ] Check the fountain before and after restoration. Water should be visible in both states. Reduced motion should leave still water and petals without stopping the study clock.
 - [ ] At 320px, check the quest tabs, puzzle choices and film selector. Use the keyboard to change pages and close NPC conversations. Check that the portrait matches the resident outside.
+
+
+## Focus Street follow-up, 21 October
+
+218 automated checks pass, including profile handoff, late shared-grant retrieval, missing primary save with damaged or inaccessible recovery, prop collision, book occlusion and interval progress. Source review also covers the appearance panel and shared readiness controls.
+
+- [ ] Open Scenery & clock from Focus and Settings. Change lighting, scene and finish, close, reload and confirm persistence. A running timer must continue.
+- [ ] On a phone, hide the keyboard hint and walk using the direction buttons. Drag a pressed finger away, switch views and return; movement must stop after release.
+- [ ] Visit Town. Open and fold its timer; the closed header must keep the countdown visible.
+- [ ] In a room, open Sessions before every member is ready. Start must be disabled there and on the main timer. Ready up in Together, then start as host.
+- [ ] Switch save ownership between tabs after changing progress or restoring a backup. Confirm the friend-facing profile catches up without duplicate shared rewards.
+- [ ] Behind a foreground tree, wait for the reading animation. Both traveller and book should be occluded together. Try walking through the garden props from each side.
+
+These manual checks remain pending. Automated tests do not establish visual quality or real-device behavior.

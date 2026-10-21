@@ -87,6 +87,23 @@ it("rejects invalid recovery and invalid writes without replacing data", () => {
   expect(writeStoredSave(s, { ...createSave(), coins: -1 }).saved).toBe(false);
   expect(s.getItem(SAVE_KEY)).toBe("{broken");
 });
+it("does not treat a missing primary with damaged recovery as a new game", () => {
+  const s = store([[RECOVERY_KEY, "{broken"]]);
+  const found = readStoredSave(s);
+  expect(found.error).toContain("recovery copy could not be read");
+  expect(found.recovery).toBeNull();
+  expect(s.getItem(SAVE_KEY)).toBeNull();
+  expect(s.getItem(RECOVERY_KEY)).toBe("{broken");
+});
+it("does not start fresh when a missing primary's recovery cannot be opened", () => {
+  const s = {
+    getItem(key: string) {
+      if (key === RECOVERY_KEY) throw new Error("Storage blocked");
+      return null;
+    },
+  };
+  expect(readStoredSave(s).error).toContain("could not open its recovery");
+});
 it("keeps grant receipts so recovery does not duplicate rewards", () => {
   const next = applySharedGrant(createSave(), grant);
   const s = store();

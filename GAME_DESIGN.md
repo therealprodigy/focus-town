@@ -1,4 +1,4 @@
-# Focus Town
+# Focus Street
 
 Greenvale sits below a magical academy. Its clock has lost an hour. The apprentice follows the small things left behind: a letter, a light across the river, a bell nobody remembers building.
 

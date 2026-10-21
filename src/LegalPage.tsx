@@ -8,7 +8,7 @@ const pages: Record<
     sections: [
       {
         title: "Personal progress",
-        text: "Focus Town stores your character name and appearance, town lighting, motivation preferences, coffee status, sessions, coins, energy, village upgrades, discoveries, mission claims, story progress, timer state and preferences in local storage in your browser. There is no personal account or automatic cross-device backup. Download a progress backup in Settings to move it yourself. A recovery copy is also kept in the same browser; clearing site data removes both copies. Backups do not include timer preferences or online identity.",
+        text: "Focus Street stores your character name and appearance, town lighting, motivation preferences, coffee status, sessions, coins, energy, village upgrades, discoveries, mission claims, story progress, timer state and preferences in local storage in your browser. There is no personal account or automatic cross-device backup. Download a progress backup in Settings to move it yourself. A recovery copy is also kept in the same browser; clearing site data removes both copies. Backups do not include timer preferences or online identity.",
       },
       {
         title: "When you join a room",
@@ -46,7 +46,7 @@ const pages: Record<
     sections: [
       {
         title: "Use the town kindly",
-        text: "Focus Town is a personal focus tool and a small browser game. Choose a nickname you are comfortable sharing. Invite people you trust. Do not impersonate others, harass players or attempt to access rooms without an invitation.",
+        text: "Focus Street is a personal focus tool and a small browser game. Choose a nickname you are comfortable sharing. Invite people you trust. Do not impersonate others, harass players or attempt to access rooms without an invitation.",
       },
       {
         title: "Game progress",
@@ -70,11 +70,11 @@ export function LegalPage() {
       <img className="scene-backdrop" src="/art/observatory.png" alt="" />
       <article>
         <a className="wordmark" href="/">
-          focus town
+          focus street
         </a>
         {p ? (
           <>
-            <p className="eyebrow">FOCUS TOWN · UPDATED 10 OCTOBER 2026</p>
+            <p className="eyebrow">FOCUS STREET · UPDATED 10 OCTOBER 2026</p>
             <h1>{p.title}</h1>
             {p.sections.map((s) => (
               <section key={s.title}>

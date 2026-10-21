@@ -96,6 +96,18 @@ const r = (x: number, y: number, width: number, height: number): Rect => ({
   width,
   height,
 });
+export const GARDEN_ORCHARD_TREES: Point[] = [
+  { x: 1218, y: 208 },
+  { x: 1280, y: 230 },
+  { x: 1340, y: 208 },
+];
+export const GARDEN_LAMPS: Point[] = [
+  { x: 920, y: 454 },
+  { x: 1180, y: 458 },
+  { x: 1344, y: 432 },
+];
+export const GARDEN_COFFEE_CRATE = r(1084, 374, 32, 24);
+export const TOWN_BEACON_BASE = r(808, 364, 24, 24);
 export const WORLDS: Record<SceneId, WorldScene> = {
   village: {
     id: "village",
@@ -104,6 +116,7 @@ export const WORLDS: Record<SceneId, WorldScene> = {
     spawn: { x: 448, y: 416 },
     solids: [
       ...TOWN_LAMPS.map(({ x, y }) => r(x - 4, y - 8, 8, 8)),
+      TOWN_BEACON_BASE,
       r(150, 382, 52, 14),
       r(302, 292, 16, 12),
       r(136, 456, 68, 20),
@@ -650,6 +663,14 @@ export function getWorldScene(
   }
   solids.push(
     ...GARDEN_TREES.map((p) => r(p.x - 12, p.y - 18, 24, 20)),
+    ...GARDEN_ORCHARD_TREES.map((p) => r(p.x - 4, p.y - 10, 8, 10)),
+    ...GARDEN_LAMPS.map((p) => r(p.x - 4, p.y - 8, 8, 8)),
+    r(
+      GARDEN_COFFEE_CRATE.x,
+      GARDEN_COFFEE_CRATE.y + GARDEN_COFFEE_CRATE.height - 10,
+      GARDEN_COFFEE_CRATE.width,
+      10,
+    ),
     r(1092, 174, 132, 104),
     r(1274, 396, 64, 16),
     r(978, 466, 54, 20),

@@ -80,7 +80,7 @@ export const TOUR_STEPS = [
   {
     title: "Follow the little oddities",
     art: "letter",
-    body: "Jun has questionable tea advice. Miso has a shop to supervise. Your bookshelf and the river atlas share a clue. Check the Missions noticeboard when you need a goal.",
+    body: "Jun has questionable tea advice. Miso has a shop to supervise. Your bookshelf and the river atlas share a clue. Check the Quests noticeboard when you need a goal.",
     hint: "Read both clues, then try the bell. Some discoveries wait until night.",
   },
   {

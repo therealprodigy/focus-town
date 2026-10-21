@@ -18,7 +18,7 @@ type Draw = {
 };
 
 // Record the renderer's actual rectangles, including character transforms.
-function renderTown(player: Player): Draw[] {
+function renderTown(player: Player, idleSeconds = 0): Draw[] {
   const draws: Draw[] = [];
   let state = { x: 0, y: 0, sx: 1, sy: 1, color: "", alpha: 1 };
   const stack: (typeof state)[] = [];
@@ -69,6 +69,7 @@ function renderTown(player: Player): Draw[] {
     activity: "idle",
     streak: 0,
     lighting: "day",
+    idleSeconds,
   });
   return draws;
 }
@@ -96,6 +97,32 @@ function expectRoofSupport(draws: Draw[], prop: Draw, roofColor: string) {
 }
 
 describe("town rendering and fountain collision", () => {
+  it("keeps an idle reader's book behind the same foreground tree as its owner", () => {
+    const draws = renderTown(playerAt(304, 525), 20);
+    const book = draws.findIndex(
+      (draw) => draw.x === 292 && draw.y === 494 && draw.color === "#a08aa4",
+    );
+    const trunk = draws.findIndex(
+      (draw) => draw.x === 292 && draw.y === 496 && draw.color === "#5e4835",
+    );
+    expect(book).toBeGreaterThanOrEqual(0);
+    expect(trunk).toBeGreaterThan(book);
+  });
+
+  it.each([
+    [1218, 208],
+    [1280, 230],
+    [1340, 208],
+    [920, 454],
+    [1180, 458],
+    [1344, 432],
+    [1100, 398],
+    [820, 388],
+  ])("blocks the garden prop's visible base at %i, %i", (x, y) => {
+    const scene = getWorldScene("village", ["crossing-lanterns"]);
+    expect(canStand(scene, x, y)).toBe(false);
+  });
+
   it("anchors all three chimney bodies to opaque roof geometry", () => {
     const draws = renderTown(playerAt(448, 416));
     for (const building of BUILDINGS) {

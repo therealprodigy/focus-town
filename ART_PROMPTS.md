@@ -1,4 +1,4 @@
-# Focus Town background prompts
+# Focus Street background prompts
 
 Generated with the built-in OpenAI image tool on 12 October 2026. Each call used `public/art/observatory.png` as a style reference. The final files are `public/art/garden-morning.webp` and `public/art/library-study.webp`; both are 1672 × 941 pixels. The tool returned that size instead of the requested ideal 1920 × 1080. Only format compression was applied afterward.
 

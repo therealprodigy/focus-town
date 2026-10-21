@@ -7,7 +7,7 @@ for (const path of ["/", "/privacy", "/terms", "/cookies"]) {
   );
   assert.equal(response.status, 200);
   assert.ok(response.headers.get("content-type").includes("text/html"));
-  assert.ok((await response.text()).includes("<title>Focus Town</title>"));
+  assert.ok((await response.text()).includes("<title>Focus Street</title>"));
 }
 const missing = await worker.fetch(
   new Request("https://town.test/path-that-does-not-exist"),

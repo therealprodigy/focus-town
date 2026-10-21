@@ -148,7 +148,7 @@ export const WRITER_MESSAGES: Record<WriterState, string> = {
   switching: "Switching your save to this tab...",
   yielded: "Your save moved to another tab. You can switch it back here.",
   stalled:
-    "The other tab has not responded. Close other Focus Town tabs; this one will open your save automatically.",
+    "The other tab has not responded. Close other Focus Street tabs; this one will open your save automatically.",
   unavailable:
     "Could not open the save for editing. Try again or reload this page.",
 };

@@ -5,12 +5,12 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 process.chdir(root);
 if (Number(process.versions.node.split(".")[0]) < 24) {
   console.error(
-    "Focus Town needs Node.js 24 or newer: https://nodejs.org/en/download",
+    "Focus Street needs Node.js 24 or newer: https://nodejs.org/en/download",
   );
   process.exit(1);
 }
 if (!existsSync("node_modules/vite/bin/vite.js")) {
-  console.log("First visit: installing Focus Town dependencies...");
+  console.log("First visit: installing Focus Street dependencies...");
   const setup = spawnSync(
     process.platform === "win32" ? "npm.cmd" : "npm",
     ["ci"],
@@ -24,7 +24,7 @@ if (!existsSync("node_modules/vite/bin/vite.js")) {
   }
 }
 console.log(
-  "Opening Focus Town. Keep this terminal open; press Ctrl+C to stop.",
+  "Opening Focus Street. Keep this terminal open; press Ctrl+C to stop.",
 );
 const game = spawn(
   process.execPath,

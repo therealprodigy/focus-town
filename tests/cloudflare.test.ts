@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import worker, { type CloudflareEnv } from "../server/cloudflare";
 const ORIGIN = "https://focus.test";
-const HTML = "<!doctype html><title>Focus Town</title>";
+const HTML = "<!doctype html><title>Focus Street</title>";
 function fixture(
   serve: (request: Request) => Promise<Response> = async (request) =>
     new URL(request.url).pathname === "/index.html"

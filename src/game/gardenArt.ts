@@ -2,6 +2,11 @@ import { townBrush, paintLantern } from "./townDetails";
 import { paintCat } from "./townLife";
 import type { UpgradeId } from "./townCatalog";
 import { getRoofGeometry } from "./buildingGeometry";
+import {
+  GARDEN_COFFEE_CRATE,
+  GARDEN_LAMPS,
+  GARDEN_ORCHARD_TREES,
+} from "./world";
 type Layer = { y: number; paint: () => void };
 export function paintBuildingIdentity(
   ctx: CanvasRenderingContext2D,
@@ -171,7 +176,8 @@ export function paintGarden(
   layers.push({
     y: 400,
     paint: () => {
-      r(1084, 374, 32, 24, "#9e7955");
+      const { x, y, width, height } = GARDEN_COFFEE_CRATE;
+      r(x, y, width, height, "#9e7955");
       r(1084, 374, 32, 3, "#d6b078");
       r(1094, 365, 9, 10, "#ded2ab");
       r(1103, 368, 3, 4, "#ded2ab");
@@ -179,11 +185,10 @@ export function paintGarden(
     },
   });
   // Orchard canopies are compact, with a clear walking lane below them.
-  [1218, 1280, 1340].forEach((x, i) =>
+  GARDEN_ORCHARD_TREES.forEach(({ x, y }) =>
     layers.push({
-      y: 208 + (i % 2) * 22,
+      y,
       paint: () => {
-        const y = 208 + (i % 2) * 22;
         r(x - 4, y - 44, 8, 44, "#645d4b");
         r(x - 25, y - 64, 50, 32, "#456759");
         r(x - 19, y - 76, 38, 24, "#577c62");
@@ -200,11 +205,7 @@ export function paintGarden(
     }),
   );
   layers.push({ y: 194, paint: () => paintCat(ctx, 1250, 194, time, false) });
-  [
-    [920, 454],
-    [1180, 458],
-    [1344, 432],
-  ].forEach(([x, y]) =>
+  GARDEN_LAMPS.forEach(({ x, y }) =>
     layers.push({ y, paint: () => paintLantern(ctx, x, y, time) }),
   );
   if (open)

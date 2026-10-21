@@ -23,7 +23,7 @@ The characters, buildings, terrain and lighting are original Canvas pixel drawin
 
 ## Interface references
 
-[Flocus](https://flocus.com/features/pomodoro-timer) informed timer hierarchy and session controls. [Aceternity's floating dock](https://ui.aceternity.com/components/floating-dock) informed the compact reveal-on-demand navigation. No Aceternity source code was copied. The shared button follows shadcn/ui's Radix Slot and class-variance-authority pattern, with Focus Town's own styles. Package licenses remain with their respective dependencies.
+[Flocus](https://flocus.com/features/pomodoro-timer) informed timer hierarchy and session controls. [Aceternity's floating dock](https://ui.aceternity.com/components/floating-dock) informed the compact reveal-on-demand navigation. No Aceternity source code was copied. The shared button follows shadcn/ui's Radix Slot and class-variance-authority pattern, with Focus Street's own styles. Package licenses remain with their respective dependencies.
 
 ## Sound library
 

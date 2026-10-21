@@ -6,7 +6,7 @@ import {
   serializeSave,
   type SaveData,
 } from "./game/state";
-import { readStoredSave, writeStoredSave } from "./saveStorage";
+import { readStoredSave, writeStoredSave, RECOVERY_KEY } from "./saveStorage";
 import {
   createSaveWriter,
   WRITER_MESSAGES,
@@ -78,7 +78,11 @@ export function useSave() {
   );
   const exportRaw = () => {
     try {
-      return localStorage.getItem(SAVE_KEY) ?? serializeSave(ref.current);
+      return (
+        localStorage.getItem(SAVE_KEY) ??
+        localStorage.getItem(RECOVERY_KEY) ??
+        serializeSave(ref.current)
+      );
     } catch {
       return serializeSave(ref.current);
     }

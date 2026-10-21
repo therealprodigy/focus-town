@@ -1,7 +1,9 @@
 import { DeskClock, TOUR_STEPS, TourPicture } from "./DeskClock";
 import { TourPractice } from "./TourPractice";
 import { deskDefaults, parseDeskPrefs } from "./deskPreferences";
-import { DeskBackdrop, DESK_BACKGROUNDS } from "./DeskBackdrop";
+import { DeskBackdrop } from "./DeskBackdrop";
+import { DeskAppearance } from "./DeskAppearance";
+import { SessionMeter } from "./SessionMeter";
 import { TownPersonalization } from "./TownPersonalization";
 import { motivationLine } from "./game/personalization";
 import { coffeeActive } from "./game/state";
@@ -70,6 +72,7 @@ type Panel =
   | "journal"
   | "story"
   | "settings"
+  | "appearance"
   | "coop"
   | "cancel"
   | "import"
@@ -116,7 +119,9 @@ function loadPrefs() {
       short: parseMinutes(p.short) ? String(p.short) : "5",
       long: parseMinutes(p.long) ? String(p.long) : "15",
       rounds:
-        Number(p.rounds) >= 1 && Number(p.rounds) <= 12
+        Number.isInteger(Number(p.rounds)) &&
+        Number(p.rounds) >= 1 &&
+        Number(p.rounds) <= 12
           ? String(p.rounds)
           : "4",
       autoBreak: p.autoBreak === true,
@@ -354,11 +359,7 @@ function Game() {
     room = useRoom();
   const [prefs, setPrefs] = useState(loadPrefs),
     [view, setView] = useState<"focus" | "town">("focus"),
-    [townTimerOpen, setTownTimerOpen] = useState(
-      () =>
-        !window.matchMedia("(max-width: 650px) and (max-height: 680px)")
-          .matches,
-    ),
+    [townTimerOpen, setTownTimerOpen] = useState(false),
     [panel, setPanel] = useState<Panel>(null),
     [phase, setPhase] = useState<Phase>("focus"),
     [now, setNow] = useState(Date.now),
@@ -702,13 +703,13 @@ function Game() {
     );
   }, [timer?.kind, inRoom, rt?.kind, rt?.status]);
   useEffect(() => {
-    if (view !== "town" || !prefs.controls)
+    if (view !== "town")
       for (const key of ["w", "a", "s", "d"]) engine.current?.key(key, false);
-  }, [view, prefs.controls]);
+  }, [view]);
   useEffect(() => {
-    document.title = active ? clock(left) + " | Focus Town" : "Focus Town";
+    document.title = active ? clock(left) + " | Focus Street" : "Focus Street";
     return () => {
-      document.title = "Focus Town";
+      document.title = "Focus Street";
     };
   }, [active, left]);
   useEffect(() => {
@@ -731,8 +732,18 @@ function Game() {
       );
     }
   };
+  const onlineMembers =
+    room.snapshot?.members.filter((member) => member.online) ?? [];
+  const everyoneReady =
+    onlineMembers.length > 0 && onlineMembers.every((member) => member.ready);
+  const controlsDisabled =
+    !canSave ||
+    room.busy ||
+    (inRoom && (!room.isHost || !room.connected)) ||
+    (!active &&
+      (!valid || (inRoom && currentPhase === "focus" && !everyoneReady)));
   const begin = () => {
-    if (!valid || room.busy) return;
+    if (controlsDisabled || active) return;
     if (inRoom) {
       void room.control("start", currentPhase, minutes!);
       return;
@@ -790,7 +801,7 @@ function Game() {
       a = document.createElement("a");
     a.href = url;
     a.download =
-      "focus-town-save-" + new Date().toISOString().slice(0, 10) + ".json";
+      "focus-street-save-" + new Date().toISOString().slice(0, 10) + ".json";
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
@@ -798,7 +809,7 @@ function Game() {
     if (!f) return;
     if (f.size > 2_000_000) {
       setMessage(
-        "That backup is too large. Choose a Focus Town save under 2 MB.",
+        "That backup is too large. Choose a Focus Street save under 2 MB.",
       );
       return;
     }
@@ -920,18 +931,7 @@ function Game() {
           className="start-button"
           variant="default"
           aria-label={actionLabel}
-          disabled={
-            (!active && !valid) ||
-            (inRoom &&
-              !active &&
-              currentPhase === "focus" &&
-              !room.snapshot?.members
-                .filter((m) => m.online)
-                .every((m) => m.ready)) ||
-            (inRoom
-              ? !room.isHost || !room.connected || room.busy
-              : !canSave || room.busy)
-          }
+          disabled={controlsDisabled}
           onClick={active ? togglePause : begin}
         >
           <Icon name={active && !isPaused ? "pause" : "play"} />
@@ -1022,7 +1022,7 @@ function Game() {
       </div>
       <header className="topbar">
         <button className="wordmark" onClick={() => setPanel("story")}>
-          focus town<span>GREENVALE</span>
+          focus street<span>GREENVALE</span>
         </button>
         <nav className="view-switch" aria-label="Views">
           <Button
@@ -1062,17 +1062,19 @@ function Game() {
           }
           aria-label="Focus timer"
         >
-          <button
-            className="timer-fold"
-            aria-label={
-              prefs.focusCollapsed ? "Expand full timer" : "Collapse timer"
-            }
-            aria-expanded={!prefs.focusCollapsed}
-            aria-controls="focus-timer-body"
-            onClick={() => setting("focusCollapsed", !prefs.focusCollapsed)}
-          >
-            {prefs.focusCollapsed ? "Expand" : "Collapse timer"}
-          </button>
+          {prefs.focusCollapsed && (
+            <button
+              className="timer-fold"
+              aria-label={
+                prefs.focusCollapsed ? "Expand full timer" : "Collapse timer"
+              }
+              aria-expanded={!prefs.focusCollapsed}
+              aria-controls="focus-timer-body"
+              onClick={() => setting("focusCollapsed", !prefs.focusCollapsed)}
+            >
+              Expand
+            </button>
+          )}
           {prefs.focusCollapsed && (
             <div className="compact-clock">
               <span>
@@ -1092,6 +1094,19 @@ function Game() {
             className="focus-body"
             hidden={prefs.focusCollapsed}
           >
+            <div className="desk-caption">
+              <span>
+                {active ? (isPaused ? "Paused" : "In session") : "Your desk"}
+              </span>
+              <button
+                onClick={() => setting("focusCollapsed", true)}
+                aria-label="Collapse timer"
+                aria-expanded={true}
+                aria-controls="focus-timer-body"
+              >
+                Minimise
+              </button>
+            </div>
             {sessionTabs}
             {prefs.showTask && (
               <label className="task-line">
@@ -1108,6 +1123,16 @@ function Game() {
               value={clock(left)}
               label={phaseLabel(currentPhase)}
               plain={prefs.clockStyle === "plain"}
+            />
+            <SessionMeter
+              remaining={left}
+              durationMinutes={
+                inRoom
+                  ? (rt?.minutes ?? minutes ?? 25)
+                  : (timer?.durationMinutes ?? minutes ?? 25)
+              }
+              active={active}
+              paused={!!isPaused}
             />
             <div className="round-line">
               {inRoom ? (
@@ -1128,20 +1153,14 @@ function Game() {
                         " of " +
                         cycle.rounds
                       : prefs.cycle && phase === "focus"
-                        ? rounds +
-                          " rounds · " +
-                          prefs.focus +
-                          " / " +
-                          prefs.short +
-                          " / " +
-                          prefs.long
+                        ? rounds + " rounds · " + prefs.focus + " min focus"
                         : phaseLabel(phase)}
                   </span>
                   <button
                     onClick={() => setPanel("sessions")}
                     disabled={active}
                   >
-                    Edit
+                    Set sessions
                   </button>
                 </>
               )}
@@ -1149,123 +1168,14 @@ function Game() {
           </div>
           {sessionActions}
           {!prefs.focusCollapsed && (
-            <details className="desk-customizer">
-              <summary>Arrange your desk</summary>
-              <label>
-                Light{" "}
-                <select
-                  value={prefs.deskTheme}
-                  onChange={(e) => setting("deskTheme", e.target.value)}
-                >
-                  <option value="lamplight">Lamplight</option>
-                  <option value="moonlight">Moonlight</option>
-                  <option value="ink">Quiet ink</option>
-                </select>
-              </label>
-              <label>
-                Clock{" "}
-                <select
-                  value={prefs.clockStyle}
-                  onChange={(e) => setting("clockStyle", e.target.value)}
-                >
-                  <option value="flip">Split-flap</option>
-                  <option value="plain">Plain digits</option>
-                </select>
-              </label>
-              <div className="backdrop-setting">
-                <span id="backdrop-label">Scenery</span>
-                <div
-                  className="backdrop-choices"
-                  role="group"
-                  aria-labelledby="backdrop-label"
-                >
-                  {(
-                    Object.keys(DESK_BACKGROUNDS) as (typeof prefs.background)[]
-                  ).map((kind) => (
-                    <button
-                      key={kind}
-                      className="backdrop-choice"
-                      aria-pressed={prefs.background === kind}
-                      onClick={() => setting("background", kind)}
-                    >
-                      <img
-                        className="backdrop-preview"
-                        src={DESK_BACKGROUNDS[kind].src}
-                        alt=""
-                        loading="lazy"
-                        decoding="async"
-                        width="160"
-                        height="90"
-                      />
-                      <span className="backdrop-name">
-                        {DESK_BACKGROUNDS[kind].name}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <label>
-                Finish{" "}
-                <select
-                  value={prefs.deskFinish}
-                  onChange={(e) =>
-                    setting(
-                      "deskFinish",
-                      e.target.value as typeof prefs.deskFinish,
-                    )
-                  }
-                >
-                  <option value="walnut">Walnut & brass</option>
-                  <option value="porcelain">Porcelain</option>
-                  <option value="terracotta">Terracotta</option>
-                </select>
-              </label>
-              <label>
-                Clock size{" "}
-                <select
-                  value={prefs.clockSize}
-                  onChange={(e) =>
-                    setting(
-                      "clockSize",
-                      e.target.value as typeof prefs.clockSize,
-                    )
-                  }
-                >
-                  <option value="small">Small</option>
-                  <option value="medium">Medium</option>
-                  <option value="large">Large</option>
-                </select>
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={prefs.showTask}
-                  onChange={(e) => setting("showTask", e.target.checked)}
-                />
-                Show task
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={prefs.showAdvice}
-                  onChange={(e) => setting("showAdvice", e.target.checked)}
-                />
-                Show a word before work
-              </label>
-              <div className="desk-tools">
-                <button onClick={() => setPanel("sessions")}>
-                  Set session lengths
-                </button>
-                <button onClick={() => setPanel("audio")}>
-                  Choose a sound
-                </button>
-                <button
-                  onClick={() => setPrefs((p) => ({ ...p, ...deskDefaults }))}
-                >
-                  Reset desk look
-                </button>
-              </div>
-            </details>
+            <div className="focus-tools">
+              <button onClick={() => setPanel("appearance")}>
+                Scenery & clock
+              </button>
+              <button onClick={() => setPanel("audio")}>
+                {sound.playing ? "Sound playing" : "Sounds"}
+              </button>
+            </div>
           )}
           {!prefs.focusCollapsed &&
             prefs.showAdvice &&
@@ -1382,31 +1292,30 @@ function Game() {
               </button>
             </div>
           )}
-          {prefs.controls && (
-            <div className="touch-pad">
-              {[
-                ["w", "Up"],
-                ["a", "Left"],
-                ["s", "Down"],
-                ["d", "Right"],
-              ].map(([key, label]) => (
-                <button
-                  key={key}
-                  aria-label={"Walk " + label.toLowerCase()}
-                  onPointerDown={(e) => {
-                    e.preventDefault();
-                    e.currentTarget.setPointerCapture(e.pointerId);
-                    engine.current?.key(key, true);
-                  }}
-                  onPointerUp={() => engine.current?.key(key, false)}
-                  onPointerCancel={() => engine.current?.key(key, false)}
-                >
-                  {label}
-                </button>
-              ))}
-              <button onClick={() => engine.current?.interact()}>Use</button>
-            </div>
-          )}
+          <div className="touch-pad">
+            {[
+              ["w", "Up"],
+              ["a", "Left"],
+              ["s", "Down"],
+              ["d", "Right"],
+            ].map(([key, label]) => (
+              <button
+                key={key}
+                aria-label={"Walk " + label.toLowerCase()}
+                onPointerDown={(e) => {
+                  e.preventDefault();
+                  e.currentTarget.setPointerCapture(e.pointerId);
+                  engine.current?.key(key, true);
+                }}
+                onPointerUp={() => engine.current?.key(key, false)}
+                onPointerCancel={() => engine.current?.key(key, false)}
+                onLostPointerCapture={() => engine.current?.key(key, false)}
+              >
+                {label}
+              </button>
+            ))}
+            <button onClick={() => engine.current?.interact()}>Use</button>
+          </div>
         </>
       )}
       {!zen && (
@@ -1694,6 +1603,22 @@ function Game() {
           </div>
         </Modal>
       )}
+      {panel === "appearance" && (
+        <Modal
+          title="Desk settings"
+          onClose={close}
+          className="appearance-dialog"
+        >
+          <DeskAppearance
+            prefs={prefs}
+            setting={(key, value) => setPrefs((p) => ({ ...p, [key]: value }))}
+            onReset={() => setPrefs((p) => ({ ...p, ...deskDefaults }))}
+          />
+          <Button variant="default" onClick={close}>
+            Done
+          </Button>
+        </Modal>
+      )}
       {panel === "audio" && (
         <Modal title="The listening shelf" onClose={close}>
           <SoundLibrary sound={sound} />
@@ -1703,7 +1628,8 @@ function Game() {
         <Modal title="Set your session" onClose={close}>
           {sessionTabs}
           <p className="muted">
-            Choose a rhythm. Leave the next round for when you are ready.
+            Set each interval below. Focus rounds always wait for you to press
+            Start.
           </p>
           <div className="preset-list">
             {[
@@ -1740,7 +1666,7 @@ function Game() {
               >
                 <span>{p.name}</span>
                 <small>
-                  {p.focus} / {p.short} / {p.long}
+                  {p.focus} min focus · {p.short} min break
                 </small>
               </button>
             ))}
@@ -1778,16 +1704,17 @@ function Game() {
             are controlled by the host.
           </p>
           <Button variant="default" disabled={!valid} onClick={close}>
-            Save settings
+            Done
           </Button>
+          {inRoom && !active && currentPhase === "focus" && !everyoneReady && (
+            <p className="fine-print">
+              Open Together and ready up. Everyone online must be ready before
+              the host starts.
+            </p>
+          )}
           {!active && (
             <Button
-              disabled={
-                !valid ||
-                (inRoom
-                  ? !room.isHost || !room.connected || room.busy
-                  : !canSave || room.busy)
-              }
+              disabled={controlsDisabled}
               onClick={() => {
                 if (valid) {
                   begin();
@@ -2058,13 +1985,16 @@ function Game() {
             )}
           </form>
           <TownPersonalization save={save} update={update} canSave={canSave} />
+          <Button variant="outline" onClick={() => setPanel("appearance")}>
+            Scenery & clock
+          </Button>
           <label className="check-row">
             <input
               type="checkbox"
               checked={prefs.controls}
               onChange={(e) => setting("controls", e.target.checked)}
             />
-            Show movement controls
+            Show keyboard hint
           </label>
           <label className="check-row">
             <input
@@ -2098,9 +2028,10 @@ function Game() {
             website address has a separate save.
           </p>
           <p>
-            Moving devices? Download a backup here, open Focus Town on the other
-            device, then choose Import progress. It carries your character and
-            town progress; timer preferences and your online identity stay here.
+            Moving devices? Download a backup here, open Focus Street on the
+            other device, then choose Import progress. It carries your character
+            and town progress; timer preferences and your online identity stay
+            here.
           </p>
           <div className="button-row">
             <Button variant="outline" onClick={download}>
@@ -2158,7 +2089,7 @@ function Game() {
         </Modal>
       )}
       {panel === "coop" && (
-        <Modal title="Keep each other company." onClose={close}>
+        <Modal title="Study together" onClose={close}>
           <p className="muted">
             Walk together, share a timer, light the river beacon.
           </p>
